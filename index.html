@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlazaPY — El mercado digital paraguayo</title>
+  <meta name="description" content="Comprá, vendé y encontrá repuestos, autos, servicios y más en Paraguay. La plataforma de clasificados con verificación real." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rojo: #E63020;
+      --rojo-dark: #B8200F;
+      --azul: #0A2463;
+      --azul-mid: #1A3A8F;
+      --crema: #F5F0E8;
+      --arena: #E8E0D0;
+      --carbon: #111111;
+      --gris: #6B6B6B;
+      --gris-light: #D4CEC5;
+      --verde: #1A7F4B;
+      --amarillo: #F5C518;
+      --blanco: #FAFAF8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--crema);
+      color: var(--carbon);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: var(--azul);
+      border-bottom: 3px solid var(--rojo);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--blanco);
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--rojo); }
+
+    .nav-links {
+      display: flex; gap: 2rem; list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--blanco); }
+
+    .nav-cta {
+      display: flex; gap: .75rem; align-items: center;
+    }
+    .btn-login {
+      color: var(--blanco);
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 500;
+      opacity: .8;
+      transition: opacity .2s;
+    }
+    .btn-login:hover { opacity: 1; }
+
+    .btn-primary {
+      background: var(--rojo);
+      color: var(--blanco);
+      padding: .5rem 1.25rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: background .2s, transform .1s;
+      border: none; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--rojo-dark); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: var(--azul);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(230,48,32,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 3rem 5rem 4rem;
+      position: relative; z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(230,48,32,0.15);
+      border: 1px solid rgba(230,48,32,0.4);
+      color: #FF8070;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: .4rem 1rem;
+      border-radius: 100px;
+      width: fit-content;
+      margin-bottom: 1.5rem;
+      animation: fadeUp .6s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.05;
+      color: var(--blanco);
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      animation: fadeUp .6s .1s ease both;
+    }
+
+    .hero-title .accent { color: var(--rojo); }
+    .hero-title .underline-py {
+      position: relative;
+      display: inline-block;
+    }
+    .hero-title .underline-py::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 4px;
+      background: var(--amarillo);
+      border-radius: 2px;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.6;
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+      animation: fadeUp .6s .2s ease both;
+    }
+
+    .hero-search {
+      display: flex;
+      background: var(--blanco);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      margin-bottom: 1.5rem;
+      animation: fadeUp .6s .3s ease both;
+    }
+
+    .hero-search select {
+      border: none; outline: none;
+      background: var(--arena);
+      padding: 0 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--carbon);
+      border-right: 2px solid var(--gris-light);
+      cursor: pointer;
+      min-width: 160px;
+    }
+
+    .hero-search input {
+      flex: 1;
+      border: none; outline: none;
+      padding: 1rem 1.25rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      color: var(--carbon);
+      background: transparent;
+    }
+    .hero-search input::placeholder { color: var(--gris); }
+
+    .hero-search button {
+      background: var(--rojo);
+      border: none;
+      color: white;
+      padding: 0 1.5rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: background .2s;
+      letter-spacing: .02em;
+    }
+    .hero-search button:hover { background: var(--rojo-dark); }
+
+    .hero-stats {
+      display: flex; gap: 2rem;
+      animation: fadeUp .6s .4s ease both;
+    }
+    .stat-item { }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--blanco);
+    }
+    .stat-label {
+      font-size: .8rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* hero right — visual */
+    .hero-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      animation: fadeIn .8s .3s ease both;
+    }
+
+    .floating-cards {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .fcard {
+      background: var(--blanco);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+      position: absolute;
+      min-width: 200px;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .fcard:nth-child(1) { top: 40px; left: 10px; animation-delay: 0s; }
+    .fcard:nth-child(2) { top: 0; right: 0; animation-delay: .8s; }
+    .fcard:nth-child(3) { bottom: 60px; left: 30px; animation-delay: 1.6s; }
+    .fcard:nth-child(4) { bottom: 30px; right: 10px; animation-delay: 2.4s; }
+
+    .fcard-badge {
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 2px 8px;
+      border-radius: 100px;
+      display: inline-block;
+      margin-bottom: .5rem;
+    }
+    .fcard-badge.repuesto { background: rgba(26,127,75,0.15); color: var(--verde); }
+    .fcard-badge.auto { background: rgba(10,36,99,0.1); color: var(--azul-mid); }
+    .fcard-badge.servicio { background: rgba(245,197,24,0.2); color: #8A6B00; }
+    .fcard-badge.verificado { background: rgba(26,127,75,0.15); color: var(--verde); }
+
+    .fcard-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--carbon);
+      margin-bottom: .25rem;
+    }
+    .fcard-price {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--rojo);
+    }
+    .fcard-loc {
+      font-size: .75rem;
+      color: var(--gris);
+      margin-top: .2rem;
+    }
+    .fcard-check {
+      font-size: .75rem;
+      color: var(--verde);
+      font-weight: 500;
+    }
+
+    .hero-spacer { height: 380px; }
+
+    /* ── CATEGORIES ── */
+    .categories {
+      background: var(--blanco);
+      padding: 5rem 4rem;
+    }
+
+    .section-label {
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--rojo);
+      margin-bottom: .75rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      color: var(--carbon);
+      letter-spacing: -0.02em;
+      margin-bottom: 3rem;
+    }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .cat-card {
+      background: var(--crema);
+      border: 1.5px solid var(--arena);
+      border-radius: 12px;
+      padding: 1.5rem 1.25rem;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+      display: block;
+    }
+    .cat-card:hover {
+      border-color: var(--rojo);
+      background: var(--blanco);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(230,48,32,0.1);
+    }
+    .cat-icon { font-size: 2rem; margin-bottom: .75rem; display: block; }
+    .cat-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--carbon);
+      margin-bottom: .25rem;
+    }
+    .cat-count { font-size: .8rem; color: var(--gris); }
+
+    /* ── FEATURED LISTINGS ── */
+    .listings {
+      padding: 5rem 4rem;
+      background: var(--crema);
+    }
+
+    .listings-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+    }
+
+    .ver-todos {
+      color: var(--rojo);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: .9rem;
+      border-bottom: 2px solid transparent;
+      transition: border-color .2s;
+    }
+    .ver-todos:hover { border-color: var(--rojo); }
+
+    .listings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .listing-card {
+      background: var(--blanco);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1.5px solid var(--arena);
+      transition: all .25s;
+      cursor: pointer;
+    }
+    .listing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+      border-color: var(--gris-light);
+    }
+
+    .listing-img {
+      width: 100%; height: 180px;
+      object-fit: cover;
+      background: var(--arena);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: relative;
+    }
+
+    .listing-verified {
+      position: absolute;
+      top: .75rem; right: .75rem;
+      background: var(--verde);
+      color: white;
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .listing-featured {
+      position: absolute;
+      top: .75rem; left: .75rem;
+      background: var(--amarillo);
+      color: var(--carbon);
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .listing-body { padding: 1rem 1.25rem 1.25rem; }
+    .listing-cat {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--gris);
+      margin-bottom: .4rem;
+    }
+    .listing-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--carbon);
+      margin-bottom: .5rem;
+      line-height: 1.3;
+    }
+    .listing-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--rojo);
+      margin-bottom: .5rem;
+    }
+    .listing-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .listing-loc {
+      font-size: .8rem;
+      color: var(--gris);
+    }
+    .listing-time {
+      font-size: .75rem;
+      color: var(--gris-light);
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      background: var(--azul);
+      padding: 5rem 4rem;
+      color: var(--blanco);
+    }
+
+    .how .section-title { color: var(--blanco); }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .how-step {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: background .2s;
+    }
+    .how-step:hover { background: rgba(255,255,255,0.1); }
+
+    .how-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--rojo);
+      line-height: 1;
+      margin-bottom: .75rem;
+      opacity: .6;
+    }
+    .how-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .how-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: .75rem;
+    }
+    .how-desc {
+      font-size: .9rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+    }
+
+    /* ── TRUST BANNER ── */
+    .trust {
+      background: var(--rojo);
+      padding: 1.25rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      color: var(--blanco);
+      font-size: .9rem;
+      font-weight: 500;
+    }
+    .trust-item .ti { font-size: 1.2rem; }
+
+    /* ── PUBLISH CTA ── */
+    .publish-cta {
+      background: var(--crema);
+      padding: 5rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .cta-text .section-title { margin-bottom: 1rem; }
+    .cta-text p {
+      color: var(--gris);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      background: transparent;
+      color: var(--azul);
+      padding: .75rem 1.75rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      border: 2px solid var(--azul);
+      margin-left: 1rem;
+      transition: all .2s;
+    }
+    .btn-secondary:hover {
+      background: var(--azul);
+      color: white;
+    }
+
+    .btn-big {
+      display: inline-block;
+      background: var(--rojo);
+      color: var(--blanco);
+      padding: .9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      transition: all .2s;
+    }
+    .btn-big:hover { background: var(--rojo-dark); transform: translateY(-2px); }
+
+    .pricing-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .pricing-card {
+      background: var(--blanco);
+      border: 1.5px solid var(--arena);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color .2s;
+    }
+    .pricing-card.featured {
+      border-color: var(--rojo);
+      background: rgba(230,48,32,0.03);
+    }
+    .pricing-card-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: .2rem;
+    }
+    .pricing-card-desc {
+      font-size: .82rem;
+      color: var(--gris);
+    }
+    .pricing-card-price {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--rojo);
+      text-align: right;
+      white-space: nowrap;
+    }
+    .pricing-card-price small {
+      display: block;
+      font-size: .7rem;
+      color: var(--gris);
+      font-weight: 400;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--carbon);
+      color: rgba(255,255,255,0.5);
+      padding: 3rem 4rem 2rem;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 2rem;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--blanco);
+      margin-bottom: .75rem;
+    }
+    .footer-logo span { color: var(--rojo); }
+    .footer-desc { font-size: .85rem; line-height: 1.6; max-width: 260px; }
+
+    .footer-col h4 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--blanco);
+      font-size: .9rem;
+      margin-bottom: 1rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .footer-col a {
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: .85rem;
+      transition: color .2s;
+    }
+    .footer-col a:hover { color: var(--blanco); }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .8rem;
+    }
+
+    .footer-py {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero-left { padding: 4rem 2rem; }
+      .categories, .listings, .how, .publish-cta { padding: 3rem 1.5rem; }
+      .how-grid { grid-template-columns: 1fr; }
+      .publish-cta { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .trust { padding: 1.25rem 2rem; gap: 1.5rem; }
+      nav { padding: 0 1.25rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">Plaza<span>PY</span></a>
+  <ul class="nav-links">
+    <li><a href="#categorias">Categorías</a></li>
+    <li><a href="#como-funciona">¿Cómo funciona?</a></li>
+    <li><a href="#publicar">Publicar</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="login.html" class="btn-login">Iniciar sesión</a>
+    <a href="publicar.html" class="btn-primary">+ Publicar gratis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge">🇵🇾 El mercado digital de Paraguay</div>
+    <h1 class="hero-title">
+      Comprá y vendé<br>
+      en la <span class="underline-py">Plaza</span><br>
+      <span class="accent">paraguaya</span>
+    </h1>
+    <p class="hero-sub">
+      Repuestos, autos, servicios y mucho más. Con verificación real y pagos seguros. Sin estafas.
+    </p>
+    <div class="hero-search">
+      <select>
+        <option>Todas las categorías</option>
+        <option>Repuestos</option>
+        <option>Autos usados</option>
+        <option>Talleres</option>
+        <option>Electrónica</option>
+        <option>Inmuebles</option>
+        <option>Empleos</option>
+      </select>
+      <input type="text" placeholder="¿Qué estás buscando?" />
+      <button>Buscar</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">2.4K</div>
+        <div class="stat-label">Anuncios activos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">340+</div>
+        <div class="stat-label">Vendedores verificados</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">Gs. 0</div>
+        <div class="stat-label">Para publicar</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="floating-cards">
+      <div class="hero-spacer"></div>
+
+      <div class="fcard">
+        <span class="fcard-badge repuesto">Repuesto</span>
+        <div class="fcard-title">Alternador Toyota Corolla 2018</div>
+        <div class="fcard-price">Gs. 480.000</div>
+        <div class="fcard-loc">📍 Asunción · hace 2h</div>
+        <div class="fcard-check">✓ Vendedor verificado</div>
+      </div>
+
+      <div class="fcard">
+        <span class="fcard-badge auto">Auto</span>
+        <div class="fcard-title">Honda Fit 2015 — 98.000 km</div>
+        <div class="fcard-price">Gs. 62.000.000</div>
+        <div class="fcard-loc">📍 San Lorenzo · hace 5h</div>
+        <div class="fcard-check">✓ Fotos reales verificadas</div>
+      </div>
+
+      <div class="fcard">
+        <span class="fcard-badge servicio">Servicio</span>
+        <div class="fcard-title">Taller Mecánico — Chapa y Pintura</div>
+        <div class="fcard-price">Presupuesto gratis</div>
+        <div class="fcard-loc">📍 Lambaré</div>
+        <div class="fcard-check">⭐ 4.8 · 120 reseñas</div>
+      </div>
+
+      <div class="fcard">
+        <span class="fcard-badge verificado">Destacado</span>
+        <div class="fcard-title">Llanta 205/55R16 x4 Bridgestone</div>
+        <div class="fcard-price">Gs. 1.200.000</div>
+        <div class="fcard-loc">📍 Fernando de la Mora</div>
+        <div class="fcard-check">✓ Stock disponible</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BANNER -->
+<div class="trust">
+  <div class="trust-item"><span class="ti">✓</span> Vendedores verificados</div>
+  <div class="trust-item"><span class="ti">📍</span> Ubicación confirmada en mapa</div>
+  <div class="trust-item"><span class="ti">🚩</span> Sistema de reportes</div>
+  <div class="trust-item"><span class="ti">💬</span> Soporte en WhatsApp</div>
+  <div class="trust-item"><span class="ti">🇵🇾</span> 100% paraguayo</div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="categories" id="categorias">
+  <div class="section-label">Explorá por rubro</div>
+  <div class="section-title">¿Qué estás buscando?</div>
+  <div class="cat-grid">
+    <a href="#" class="cat-card">
+      <span class="cat-icon">🔧</span>
+      <div class="cat-name">Repuestos</div>
+      <div class="cat-count">1.240 anuncios</div>
+    </a>
+    <a href="#" class="cat-card">
+      <span class="cat-icon">🚗</span>
+      <div class="cat-name">Autos usados</div>
+      <div class="cat-count">580 anuncios</div>
+    </a>
+    <a href="#" class="cat-card">
+      <span class="cat-icon">🏍️</span>
+      <div class="cat-name">Motos</div>
+      <div class="cat-count">320 anuncios</div>
+    </a>
+    <a href="#" class="cat-card">
+      <span class="cat-icon">🔩</span>
+      <div class="cat-name">Talleres</div>
+      <div class="cat-count">180 talleres</div>
+    </a>
+    <a href="#" class="cat-card">
+      <span class="cat-icon">📱</span>
+      <div class="cat-name">Electrónica</div>
+      <div class="cat-count">próximamente</div>
+    </a>
+    <a href="#" class="cat-card">
+      <span class="cat-icon">🏠</span>
+      <div class="cat-name">Inmuebles</div>
+      <div class="cat-count">próximamente</div>
+    </a>
+    <a href="#" class="cat-card">
+      <span class="cat-icon">💼</span>
+      <div class="cat-name">Empleos</div>
+      <div class="cat-count">próximamente</div>
+    </a>
+    <a href="#" class="cat-card">
+      <span class="cat-icon">🛋️</span>
+      <div class="cat-name">Hogar</div>
+      <div class="cat-count">próximamente</div>
+    </a>
+  </div>
+</section>
+
+<!-- FEATURED LISTINGS -->
+<section class="listings">
+  <div class="listings-header">
+    <div>
+      <div class="section-label">Anuncios recientes</div>
+      <div class="section-title">Destacados de hoy</div>
+    </div>
+    <a href="#" class="ver-todos">Ver todos →</a>
+  </div>
+
+  <div class="listings-grid">
+    <!-- Card 1 -->
+    <div class="listing-card">
+      <div class="listing-img">
+        🔧
+        <span class="listing-verified">✓ Verificado</span>
+        <span class="listing-featured">★ Destacado</span>
+      </div>
+      <div class="listing-body">
+        <div class="listing-cat">Repuestos · Motor</div>
+        <div class="listing-title">Alternador Original Toyota Corolla 2016–2020</div>
+        <div class="listing-price">Gs. 480.000</div>
+        <div class="listing-meta">
+          <span class="listing-loc">📍 Asunción</span>
+          <span class="listing-time">hace 2h</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="listing-card">
+      <div class="listing-img">🚗</div>
+      <div class="listing-body">
+        <div class="listing-cat">Autos usados · Sedán</div>
+        <div class="listing-title">Toyota Vitz 2017 — 72.000 km — Excelente estado</div>
+        <div class="listing-price">Gs. 58.000.000</div>
+        <div class="listing-meta">
+          <span class="listing-loc">📍 San Lorenzo</span>
+          <span class="listing-time">hace 5h</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="listing-card">
+      <div class="listing-img">
+        🔩
+        <span class="listing-verified">✓ Verificado</span>
+      </div>
+      <div class="listing-body">
+        <div class="listing-cat">Talleres · Mecánica general</div>
+        <div class="listing-title">Taller Don Aurelio — Mecánica y electricidad</div>
+        <div class="listing-price">⭐ 4.9 · 200 reseñas</div>
+        <div class="listing-meta">
+          <span class="listing-loc">📍 Lambaré</span>
+          <span class="listing-time">Abierto ahora</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="listing-card">
+      <div class="listing-img">
+        🏍️
+        <span class="listing-featured">★ Destacado</span>
+      </div>
+      <div class="listing-body">
+        <div class="listing-cat">Motos · Honda</div>
+        <div class="listing-title">Honda CB 190R 2022 — 15.000 km — SOAT al día</div>
+        <div class="listing-price">Gs. 22.500.000</div>
+        <div class="listing-meta">
+          <span class="listing-loc">📍 Fernando de la Mora</span>
+          <span class="listing-time">hace 1d</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="como-funciona">
+  <div class="section-label" style="color: rgba(255,255,255,0.5)">Simple y seguro</div>
+  <div class="section-title">¿Cómo funciona PlazaPY?</div>
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="how-num">01</div>
+      <div class="how-icon">📝</div>
+      <div class="how-title">Publicá tu anuncio</div>
+      <div class="how-desc">Registrarte con tu número de teléfono y cargá tu anuncio con fotos, precio y ubicación en el mapa. Es gratis.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">02</div>
+      <div class="how-icon">✅</div>
+      <div class="how-title">Lo revisamos</div>
+      <div class="how-desc">Nuestro equipo verifica que el anuncio sea real antes de publicarlo. Sin spam, sin estafas, sin anuncios falsos.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">03</div>
+      <div class="how-icon">💬</div>
+      <div class="how-title">Conectá y vendé</div>
+      <div class="how-desc">Los compradores te contactan directo por WhatsApp o por el chat interno. Vos cerrás el trato como más te convenga.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLISH CTA -->
+<section class="publish-cta" id="publicar">
+  <div class="cta-text">
+    <div class="section-label">Para anunciantes</div>
+    <div class="section-title">¿Tenés algo para vender?</div>
+    <p>
+      Publicar en PlazaPY es gratis. Tu anuncio llega a miles de paraguayos que buscan exactamente lo que vos tenés. Y si querés más visibilidad, los planes destacados empiezan en Gs. 50.000.
+    </p>
+    <a href="publicar.html" class="btn-big">+ Publicar gratis ahora</a>
+    <a href="#como-funciona" class="btn-secondary">Ver cómo funciona</a>
+  </div>
+  <div class="pricing-cards">
+    <div class="pricing-card">
+      <div>
+        <div class="pricing-card-name">Anuncio básico</div>
+        <div class="pricing-card-desc">Publicación estándar · 30 días</div>
+      </div>
+      <div class="pricing-card-price">
+        Gratis
+        <small>siempre</small>
+      </div>
+    </div>
+    <div class="pricing-card featured">
+      <div>
+        <div class="pricing-card-name">⭐ Anuncio destacado</div>
+        <div class="pricing-card-desc">Aparece primero · badge amarillo · 30 días</div>
+      </div>
+      <div class="pricing-card-price">
+        Gs. 50.000
+        <small>por mes</small>
+      </div>
+    </div>
+    <div class="pricing-card">
+      <div>
+        <div class="pricing-card-name">✓ Perfil verificado</div>
+        <div class="pricing-card-desc">Badge verde · anuncios ilimitados · soporte</div>
+      </div>
+      <div class="pricing-card-price">
+        Gs. 150.000
+        <small>por mes</small>
+      </div>
+    </div>
+    <div class="pricing-card">
+      <div>
+        <div class="pricing-card-name">🏢 Plan negocio</div>
+        <div class="pricing-card-desc">Todo incluido · perfil de empresa · estadísticas</div>
+      </div>
+      <div class="pricing-card-price">
+        Gs. 300.000
+        <small>por mes</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">Plaza<span>PY</span></div>
+      <p class="footer-desc">El mercado digital paraguayo. Comprá, vendé y encontrá lo que necesitás con confianza real.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Categorías</h4>
+      <ul>
+        <li><a href="#">Repuestos</a></li>
+        <li><a href="#">Autos usados</a></li>
+        <li><a href="#">Motos</a></li>
+        <li><a href="#">Talleres</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>PlazaPY</h4>
+      <ul>
+        <li><a href="#">Cómo funciona</a></li>
+        <li><a href="#">Publicar anuncio</a></li>
+        <li><a href="#">Verificación</a></li>
+        <li><a href="#">Precios</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <ul>
+        <li><a href="#">WhatsApp</a></li>
+        <li><a href="#">hola@plazapy.com</a></li>
+        <li><a href="#">Reportar anuncio</a></li>
+        <li><a href="#">Términos de uso</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-py">🇵🇾 Hecho en Paraguay · © 2025 PlazaPY</div>
+    <div>Todos los derechos reservados</div>
+  </div>
+</footer>
+
+</body>
+</html>
