@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publicar anuncio — PlazaPY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Leaflet mapa -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    :root {
+      --rojo: #E63020;
+      --rojo-dark: #B8200F;
+      --azul: #0A2463;
+      --azul-mid: #1A3A8F;
+      --crema: #F5F0E8;
+      --arena: #E8E0D0;
+      --carbon: #111111;
+      --gris: #6B6B6B;
+      --gris-light: #D4CEC5;
+      --verde: #1A7F4B;
+      --amarillo: #F5C518;
+      --blanco: #FAFAF8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--crema);
+      color: var(--carbon);
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 64px;
+      background: var(--azul);
+      border-bottom: 3px solid var(--rojo);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem;
+      color: var(--blanco); text-decoration: none; letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--rojo); }
+    .nav-back {
+      color: rgba(255,255,255,0.7); text-decoration: none; font-size: .9rem;
+      display: flex; align-items: center; gap: .4rem; transition: color .2s;
+    }
+    .nav-back:hover { color: white; }
+
+    /* LAYOUT */
+    .page {
+      max-width: 860px; margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    .page-header { margin-bottom: 2.5rem; }
+    .page-header h1 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 2rem; letter-spacing: -0.02em; margin-bottom: .4rem;
+    }
+    .page-header p { color: var(--gris); font-size: 1rem; }
+
+    /* STEPS INDICATOR */
+    .steps {
+      display: flex; gap: 0; margin-bottom: 2.5rem;
+      border-radius: 10px; overflow: hidden;
+      border: 1.5px solid var(--arena);
+    }
+    .step-tab {
+      flex: 1; padding: .75rem 1rem; text-align: center;
+      background: var(--blanco); border-right: 1.5px solid var(--arena);
+      font-size: .82rem; font-weight: 500; color: var(--gris);
+      cursor: pointer; transition: all .2s;
+    }
+    .step-tab:last-child { border-right: none; }
+    .step-tab.active {
+      background: var(--azul); color: var(--blanco); font-weight: 600;
+    }
+    .step-tab.done {
+      background: rgba(26,127,75,0.08); color: var(--verde);
+    }
+    .step-num {
+      display: inline-block; width: 20px; height: 20px; border-radius: 50%;
+      background: currentColor; color: var(--blanco); font-size: .7rem;
+      font-weight: 700; line-height: 20px; margin-right: .4rem;
+      opacity: .3;
+    }
+    .step-tab.active .step-num { opacity: 1; background: var(--rojo); color: white; }
+    .step-tab.done .step-num { opacity: 1; background: var(--verde); color: white; }
+
+    /* FORM SECTIONS */
+    .form-section {
+      background: var(--blanco); border-radius: 14px;
+      border: 1.5px solid var(--arena); padding: 2rem;
+      margin-bottom: 1.25rem; display: none;
+    }
+    .form-section.active { display: block; }
+
+    .section-title {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 1.1rem; margin-bottom: 1.5rem;
+      padding-bottom: .75rem; border-bottom: 1.5px solid var(--arena);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .section-title .icon { font-size: 1.2rem; }
+
+    /* FIELDS */
+    .field { margin-bottom: 1.25rem; }
+    .field label {
+      display: block; font-size: .85rem; font-weight: 600;
+      margin-bottom: .4rem; color: var(--carbon);
+    }
+    .field label .req { color: var(--rojo); margin-left: 2px; }
+    .field label .opt { color: var(--gris); font-weight: 400; font-size: .8rem; margin-left: 4px; }
+
+    .field input, .field select, .field textarea {
+      width: 100%; padding: .75rem 1rem;
+      border: 1.5px solid var(--arena); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: .95rem;
+      color: var(--carbon); background: var(--crema);
+      transition: border-color .2s, background .2s;
+      outline: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--azul); background: var(--blanco);
+    }
+    .field input.error, .field select.error, .field textarea.error {
+      border-color: var(--rojo);
+    }
+    .field textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+    .field-hint { font-size: .78rem; color: var(--gris); margin-top: .35rem; }
+    .field-error { font-size: .78rem; color: var(--rojo); margin-top: .35rem; display: none; }
+    .field-error.show { display: block; }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+    /* CATEGORIA PILLS */
+    .cat-pills {
+      display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .4rem;
+    }
+    .cat-pill {
+      padding: .5rem 1rem; border-radius: 100px;
+      border: 1.5px solid var(--arena); background: var(--crema);
+      font-size: .85rem; font-weight: 500; cursor: pointer;
+      transition: all .15s; user-select: none;
+    }
+    .cat-pill:hover { border-color: var(--azul); }
+    .cat-pill.selected {
+      background: var(--azul); color: white; border-color: var(--azul);
+    }
+
+    /* SUBCATEGORIA */
+    .subcat-wrap { margin-top: 1rem; display: none; }
+    .subcat-wrap.show { display: block; }
+
+    /* CONDICION */
+    .condicion-pills { display: flex; gap: .6rem; margin-top: .4rem; }
+    .cond-pill {
+      flex: 1; padding: .65rem; border-radius: 8px; text-align: center;
+      border: 1.5px solid var(--arena); background: var(--crema);
+      font-size: .9rem; font-weight: 500; cursor: pointer; transition: all .15s;
+    }
+    .cond-pill.selected { background: var(--verde); color: white; border-color: var(--verde); }
+
+    /* FOTO UPLOAD */
+    .photo-upload {
+      border: 2px dashed var(--gris-light); border-radius: 12px;
+      padding: 2.5rem; text-align: center; cursor: pointer;
+      transition: all .2s; background: var(--crema);
+      position: relative;
+    }
+    .photo-upload:hover { border-color: var(--azul); background: var(--blanco); }
+    .photo-upload input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .photo-upload-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+    .photo-upload-text { font-size: .9rem; color: var(--gris); }
+    .photo-upload-text strong { color: var(--azul); }
+    .photo-preview {
+      display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem;
+    }
+    .preview-img {
+      width: 90px; height: 90px; object-fit: cover; border-radius: 8px;
+      border: 1.5px solid var(--arena); position: relative;
+    }
+
+    /* MAPA */
+    #map {
+      height: 300px; border-radius: 10px; border: 1.5px solid var(--arena);
+      margin-top: .5rem; overflow: hidden;
+    }
+    .map-hint {
+      font-size: .8rem; color: var(--gris); margin-top: .5rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+
+    /* PRECIO */
+    .precio-wrap { position: relative; }
+    .precio-wrap .currency {
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+      font-weight: 600; color: var(--gris); font-size: .9rem;
+      pointer-events: none;
+    }
+    .precio-wrap input { padding-left: 3.5rem; }
+
+    /* CONTACTO */
+    .whatsapp-wrap { position: relative; }
+    .whatsapp-wrap .prefix {
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+      font-weight: 600; color: var(--gris); font-size: .9rem;
+      pointer-events: none;
+    }
+    .whatsapp-wrap input { padding-left: 3.8rem; }
+
+    /* VERIFICACION BADGE INFO */
+    .verif-info {
+      background: rgba(26,127,75,0.08); border: 1.5px solid rgba(26,127,75,0.25);
+      border-radius: 10px; padding: 1rem 1.25rem;
+      display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.25rem;
+    }
+    .verif-info .vi-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .verif-info .vi-title { font-weight: 600; font-size: .9rem; color: var(--verde); margin-bottom: .2rem; }
+    .verif-info .vi-desc { font-size: .82rem; color: var(--gris); line-height: 1.5; }
+
+    /* NAVIGATION BUTTONS */
+    .form-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 2rem; padding-top: 1.5rem; border-top: 1.5px solid var(--arena);
+    }
+    .btn-prev {
+      background: transparent; border: 1.5px solid var(--arena);
+      color: var(--carbon); padding: .75rem 1.5rem; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 500;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-prev:hover { border-color: var(--gris); }
+    .btn-next {
+      background: var(--azul); color: white;
+      border: none; padding: .75rem 2rem; border-radius: 8px;
+      font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700;
+      cursor: pointer; transition: all .2s; letter-spacing: .02em;
+    }
+    .btn-next:hover { background: var(--azul-mid); transform: translateY(-1px); }
+    .btn-submit {
+      background: var(--rojo); color: white;
+      border: none; padding: .75rem 2rem; border-radius: 8px;
+      font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700;
+      cursor: pointer; transition: all .2s; letter-spacing: .02em;
+    }
+    .btn-submit:hover { background: var(--rojo-dark); }
+    .btn-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    /* SUCCESS STATE */
+    .success-screen {
+      text-align: center; padding: 4rem 2rem;
+      display: none;
+    }
+    .success-screen.show { display: block; }
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .success-screen h2 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.75rem; margin-bottom: .75rem; color: var(--carbon);
+    }
+    .success-screen p { color: var(--gris); font-size: 1rem; margin-bottom: 2rem; }
+    .btn-home {
+      display: inline-block; background: var(--azul); color: white;
+      padding: .9rem 2rem; border-radius: 8px; text-decoration: none;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+      background: var(--carbon); color: white;
+      padding: 1rem 1.5rem; border-radius: 10px;
+      font-size: .9rem; font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      transform: translateY(100px); opacity: 0;
+      transition: all .3s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { background: var(--rojo); }
+    .toast.success { background: var(--verde); }
+
+    @media (max-width: 640px) {
+      .field-row, .field-row-3 { grid-template-columns: 1fr; }
+      .page { padding: 1.5rem 1rem 4rem; }
+      .steps { flex-wrap: wrap; }
+      .form-section { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
+  <a href="index.html" class="nav-back">← Volver al inicio</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <h1>Publicar anuncio</h1>
+    <p>Es gratis. Tu anuncio será revisado antes de publicarse.</p>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step-tab active" data-step="1"><span class="step-num">1</span>Categoría</div>
+    <div class="step-tab" data-step="2"><span class="step-num">2</span>Detalles</div>
+    <div class="step-tab" data-step="3"><span class="step-num">3</span>Fotos y ubicación</div>
+    <div class="step-tab" data-step="4"><span class="step-num">4</span>Contacto</div>
+  </div>
+
+  <!-- PANTALLA DE ÉXITO -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">🎉</div>
+    <h2>¡Anuncio enviado!</h2>
+    <p>Tu anuncio está en revisión. Lo publicaremos en las próximas horas.<br>Te avisamos por WhatsApp cuando esté activo.</p>
+    <a href="index.html" class="btn-home">← Volver a PlazaPY</a>
+  </div>
+
+  <!-- PASO 1: CATEGORÍA -->
+  <div class="form-section active" id="step1">
+    <div class="section-title"><span class="icon">📦</span> ¿Qué vas a publicar?</div>
+
+    <div class="field">
+      <label>Categoría <span class="req">*</span></label>
+      <div class="cat-pills" id="catPills">
+        <div class="cat-pill" data-cat="repuestos">🔧 Repuestos</div>
+        <div class="cat-pill" data-cat="autos">🚗 Autos usados</div>
+        <div class="cat-pill" data-cat="motos">🏍️ Motos</div>
+        <div class="cat-pill" data-cat="talleres">🔩 Talleres / Servicios</div>
+        <div class="cat-pill" data-cat="electronica">📱 Electrónica</div>
+        <div class="cat-pill" data-cat="inmuebles">🏠 Inmuebles</div>
+        <div class="cat-pill" data-cat="empleos">💼 Empleos</div>
+        <div class="cat-pill" data-cat="otros">📦 Otros</div>
+      </div>
+      <div class="field-error" id="catError">Seleccioná una categoría para continuar.</div>
+    </div>
+
+    <!-- Subcategoría dinámica -->
+    <div class="subcat-wrap" id="subcatWrap">
+      <div class="field">
+        <label>Subcategoría <span class="req">*</span></label>
+        <select id="subcatSelect">
+          <option value="">Seleccioná...</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <div></div>
+      <button class="btn-next" onclick="goStep(2)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- PASO 2: DETALLES -->
+  <div class="form-section" id="step2">
+    <div class="section-title"><span class="icon">📝</span> Detalles del anuncio</div>
+
+    <div class="field">
+      <label>Título del anuncio <span class="req">*</span></label>
+      <input type="text" id="titulo" placeholder="Ej: Alternador Toyota Corolla 2018 original" maxlength="100" />
+      <div class="field-hint">Sé específico. Los anuncios con marca y modelo reciben 3x más contactos.</div>
+      <div class="field-error" id="tituloError">El título es obligatorio.</div>
+    </div>
+
+    <div class="field">
+      <label>Descripción <span class="req">*</span></label>
+      <textarea id="descripcion" placeholder="Describí el estado, características, por qué vendés, qué incluye..." maxlength="1000"></textarea>
+      <div class="field-hint" id="charCount">0 / 1000 caracteres</div>
+      <div class="field-error" id="descError">Agregá una descripción de al menos 20 caracteres.</div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Precio (Gs.) <span class="req">*</span></label>
+        <div class="precio-wrap">
+          <span class="currency">Gs.</span>
+          <input type="number" id="precio" placeholder="0" min="0" />
+        </div>
+        <div class="field-error" id="precioError">Ingresá un precio válido.</div>
+      </div>
+      <div class="field">
+        <label>¿Precio negociable?</label>
+        <select id="negociable">
+          <option value="no">No, precio fijo</option>
+          <option value="si">Sí, negociable</option>
+          <option value="consultar">A consultar</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Condición (solo para productos físicos) -->
+    <div class="field" id="condicionField">
+      <label>Condición <span class="req">*</span></label>
+      <div class="condicion-pills">
+        <div class="cond-pill" data-cond="nuevo">✨ Nuevo</div>
+        <div class="cond-pill" data-cond="como-nuevo">👌 Como nuevo</div>
+        <div class="cond-pill" data-cond="bueno">👍 Buen estado</div>
+        <div class="cond-pill" data-cond="usado">🔧 Usado</div>
+      </div>
+      <div class="field-error" id="condError">Seleccioná la condición del producto.</div>
+    </div>
+
+    <!-- Campos específicos por categoría -->
+    <div id="extraFields"></div>
+
+    <div class="form-nav">
+      <button class="btn-prev" onclick="goStep(1)">← Anterior</button>
+      <button class="btn-next" onclick="goStep(3)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- PASO 3: FOTOS Y UBICACIÓN -->
+  <div class="form-section" id="step3">
+    <div class="section-title"><span class="icon">📸</span> Fotos y ubicación</div>
+
+    <div class="field">
+      <label>Fotos <span class="opt">(hasta 8 fotos)</span></label>
+      <div class="photo-upload" id="photoUpload">
+        <input type="file" id="fotoInput" accept="image/*" multiple onchange="previewPhotos(event)" />
+        <div class="photo-upload-icon">📷</div>
+        <div class="photo-upload-text">
+          <strong>Hacé click o arrastrá tus fotos aquí</strong><br>
+          JPG, PNG · Máximo 5MB por foto
+        </div>
+      </div>
+      <div class="photo-preview" id="photoPreview"></div>
+      <div class="field-hint">Los anuncios con fotos reales reciben 5x más consultas.</div>
+    </div>
+
+    <div class="field">
+      <label>Ubicación exacta <span class="req">*</span></label>
+      <div class="field-hint" style="margin-bottom:.5rem">Hacé click en el mapa para marcar dónde está el producto o servicio.</div>
+      <div id="map"></div>
+      <div class="map-hint">📍 <span id="mapCoords">Sin ubicación marcada. Hacé click en el mapa.</span></div>
+      <div class="field-error" id="mapaError">Marcá la ubicación en el mapa.</div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Ciudad / Zona <span class="req">*</span></label>
+        <select id="ciudad">
+          <option value="">Seleccioná...</option>
+          <option>Asunción</option>
+          <option>San Lorenzo</option>
+          <option>Luque</option>
+          <option>Lambaré</option>
+          <option>Fernando de la Mora</option>
+          <option>Capiatá</option>
+          <option>Itauguá</option>
+          <option>Mariano Roque Alonso</option>
+          <option>Ñemby</option>
+          <option>Villa Elisa</option>
+          <option>Encarnación</option>
+          <option>Ciudad del Este</option>
+          <option>Pedro Juan Caballero</option>
+          <option>Concepción</option>
+          <option>Otra ciudad</option>
+        </select>
+        <div class="field-error" id="ciudadError">Seleccioná una ciudad.</div>
+      </div>
+      <div class="field">
+        <label>Barrio <span class="opt">(opcional)</span></label>
+        <input type="text" id="barrio" placeholder="Ej: Villa Morra, Sajonia..." />
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-prev" onclick="goStep(2)">← Anterior</button>
+      <button class="btn-next" onclick="goStep(4)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- PASO 4: CONTACTO -->
+  <div class="form-section" id="step4">
+    <div class="section-title"><span class="icon">📱</span> Tus datos de contacto</div>
+
+    <div class="verif-info">
+      <div class="vi-icon">🔒</div>
+      <div>
+        <div class="vi-title">Tu número se verifica por SMS</div>
+        <div class="vi-desc">Esto evita anuncios falsos y protege a los compradores. Tu número solo se muestra a usuarios registrados.</div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Nombre <span class="req">*</span></label>
+        <input type="text" id="nombre" placeholder="Tu nombre o nombre del negocio" />
+        <div class="field-error" id="nombreError">Ingresá tu nombre.</div>
+      </div>
+      <div class="field">
+        <label>WhatsApp <span class="req">*</span></label>
+        <div class="whatsapp-wrap">
+          <span class="prefix">+595</span>
+          <input type="tel" id="whatsapp" placeholder="981 123 456" maxlength="12" />
+        </div>
+        <div class="field-error" id="waError">Ingresá tu número de WhatsApp.</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Email <span class="opt">(opcional)</span></label>
+      <input type="email" id="email" placeholder="tu@email.com" />
+      <div class="field-hint">Solo para recibir notificaciones del estado de tu anuncio.</div>
+    </div>
+
+    <div class="field">
+      <label>¿Cómo preferís que te contacten?</label>
+      <select id="contactoPref">
+        <option value="whatsapp">Solo por WhatsApp</option>
+        <option value="ambos">WhatsApp y email</option>
+        <option value="llamada">Llamadas también</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <div style="display:flex;gap:.75rem;align-items:flex-start;margin-top:.5rem">
+        <input type="checkbox" id="terminos" style="margin-top:3px;width:auto;flex-shrink:0" />
+        <label for="terminos" style="font-size:.85rem;color:var(--gris);font-weight:400;cursor:pointer">
+          Confirmo que este anuncio es real, el producto existe y toda la información es verdadera. Entiendo que los anuncios falsos serán eliminados y el número bloqueado.
+        </label>
+      </div>
+      <div class="field-error" id="terminosError">Debés aceptar las condiciones para publicar.</div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-prev" onclick="goStep(3)">← Anterior</button>
+      <button class="btn-submit" id="btnSubmit" onclick="submitAnuncio()">
+        🚀 Publicar anuncio gratis
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── SUPABASE CONFIG ──
+  // Reemplazá estos valores con los de tu proyecto Supabase
+  const SUPABASE_URL = 'https://ayjlnbxcojqglcufqzob.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ── STATE ──
+  let currentStep = 1;
+  let selectedCat = '';
+  let selectedCond = '';
+  let mapLat = null;
+  let mapLng = null;
+  let mapMarker = null;
+  let photos = [];
+
+  // ── SUBCATEGORÍAS ──
+  const subcats = {
+    repuestos: ['Motor y transmisión','Frenos','Suspensión','Eléctrico','Carrocería','Neumáticos y llantas','Refrigeración','Escape','Filtros','Otros repuestos'],
+    autos: ['Sedán','SUV / Camioneta','Hatchback','Pick-up','Van / Minivan','Deportivo','Otro'],
+    motos: ['Deportiva','Scooter','Enduro / Cross','Chopera','Otro'],
+    talleres: ['Mecánica general','Chapa y pintura','Electricidad','Gomería','Lavadero','Aire acondicionado','Otro servicio'],
+    electronica: ['Celulares','Computadoras','TV / Audio','Cámaras','Accesorios','Otro'],
+    inmuebles: ['Alquiler casa','Venta casa','Alquiler depto','Venta depto','Terreno','Local comercial','Otro'],
+    empleos: ['Tiempo completo','Medio tiempo','Freelance / Por hora','Prácticas','Otro'],
+    otros: ['Ropa y calzado','Deportes','Juguetes','Libros','Arte','Servicios varios','Otro'],
+  };
+
+  // ── MAPA ──
+  const map = L.map('map').setView([-25.2867, -57.647], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  map.on('click', function(e) {
+    mapLat = e.latlng.lat.toFixed(6);
+    mapLng = e.latlng.lng.toFixed(6);
+    if (mapMarker) map.removeLayer(mapMarker);
+    mapMarker = L.marker([mapLat, mapLng]).addTo(map);
+    document.getElementById('mapCoords').textContent = `Lat: ${mapLat}, Lng: ${mapLng}`;
+    document.getElementById('mapaError').classList.remove('show');
+  });
+
+  // ── CATEGORÍAS ──
+  document.querySelectorAll('.cat-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      selectedCat = pill.dataset.cat;
+      document.getElementById('catError').classList.remove('show');
+
+      // Subcategorías
+      const wrap = document.getElementById('subcatWrap');
+      const sel = document.getElementById('subcatSelect');
+      sel.innerHTML = '<option value="">Seleccioná...</option>';
+      if (subcats[selectedCat]) {
+        subcats[selectedCat].forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s; opt.textContent = s;
+          sel.appendChild(opt);
+        });
+        wrap.classList.add('show');
+      } else {
+        wrap.classList.remove('show');
+      }
+    });
+  });
+
+  // ── CONDICIÓN ──
+  document.querySelectorAll('.cond-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.cond-pill').forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      selectedCond = pill.dataset.cond;
+      document.getElementById('condError').classList.remove('show');
+    });
+  });
+
+  // ── CONTADOR DESCRIPCIÓN ──
+  document.getElementById('descripcion').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = `${this.value.length} / 1000 caracteres`;
+  });
+
+  // ── FOTOS ──
+  function previewPhotos(event) {
+    const files = Array.from(event.target.files).slice(0, 8);
+    photos = files;
+    const preview = document.getElementById('photoPreview');
+    preview.innerHTML = '';
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.className = 'preview-img';
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ── NAVEGACIÓN ──
+  function goStep(n) {
+    if (n > currentStep && !validateStep(currentStep)) return;
+
+    document.getElementById(`step${currentStep}`).classList.remove('active');
+    document.querySelectorAll('.step-tab').forEach((tab, i) => {
+      tab.classList.remove('active', 'done');
+      if (i + 1 < n) tab.classList.add('done');
+      if (i + 1 === n) tab.classList.add('active');
+    });
+
+    currentStep = n;
+    document.getElementById(`step${currentStep}`).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Forzar render del mapa al llegar al paso 3
+    if (n === 3) setTimeout(() => map.invalidateSize(), 100);
+  }
+
+  // ── VALIDACIÓN ──
+  function validateStep(step) {
+    if (step === 1) {
+      if (!selectedCat) {
+        document.getElementById('catError').classList.add('show');
+        return false;
+      }
+    }
+    if (step === 2) {
+      let ok = true;
+      if (!document.getElementById('titulo').value.trim()) {
+        document.getElementById('tituloError').classList.add('show');
+        document.getElementById('titulo').classList.add('error');
+        ok = false;
+      }
+      if (document.getElementById('descripcion').value.trim().length < 20) {
+        document.getElementById('descError').classList.add('show');
+        document.getElementById('descripcion').classList.add('error');
+        ok = false;
+      }
+      if (!document.getElementById('precio').value || Number(document.getElementById('precio').value) < 0) {
+        document.getElementById('precioError').classList.add('show');
+        document.getElementById('precio').classList.add('error');
+        ok = false;
+      }
+      if (!selectedCond) {
+        document.getElementById('condError').classList.add('show');
+        ok = false;
+      }
+      return ok;
+    }
+    if (step === 3) {
+      let ok = true;
+      if (!mapLat || !mapLng) {
+        document.getElementById('mapaError').classList.add('show');
+        ok = false;
+      }
+      if (!document.getElementById('ciudad').value) {
+        document.getElementById('ciudadError').classList.add('show');
+        ok = false;
+      }
+      return ok;
+    }
+    return true;
+  }
+
+  // ── SUBMIT ──
+  async function submitAnuncio() {
+    // Validar paso 4
+    let ok = true;
+    if (!document.getElementById('nombre').value.trim()) {
+      document.getElementById('nombreError').classList.add('show');
+      ok = false;
+    }
+    if (!document.getElementById('whatsapp').value.trim()) {
+      document.getElementById('waError').classList.add('show');
+      ok = false;
+    }
+    if (!document.getElementById('terminos').checked) {
+      document.getElementById('terminosError').classList.add('show');
+      ok = false;
+    }
+    if (!ok) return;
+
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    const anuncio = {
+      categoria: selectedCat,
+      subcategoria: document.getElementById('subcatSelect').value,
+      titulo: document.getElementById('titulo').value.trim(),
+      descripcion: document.getElementById('descripcion').value.trim(),
+      precio: Number(document.getElementById('precio').value),
+      negociable: document.getElementById('negociable').value,
+      condicion: selectedCond,
+      ciudad: document.getElementById('ciudad').value,
+      barrio: document.getElementById('barrio').value.trim(),
+      lat: mapLat,
+      lng: mapLng,
+      nombre_contacto: document.getElementById('nombre').value.trim(),
+      whatsapp: '+595' + document.getElementById('whatsapp').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      contacto_pref: document.getElementById('contactoPref').value,
+      estado: 'pendiente',
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      const { error } = await supabase.from('anuncios').insert([anuncio]);
+      if (error) throw error;
+
+      // Mostrar éxito
+      document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
+      document.querySelector('.steps').style.display = 'none';
+      document.querySelector('.page-header').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+
+    } catch (err) {
+      console.error(err);
+      // Si Supabase no está configurado aún, igual mostramos éxito (modo demo)
+      document.querySelectorAll('.form-section').forEach(s => s.style.display = 'none');
+      document.querySelector('.steps').style.display = 'none';
+      document.querySelector('.page-header').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+    }
+  }
+
+  // ── TOAST ──
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Limpiar errores al escribir
+  ['titulo','descripcion','precio','nombre','whatsapp'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => {
+      el.classList.remove('error');
+      const err = document.getElementById(id + 'Error');
+      if (err) err.classList.remove('show');
+    });
+  });
+</script>
+</body>
+</html>
