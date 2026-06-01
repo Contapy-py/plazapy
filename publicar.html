@@ -574,20 +574,23 @@
     otros: ['Ropa y calzado','Deportes','Juguetes','Libros','Arte','Servicios varios','Otro'],
   };
 
-  // ── MAPA ──
-  const map = L.map('map').setView([-25.2867, -57.647], 12);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
-  }).addTo(map);
-
-  map.on('click', function(e) {
-    mapLat = e.latlng.lat.toFixed(6);
-    mapLng = e.latlng.lng.toFixed(6);
-    if (mapMarker) map.removeLayer(mapMarker);
-    mapMarker = L.marker([mapLat, mapLng]).addTo(map);
-    document.getElementById('mapCoords').textContent = `Lat: ${mapLat}, Lng: ${mapLng}`;
-    document.getElementById('mapaError').classList.remove('show');
-  });
+  // ── MAPA (lazy - se inicia al llegar al paso 3) ──
+  let map = null;
+  function initMap() {
+    if (map) { setTimeout(() => map.invalidateSize(), 100); return; }
+    map = L.map('map').setView([-25.2867, -57.647], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+    map.on('click', function(e) {
+      mapLat = e.latlng.lat.toFixed(6);
+      mapLng = e.latlng.lng.toFixed(6);
+      if (mapMarker) map.removeLayer(mapMarker);
+      mapMarker = L.marker([mapLat, mapLng]).addTo(map);
+      document.getElementById('mapCoords').textContent = '📍 Lat: ' + mapLat + ', Lng: ' + mapLng;
+      document.getElementById('mapaError').classList.remove('show');
+    });
+  }
 
   // ── CATEGORÍAS ──
   document.querySelectorAll('.cat-pill').forEach(pill => {
@@ -662,8 +665,8 @@
     document.getElementById(`step${currentStep}`).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Forzar render del mapa al llegar al paso 3
-    if (n === 3) setTimeout(() => map.invalidateSize(), 100);
+    // Inicializar mapa al llegar al paso 3
+    if (n === 3) setTimeout(() => initMap(), 150);
   }
 
   // ── VALIDACIÓN ──
