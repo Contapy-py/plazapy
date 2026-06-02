@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalle — PlazaPY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    :root{--azul:#1565C0;--amarillo:#F5A623;--rojo:#E53935;--verde:#2E7D32;--negro:#111;--gris:#666;--borde:#E0E0E0;--blanco:#fff;--fondo:#F8F8F8}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
+    nav{position:sticky;top:0;z-index:100;background:var(--azul);height:60px;display:flex;align-items:center;padding:0 2rem;gap:1rem;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+    .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:white;text-decoration:none}
+    .nav-logo span{color:var(--amarillo)}
+    .nav-back{color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;margin-left:auto}
+    .nav-back:hover{color:white}
+    .btn-pub{background:var(--amarillo);color:var(--negro);padding:.45rem 1.1rem;border-radius:5px;text-decoration:none;font-size:.88rem;font-weight:700}
+
+    .breadcrumb{background:white;border-bottom:1px solid var(--borde);padding:.65rem 2rem;font-size:.8rem;color:var(--gris)}
+    .breadcrumb a{color:var(--azul);text-decoration:none}
+    .breadcrumb a:hover{text-decoration:underline}
+
+    .page{max-width:1100px;margin:0 auto;padding:1.5rem;display:grid;grid-template-columns:1fr 340px;gap:1.5rem}
+
+    /* IZQUIERDA */
+    .main-col{}
+    .img-main{background:white;border-radius:10px;border:1.5px solid var(--borde);overflow:hidden;margin-bottom:1rem}
+    .img-placeholder{height:360px;display:flex;align-items:center;justify-content:center;font-size:6rem;background:var(--fondo)}
+    .img-placeholder img{width:100%;height:100%;object-fit:cover}
+
+    .panel{background:white;border-radius:10px;border:1.5px solid var(--borde);padding:1.25rem;margin-bottom:1rem}
+    .panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--borde);color:var(--gris);text-transform:uppercase;letter-spacing:.06em;font-size:.75rem}
+
+    .anuncio-titulo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;line-height:1.2;margin-bottom:.75rem}
+    .anuncio-badges{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+    .badge{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.04em}
+    .badge-dest{background:#FFF3CC;color:#8a6b00}
+    .badge-verif{background:#E8F5E9;color:var(--verde)}
+    .badge-cat{background:#E3F0FF;color:var(--azul)}
+    .badge-cond{background:var(--fondo);color:var(--gris)}
+
+    .anuncio-precio{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:var(--rojo);margin-bottom:.3rem}
+    .anuncio-neg{font-size:.82rem;color:var(--gris);margin-bottom:1rem}
+
+    .detalle-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.5rem}
+    .detalle-item{display:flex;flex-direction:column;gap:.15rem}
+    .detalle-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gris);font-weight:600}
+    .detalle-val{font-size:.9rem;font-weight:500}
+
+    .desc-text{font-size:.92rem;line-height:1.7;color:#333;white-space:pre-wrap}
+
+    #mapa-detalle{height:220px;border-radius:8px;overflow:hidden}
+
+    /* DERECHA */
+    .side-col{position:sticky;top:76px;height:fit-content}
+    .contact-card{background:white;border-radius:10px;border:1.5px solid var(--borde);padding:1.5rem;margin-bottom:1rem}
+    .contact-nombre{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.3rem}
+    .contact-verif{font-size:.78rem;color:var(--verde);margin-bottom:1rem;font-weight:600}
+    .btn-wa{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;background:#25D366;color:white;border:none;padding:.85rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;text-decoration:none;margin-bottom:.75rem;transition:background .2s}
+    .btn-wa:hover{background:#1da851}
+    .btn-llamar{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;background:var(--fondo);color:var(--negro);border:1.5px solid var(--borde);padding:.75rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none;transition:all .2s}
+    .btn-llamar:hover{border-color:var(--azul);color:var(--azul)}
+    .contact-hint{font-size:.75rem;color:var(--gris);text-align:center;margin-top:.75rem;line-height:1.5}
+
+    .safety-card{background:#FFF8E7;border:1.5px solid #FFE082;border-radius:10px;padding:1rem}
+    .safety-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:#8a6b00;margin-bottom:.5rem}
+    .safety-item{font-size:.78rem;color:#8a6b00;line-height:1.6}
+
+    .loading-page{text-align:center;padding:5rem;color:var(--gris)}
+    .error-page{text-align:center;padding:5rem;color:var(--gris)}
+
+    @media(max-width:768px){
+      .page{grid-template-columns:1fr;padding:1rem}
+      .side-col{position:static}
+      nav{padding:0 1rem}
+      .breadcrumb{padding:.65rem 1rem}
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
+  <a href="anuncios.html" class="nav-back">← Volver a anuncios</a>
+  <a href="publicar.html" class="btn-pub">+ Publicar</a>
+</nav>
+
+<div class="breadcrumb" id="breadcrumb">
+  <a href="index.html">PlazaPY</a> › <a href="anuncios.html">Anuncios</a> › Cargando...
+</div>
+
+<div id="loadingPage" class="loading-page">⏳ Cargando anuncio...</div>
+<div id="errorPage" class="error-page" style="display:none">⚠️ Anuncio no encontrado. <a href="anuncios.html" style="color:var(--azul)">Ver todos los anuncios</a></div>
+
+<div class="page" id="pageContent" style="display:none">
+  <!-- IZQUIERDA -->
+  <div class="main-col">
+    <div class="img-main">
+      <div class="img-placeholder" id="imgPrincipal">📦</div>
+    </div>
+
+    <div class="panel">
+      <div class="anuncio-badges" id="badges"></div>
+      <div class="anuncio-titulo" id="titulo"></div>
+      <div class="anuncio-precio" id="precio"></div>
+      <div class="anuncio-neg" id="negociable"></div>
+      <div class="detalle-grid" id="detalles"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Descripción</div>
+      <div class="desc-text" id="descripcion"></div>
+    </div>
+
+    <div class="panel" id="mapaPanel" style="display:none">
+      <div class="panel-title">📍 Ubicación aproximada</div>
+      <div id="mapa-detalle"></div>
+      <p style="font-size:.78rem;color:var(--gris);margin-top:.5rem">La ubicación es aproximada. Coordiná con el vendedor el punto exacto de encuentro.</p>
+    </div>
+  </div>
+
+  <!-- DERECHA -->
+  <div class="side-col">
+    <div class="contact-card">
+      <div class="contact-nombre" id="contactNombre"></div>
+      <div class="contact-verif" id="contactVerif"></div>
+      <a href="#" class="btn-wa" id="btnWa">💬 Contactar por WhatsApp</a>
+      <a href="#" class="btn-llamar" id="btnLlamar">📞 Llamar</a>
+      <div class="contact-hint">Nunca hagas pagos anticipados sin ver el producto en persona.</div>
+    </div>
+    <div class="safety-card">
+      <div class="safety-title">🛡️ Consejos de seguridad</div>
+      <div class="safety-item">
+        ✓ Coordiná en lugar público<br>
+        ✓ Verificá el producto antes de pagar<br>
+        ✓ Desconfiá de precios muy bajos<br>
+        ✓ No enviés dinero por adelantado<br>
+        ✓ <a href="#" style="color:#8a6b00" onclick="reportar()">Reportar este anuncio</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const ICONS={repuestos:'🔧',autos:'🚗',motos:'🏍️',talleres:'🔩',electronica:'📱',inmuebles:'🏠',empleos:'💼',otros:'📦'};
+
+async function cargar(){
+  const id=new URLSearchParams(window.location.search).get('id');
+  if(!id){mostrarError();return;}
+
+  const{data,error}=await db.from('anuncios').select('*').eq('id',id).eq('estado','aprobado').single();
+  if(error||!data){mostrarError();return;}
+
+  const a=data;
+
+  // Breadcrumb
+  document.getElementById('breadcrumb').innerHTML=`<a href="index.html">PlazaPY</a> › <a href="anuncios.html?cat=${a.categoria}">${a.categoria}</a> › ${a.titulo}`;
+  document.title=a.titulo+' — PlazaPY';
+
+  // Imagen
+  document.getElementById('imgPrincipal').textContent=ICONS[a.categoria]||'📦';
+
+  // Badges
+  let badges='';
+  if(a.destacado) badges+=`<span class="badge badge-dest">⭐ Destacado</span>`;
+  if(a.verificado) badges+=`<span class="badge badge-verif">✓ Verificado</span>`;
+  badges+=`<span class="badge badge-cat">${a.categoria}</span>`;
+  if(a.condicion) badges+=`<span class="badge badge-cond">${a.condicion}</span>`;
+  document.getElementById('badges').innerHTML=badges;
+
+  // Info principal
+  document.getElementById('titulo').textContent=a.titulo;
+  document.getElementById('precio').textContent='Gs. '+Number(a.precio).toLocaleString();
+  document.getElementById('negociable').textContent=a.negociable==='si'?'Precio negociable':a.negociable==='consultar'?'Precio a consultar':'Precio fijo';
+  document.getElementById('descripcion').textContent=a.descripcion;
+
+  // Detalles
+  const detalles=[
+    ['Ciudad',a.ciudad||'—'],
+    ['Barrio',a.barrio||'—'],
+    ['Subcategoría',a.subcategoria||'—'],
+    ['Condición',a.condicion||'—'],
+    ['Publicado',new Date(a.created_at).toLocaleDateString('es-PY')],
+    ['Estado','Disponible'],
+  ];
+  document.getElementById('detalles').innerHTML=detalles.map(([l,v])=>`
+    <div class="detalle-item"><span class="detalle-label">${l}</span><span class="detalle-val">${v}</span></div>
+  `).join('');
+
+  // Contacto
+  document.getElementById('contactNombre').textContent=a.nombre_contacto;
+  document.getElementById('contactVerif').textContent=a.verificado?'✓ Vendedor verificado por PlazaPY':'Vendedor registrado';
+  const wa=a.whatsapp.replace(/\D/g,'');
+  const msg=encodeURIComponent(`Hola! Vi tu anuncio en PlazaPY: "${a.titulo}". ¿Está disponible?`);
+  document.getElementById('btnWa').href=`https://wa.me/${wa}?text=${msg}`;
+  document.getElementById('btnLlamar').href=`tel:${a.whatsapp}`;
+
+  // Mapa
+  if(a.lat&&a.lng){
+    document.getElementById('mapaPanel').style.display='block';
+    setTimeout(()=>{
+      const m=L.map('mapa-detalle').setView([a.lat,a.lng],14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(m);
+      L.circle([a.lat,a.lng],{radius:300,color:'#1565C0',fillColor:'#1565C0',fillOpacity:.15}).addTo(m);
+    },100);
+  }
+
+  document.getElementById('loadingPage').style.display='none';
+  document.getElementById('pageContent').style.display='grid';
+}
+
+function mostrarError(){
+  document.getElementById('loadingPage').style.display='none';
+  document.getElementById('errorPage').style.display='block';
+}
+
+function reportar(){
+  alert('Gracias por reportar. Revisaremos este anuncio en breve.');
+}
+
+cargar();
+</script>
+</body>
+</html>
