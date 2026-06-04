@@ -153,6 +153,7 @@
   <ul class="nav-links">
     <li><a href="anuncios.html">Ver anuncios</a></li>
     <li><a href="#como-funciona">¿Cómo funciona?</a></li>
+    <li><a href="auth.html" id="navAuth">Ingresar</a></li>
   </ul>
   <a href="publicar.html" class="btn-pub">+ Publicar gratis</a>
 </nav>
@@ -336,6 +337,18 @@ async function cargar(){
   `).join('');
 }
 cargar();
+</script>
+
+<script>
+// Verificar sesión para cambiar nav
+(async()=>{
+  const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+  const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+  const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+  const{data:{session}}=await db.auth.getSession();
+  const el=document.getElementById('navAuth');
+  if(el&&session){el.textContent='Mi cuenta';el.href='cuenta.html';}
+})();
 </script>
 </body>
 </html>

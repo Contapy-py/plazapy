@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mi cuenta — PlazaPY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--azul:#1565C0;--azul-dark:#0D47A1;--azul-light:#E3F0FF;--amarillo:#F5A623;--amarillo-dark:#E09000;--rojo:#E53935;--verde:#2E7D32;--verde-light:#E8F5E9;--negro:#111;--gris:#666;--borde:#E0E0E0;--blanco:#fff;--fondo:#F8F8F8}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
+
+    nav{position:sticky;top:0;z-index:100;background:var(--azul);height:60px;display:flex;align-items:center;padding:0 2rem;gap:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+    .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:white;text-decoration:none}
+    .nav-logo span{color:var(--amarillo)}
+    .nav-right{margin-left:auto;display:flex;gap:.75rem;align-items:center}
+    .nav-user{color:rgba(255,255,255,.8);font-size:.88rem}
+    .btn-nav{padding:.42rem 1rem;border-radius:5px;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;border:none;font-family:'DM Sans',sans-serif}
+    .btn-pub{background:var(--amarillo);color:var(--negro)}
+    .btn-pub:hover{background:var(--amarillo-dark)}
+    .btn-salir{background:rgba(255,255,255,.1);color:white}
+    .btn-salir:hover{background:rgba(255,255,255,.2)}
+
+    .page{max-width:1000px;margin:0 auto;padding:2rem 1.5rem;display:grid;grid-template-columns:220px 1fr;gap:1.5rem}
+
+    /* SIDEBAR */
+    .sidebar{position:sticky;top:76px;height:fit-content}
+    .perfil-card{background:white;border-radius:12px;border:1.5px solid var(--borde);padding:1.5rem;text-align:center;margin-bottom:.75rem}
+    .perfil-avatar{width:64px;height:64px;border-radius:50%;background:var(--azul-light);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto .75rem}
+    .perfil-nombre{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.2rem}
+    .perfil-email{font-size:.78rem;color:var(--gris)}
+    .perfil-badge{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:100px;margin-top:.5rem}
+    .badge-free{background:var(--fondo);color:var(--gris);border:1px solid var(--borde)}
+    .badge-verif{background:var(--verde-light);color:var(--verde)}
+
+    .menu-nav{background:white;border-radius:12px;border:1.5px solid var(--borde);overflow:hidden}
+    .menu-item{display:flex;align-items:center;gap:.65rem;padding:.8rem 1.1rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--gris);border-bottom:1px solid var(--borde);transition:all .15s;text-decoration:none}
+    .menu-item:last-child{border-bottom:none}
+    .menu-item:hover{background:var(--fondo);color:var(--negro)}
+    .menu-item.activo{background:var(--azul-light);color:var(--azul);font-weight:600}
+    .menu-item .ico{font-size:1rem;width:20px;text-align:center}
+    .menu-badge{margin-left:auto;background:var(--rojo);color:white;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:100px}
+
+    /* MAIN */
+    .main{}
+    .sec-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:1.25rem}
+
+    /* PANEL */
+    .panel{background:white;border-radius:12px;border:1.5px solid var(--borde);padding:1.5rem;margin-bottom:1rem}
+    .panel-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gris);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--borde)}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem}
+    .stat{background:white;border-radius:10px;border:1.5px solid var(--borde);padding:1.1rem;text-align:center}
+    .stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;line-height:1}
+    .stat-lbl{font-size:.75rem;color:var(--gris);margin-top:.25rem}
+
+    /* MIS ANUNCIOS */
+    .anuncio-row{display:flex;gap:1rem;align-items:flex-start;padding:1rem;border-bottom:1px solid var(--borde);transition:background .15s}
+    .anuncio-row:last-child{border-bottom:none}
+    .anuncio-row:hover{background:var(--fondo)}
+    .anuncio-thumb{width:72px;height:72px;border-radius:8px;background:var(--fondo);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;overflow:hidden;border:1px solid var(--borde)}
+    .anuncio-thumb img{width:100%;height:100%;object-fit:cover}
+    .anuncio-info{flex:1;min-width:0}
+    .anuncio-titulo{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .anuncio-precio{font-size:.95rem;font-weight:700;color:var(--rojo);margin-bottom:.3rem}
+    .anuncio-meta{font-size:.75rem;color:var(--gris);display:flex;gap:.75rem;flex-wrap:wrap}
+    .anuncio-acciones{display:flex;gap:.4rem;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+    .btn-acc{padding:.35rem .75rem;border-radius:6px;border:none;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .btn-editar{background:var(--azul-light);color:var(--azul)}
+    .btn-editar:hover{background:var(--azul);color:white}
+    .btn-eliminar{background:#fde8e8;color:var(--rojo)}
+    .btn-eliminar:hover{background:var(--rojo);color:white}
+    .btn-destacar{background:#FFF8E7;color:#8a6b00}
+    .btn-destacar:hover{background:var(--amarillo);color:var(--negro)}
+    .btn-ver{background:var(--fondo);color:var(--gris)}
+    .btn-ver:hover{background:#e0e0e0}
+
+    /* BADGES */
+    .badge{display:inline-block;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:100px;text-transform:uppercase;letter-spacing:.04em}
+    .b-pend{background:#fff3cd;color:#856404}
+    .b-apro{background:var(--verde-light);color:var(--verde)}
+    .b-rech{background:#fde8e8;color:var(--rojo)}
+    .b-dest{background:#FFF8E7;color:#8a6b00}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:3rem 2rem;color:var(--gris)}
+    .empty-icon{font-size:3rem;margin-bottom:.75rem}
+    .empty h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--negro);margin-bottom:.4rem}
+    .empty p{font-size:.85rem;margin-bottom:1.25rem}
+    .btn-empty{display:inline-block;background:var(--amarillo);color:var(--negro);padding:.7rem 1.5rem;border-radius:7px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem}
+
+    /* PERFIL FORM */
+    .campo{margin-bottom:1rem}
+    .campo label{display:block;font-size:.82rem;font-weight:600;margin-bottom:.35rem}
+    .campo input,.campo select{width:100%;padding:.68rem .9rem;border:1.5px solid var(--borde);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;background:var(--fondo);outline:none;transition:border-color .2s}
+    .campo input:focus,.campo select:focus{border-color:var(--azul);background:white}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .btn-guardar{background:var(--azul);color:white;border:none;padding:.72rem 1.75rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer}
+    .btn-guardar:hover{background:var(--azul-dark)}
+
+    /* MODAL CONFIRMAR */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem}
+    .modal-bg.v{display:flex}
+    .modal{background:white;border-radius:12px;padding:2rem;max-width:400px;width:100%;text-align:center}
+    .modal h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.5rem}
+    .modal p{font-size:.88rem;color:var(--gris);margin-bottom:1.5rem;line-height:1.6}
+    .modal-btns{display:flex;gap:.75rem}
+    .btn-cancel{flex:1;background:var(--fondo);border:1.5px solid var(--borde);color:var(--negro);padding:.7rem;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif}
+    .btn-confirm{flex:1;background:var(--rojo);border:none;color:white;padding:.7rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:var(--negro);color:white;padding:.85rem 1.3rem;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .3s}
+    .toast.v{transform:translateY(0);opacity:1}
+    .toast.verde{background:var(--verde)}
+    .toast.rojo{background:var(--rojo)}
+
+    /* SECCIONES */
+    .seccion{display:none}
+    .seccion.v{display:block}
+
+    /* UPGRADE CARD */
+    .upgrade-card{background:linear-gradient(135deg,var(--azul),var(--azul-dark));border-radius:12px;padding:1.5rem;color:white;margin-bottom:1rem}
+    .upgrade-card h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:.4rem}
+    .upgrade-card p{font-size:.82rem;opacity:.8;margin-bottom:1rem;line-height:1.5}
+    .btn-upgrade{display:inline-block;background:var(--amarillo);color:var(--negro);padding:.55rem 1.25rem;border-radius:6px;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;text-decoration:none;cursor:pointer;border:none}
+
+    @media(max-width:768px){
+      .page{grid-template-columns:1fr;padding:1rem}
+      .sidebar{position:static}
+      .stats-row{grid-template-columns:1fr 1fr}
+      .grid2{grid-template-columns:1fr}
+      nav{padding:0 1rem}
+      .anuncio-acciones{width:100%;margin-top:.5rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
+  <div class="nav-right">
+    <span class="nav-user" id="navUser"></span>
+    <a href="publicar.html" class="btn-nav btn-pub">+ Publicar</a>
+    <button class="btn-nav btn-salir" onclick="salir()">Salir</button>
+  </div>
+</nav>
+
+<div class="page">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="perfil-card">
+      <div class="perfil-avatar" id="avatar">👤</div>
+      <div class="perfil-nombre" id="perfilNombre">Cargando...</div>
+      <div class="perfil-email" id="perfilEmail"></div>
+      <span class="perfil-badge badge-free" id="perfilBadge">Cuenta gratuita</span>
+    </div>
+    <div class="menu-nav">
+      <a class="menu-item activo" onclick="verSec('dashboard')"><span class="ico">🏠</span> Inicio</a>
+      <a class="menu-item" onclick="verSec('anuncios')"><span class="ico">📋</span> Mis anuncios <span class="menu-badge" id="badgeAnuncios" style="display:none">0</span></a>
+      <a class="menu-item" onclick="verSec('perfil')"><span class="ico">👤</span> Mi perfil</a>
+      <a class="menu-item" href="publicar.html"><span class="ico">➕</span> Publicar anuncio</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="seccion v" id="secDashboard">
+      <div class="sec-title" id="saludo">¡Hola!</div>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-num" id="stTotal">0</div><div class="stat-lbl">Anuncios publicados</div></div>
+        <div class="stat"><div class="stat-num" id="stActivos" style="color:var(--verde)">0</div><div class="stat-lbl">Activos</div></div>
+        <div class="stat"><div class="stat-num" id="stPend" style="color:var(--amarillo-dark)">0</div><div class="stat-lbl">Pendientes</div></div>
+      </div>
+
+      <div class="upgrade-card">
+        <h3>⭐ Destacá tus anuncios</h3>
+        <p>Los anuncios destacados aparecen primero y reciben hasta 5x más contactos. Desde Gs. 50.000/mes.</p>
+        <button class="btn-upgrade" onclick="verSec('anuncios')">Ver mis anuncios</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Anuncios recientes</div>
+        <div id="dashAnuncios"><div style="text-align:center;padding:1.5rem;color:var(--gris)">Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- MIS ANUNCIOS -->
+    <div class="seccion" id="secAnuncios">
+      <div class="sec-title">Mis anuncios</div>
+      <div class="panel" style="padding:0">
+        <div id="listaAnuncios"><div style="text-align:center;padding:2rem;color:var(--gris)">Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- PERFIL -->
+    <div class="seccion" id="secPerfil">
+      <div class="sec-title">Mi perfil</div>
+      <div class="panel">
+        <div class="panel-title">Datos personales</div>
+        <div class="grid2">
+          <div class="campo"><label>Nombre</label><input type="text" id="pNombre" placeholder="Tu nombre"/></div>
+          <div class="campo"><label>WhatsApp</label><input type="tel" id="pWa" placeholder="+595 981 123 456"/></div>
+        </div>
+        <div class="campo"><label>Email</label><input type="email" id="pEmail" disabled style="opacity:.6"/></div>
+        <button class="btn-guardar" onclick="guardarPerfil()">Guardar cambios</button>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Seguridad</div>
+        <div class="campo"><label>Nueva contraseña</label><input type="password" id="newPass" placeholder="Mínimo 6 caracteres"/></div>
+        <button class="btn-guardar" onclick="cambiarPass()">Cambiar contraseña</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL ELIMINAR -->
+<div class="modal-bg" id="modalElim">
+  <div class="modal">
+    <h3>⚠️ Eliminar anuncio</h3>
+    <p>¿Estás seguro? Esta acción no se puede deshacer. El anuncio se eliminará permanentemente.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-confirm" id="btnConfirmElim">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const ICONS={repuestos:'🔧',autos:'🚗',motos:'🏍️',talleres:'🔩',electronica:'📱',inmuebles:'🏠',empleos:'💼',otros:'📦'};
+
+let usuario=null;
+let misAnuncios=[];
+let elimId=null;
+
+// ── INIT ──
+async function init(){
+  const{data:{session}}=await db.auth.getSession();
+  if(!session){window.location.href='auth.html';return;}
+  usuario=session.user;
+
+  document.getElementById('navUser').textContent=usuario.email;
+  document.getElementById('perfilEmail').textContent=usuario.email;
+  document.getElementById('pEmail').value=usuario.email;
+
+  // Cargar perfil
+  const{data:perfil}=await db.from('perfiles').select('*').eq('id',usuario.id).single();
+  if(perfil){
+    document.getElementById('perfilNombre').textContent=perfil.nombre||'Sin nombre';
+    document.getElementById('saludo').textContent='¡Hola, '+( perfil.nombre?.split(' ')[0]||'!')+' 👋';
+    document.getElementById('avatar').textContent=perfil.nombre?perfil.nombre[0].toUpperCase():'👤';
+    document.getElementById('pNombre').value=perfil.nombre||'';
+    document.getElementById('pWa').value=perfil.whatsapp||'';
+    if(perfil.verificado){
+      document.getElementById('perfilBadge').textContent='✓ Verificado';
+      document.getElementById('perfilBadge').className='perfil-badge badge-verif';
+    }
+  } else {
+    document.getElementById('perfilNombre').textContent=usuario.email.split('@')[0];
+    document.getElementById('saludo').textContent='¡Hola! 👋';
+  }
+
+  await cargarAnuncios();
+}
+
+async function cargarAnuncios(){
+  const{data,error}=await db.from('anuncios').select('*').eq('user_id',usuario.id).order('created_at',{ascending:false});
+  misAnuncios=data||[];
+
+  const total=misAnuncios.length;
+  const activos=misAnuncios.filter(a=>a.estado==='aprobado').length;
+  const pend=misAnuncios.filter(a=>a.estado==='pendiente').length;
+
+  document.getElementById('stTotal').textContent=total;
+  document.getElementById('stActivos').textContent=activos;
+  document.getElementById('stPend').textContent=pend;
+
+  if(pend>0){
+    document.getElementById('badgeAnuncios').style.display='inline';
+    document.getElementById('badgeAnuncios').textContent=pend;
+  }
+
+  renderDashAnuncios();
+  renderListaAnuncios();
+}
+
+function renderDashAnuncios(){
+  const el=document.getElementById('dashAnuncios');
+  if(!misAnuncios.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><h3>Aún no tenés anuncios</h3><p>Publicá tu primer anuncio gratis y llegá a miles de compradores.</p><a href="publicar.html" class="btn-empty">+ Publicar ahora</a></div>`;
+    return;
+  }
+  el.innerHTML=misAnuncios.slice(0,3).map(a=>rowAnuncio(a,true)).join('');
+}
+
+function renderListaAnuncios(){
+  const el=document.getElementById('listaAnuncios');
+  if(!misAnuncios.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><h3>Aún no tenés anuncios</h3><p>Publicá gratis y llegá a miles de compradores en Paraguay.</p><a href="publicar.html" class="btn-empty">+ Publicar ahora</a></div>`;
+    return;
+  }
+  el.innerHTML=misAnuncios.map(a=>rowAnuncio(a,false)).join('');
+}
+
+function rowAnuncio(a,mini){
+  const estadoBadge={pendiente:'b-pend',aprobado:'b-apro',rechazado:'b-rech'}[a.estado]||'b-pend';
+  const fecha=new Date(a.created_at).toLocaleDateString('es-PY');
+  return`
+  <div class="anuncio-row">
+    <div class="anuncio-thumb">${ICONS[a.categoria]||'📦'}</div>
+    <div class="anuncio-info">
+      <div class="anuncio-titulo">${a.titulo}</div>
+      <div class="anuncio-precio">Gs. ${Number(a.precio).toLocaleString()}</div>
+      <div class="anuncio-meta">
+        <span class="badge ${estadoBadge}">${a.estado}</span>
+        ${a.destacado?'<span class="badge b-dest">⭐ Destacado</span>':''}
+        <span>📍 ${a.ciudad||'—'}</span>
+        <span>📅 ${fecha}</span>
+      </div>
+    </div>
+    <div class="anuncio-acciones">
+      ${a.estado==='aprobado'?`<button class="btn-acc btn-ver" onclick="window.open('detalle.html?id=${a.id}','_blank')">Ver</button>`:''}
+      <button class="btn-acc btn-editar" onclick="editarAnuncio('${a.id}')">Editar</button>
+      ${!a.destacado?`<button class="btn-acc btn-destacar" onclick="pedirDestacado('${a.id}')">⭐ Destacar</button>`:''}
+      <button class="btn-acc btn-eliminar" onclick="confirmarElim('${a.id}')">Eliminar</button>
+    </div>
+  </div>`;
+}
+
+// ── NAVEGACIÓN ──
+function verSec(sec){
+  document.querySelectorAll('.seccion').forEach(s=>s.classList.remove('v'));
+  document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('activo'));
+  document.getElementById('sec'+sec.charAt(0).toUpperCase()+sec.slice(1)).classList.add('v');
+  event.currentTarget?.classList.add('activo');
+}
+
+// ── ELIMINAR ──
+function confirmarElim(id){
+  elimId=id;
+  document.getElementById('modalElim').classList.add('v');
+  document.getElementById('btnConfirmElim').onclick=async()=>{
+    const{error}=await db.from('anuncios').delete().eq('id',elimId).eq('user_id',usuario.id);
+    cerrarModal();
+    if(error){toast('Error al eliminar.','rojo');return;}
+    misAnuncios=misAnuncios.filter(a=>a.id!==elimId);
+    renderDashAnuncios();
+    renderListaAnuncios();
+    toast('Anuncio eliminado.','verde');
+  };
+}
+function cerrarModal(){document.getElementById('modalElim').classList.remove('v');}
+
+// ── EDITAR ──
+function editarAnuncio(id){
+  window.location.href='publicar.html?editar='+id;
+}
+
+// ── DESTACAR ──
+function pedirDestacado(id){
+  const wa='595'+prompt('Para destacar tu anuncio envianos un Tigo Money a nuestro número y te activamos el badge ⭐\n\nIngresá tu número de WhatsApp para coordinar:');
+  if(wa) window.open(`https://wa.me/595981000000?text=${encodeURIComponent('Hola! Quiero destacar mi anuncio ID: '+id+'. Mi WhatsApp: +'+wa)}`, '_blank');
+}
+
+// ── PERFIL ──
+async function guardarPerfil(){
+  const nombre=document.getElementById('pNombre').value.trim();
+  const wa=document.getElementById('pWa').value.trim();
+  const{error}=await db.from('perfiles').upsert({id:usuario.id,nombre,whatsapp:wa,email:usuario.email});
+  if(error){toast('Error al guardar.','rojo');return;}
+  document.getElementById('perfilNombre').textContent=nombre||'Sin nombre';
+  document.getElementById('avatar').textContent=nombre?nombre[0].toUpperCase():'👤';
+  toast('Perfil actualizado.','verde');
+}
+
+async function cambiarPass(){
+  const pass=document.getElementById('newPass').value;
+  if(pass.length<6){toast('Mínimo 6 caracteres.','rojo');return;}
+  const{error}=await db.auth.updateUser({password:pass});
+  if(error){toast('Error: '+error.message,'rojo');return;}
+  document.getElementById('newPass').value='';
+  toast('Contraseña actualizada.','verde');
+}
+
+// ── SALIR ──
+async function salir(){
+  await db.auth.signOut();
+  window.location.href='index.html';
+}
+
+// ── TOAST ──
+function toast(msg,tipo){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast v ${tipo||''}`;
+  setTimeout(()=>t.classList.remove('v'),3000);
+}
+
+init();
+</script>
+</body>
+</html>

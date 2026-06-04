@@ -522,6 +522,7 @@ async function enviar() {
     email: document.getElementById('email').value.trim(),
     estado: 'pendiente',
     created_at: new Date().toISOString(),
+    user_id: (await db.auth.getSession()).data.session?.user?.id || null,
   };
 
   try {
