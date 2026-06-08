@@ -153,8 +153,8 @@
 </nav>
 
 <div class="page">
-  <h1>Publicar anuncio</h1>
-  <p class="sub">Es gratis. Revisamos antes de publicar.</p>
+  <h1 id="pageTitle">Publicar anuncio</h1>
+  <p class="sub" id="pageSub">Es gratis. Revisamos antes de publicar.</p>
 
   <!-- STEPS -->
   <div class="steps">
@@ -526,18 +526,90 @@ async function enviar() {
   };
 
   try {
-    const { error } = await db.from('anuncios').insert([datos]);
-    if (error) console.error('Supabase:', error);
+    if (modoEdicion && anuncioEditId) {
+      // EDITAR: UPDATE en lugar de INSERT
+      delete datos.created_at; // no tocar la fecha original
+      delete datos.estado;     // no resetear el estado al editar
+      const { error } = await db.from('anuncios').update(datos).eq('id', anuncioEditId).eq('user_id', datos.user_id);
+      if (error) console.error('Supabase update:', error);
+    } else {
+      // NUEVO: INSERT normal
+      const { error } = await db.from('anuncios').insert([datos]);
+      if (error) console.error('Supabase insert:', error);
+    }
   } catch(e) {
     console.error(e);
   }
 
-  // Mostrar éxito siempre
+  // Mostrar éxito
   document.getElementById('paso4').style.display = 'none';
   document.querySelector('.steps').style.display = 'none';
   document.querySelector('h1').style.display = 'none';
   document.querySelector('.sub').style.display = 'none';
-  document.getElementById('exito').classList.add('v');
+  const exitoEl = document.getElementById('exito');
+  exitoEl.querySelector('h2').textContent = modoEdicion ? '¡Anuncio actualizado!' : '¡Anuncio enviado!';
+  exitoEl.querySelector('p').textContent = modoEdicion ? 'Los cambios fueron guardados correctamente.' : 'Está en revisión. Te avisamos por WhatsApp cuando esté activo.';
+  exitoEl.classList.add('v');
+}
+
+// ── MODO EDICIÓN ──
+let modoEdicion = false;
+let anuncioEditId = null;
+
+async function cargarParaEditar(id) {
+  modoEdicion = true;
+  anuncioEditId = id;
+
+  // Cambiar textos de la página
+  document.getElementById('pageTitle').textContent = 'Editar anuncio';
+  document.getElementById('pageSub').textContent = 'Modificá los datos de tu anuncio.';
+  document.getElementById('btnEnviar').textContent = '💾 Guardar cambios';
+
+  // Ocultar paso 1 de categoría y saltar directo al paso 2
+  // (mantenemos los pasos pero pre-llenamos todo)
+
+  const { data, error } = await db.from('anuncios').select('*').eq('id', id).single();
+  if (error || !data) { alert('No se pudo cargar el anuncio.'); return; }
+
+  const a = data;
+
+  // Paso 1: categoría
+  const pill = document.querySelector(`.pill[onclick*="'${a.categoria}'"]`);
+  if (pill) selCat(pill, a.categoria);
+
+  setTimeout(() => {
+    // Subcategoría
+    if (a.subcategoria) {
+      const subSel = document.getElementById('subcat');
+      for (let o of subSel.options) { if (o.value === a.subcategoria) { subSel.value = a.subcategoria; break; } }
+    }
+
+    // Paso 2: detalles
+    document.getElementById('titulo').value = a.titulo || '';
+    document.getElementById('desc').value = a.descripcion || '';
+    document.getElementById('desc').dispatchEvent(new Event('input'));
+    document.getElementById('precio').value = a.precio || '';
+    document.getElementById('negociable').value = a.negociable || 'no';
+
+    // Condición
+    const condPill = document.querySelector(`.cond[onclick*="'${a.condicion}'"]`);
+    if (condPill) selCond(condPill, a.condicion);
+
+    // Paso 3: ubicación
+    if (a.lat && a.lng) { lat = a.lat; lng = a.lng; }
+    if (a.ciudad) document.getElementById('ciudad').value = a.ciudad;
+    if (a.barrio) document.getElementById('barrio').value = a.barrio || '';
+
+    // Paso 4: contacto
+    document.getElementById('nombre').value = a.nombre_contacto || '';
+    const waNum = (a.whatsapp || '').replace('+595','').replace('595','');
+    document.getElementById('whatsapp').value = waNum;
+    if (a.email) document.getElementById('email').value = a.email;
+
+    // Auto-check términos en edición
+    document.getElementById('terminos').checked = true;
+
+  }, 200);
 }
 
 // Limpiar errores al escribir
@@ -550,6 +622,9 @@ async function enviar() {
     if (err) err.classList.remove('v');
   });
 });
+// Iniciar modo edición si hay ?editar=ID en la URL
+const editParam = new URLSearchParams(window.location.search).get('editar');
+if (editParam) cargarParaEditar(editParam);
 </script>
 </body>
 </html>
