@@ -68,6 +68,14 @@
     .safety-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:#8a6b00;margin-bottom:.5rem}
     .safety-item{font-size:.78rem;color:#8a6b00;line-height:1.6}
 
+    /* GALERÍA */
+    .galeria { display: grid; grid-template-columns: 1fr; gap: .5rem; margin-bottom: 1rem; }
+    .galeria-principal { background: white; border-radius: 10px; border: 1.5px solid var(--borde); overflow: hidden; height: 340px; display: flex; align-items: center; justify-content: center; font-size: 5rem; cursor: pointer; }
+    .galeria-principal img { width: 100%; height: 100%; object-fit: cover; }
+    .galeria-thumbs { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .galeria-thumb { width: 72px; height: 72px; border-radius: 7px; border: 2px solid var(--borde); overflow: hidden; cursor: pointer; flex-shrink: 0; transition: border-color .2s; }
+    .galeria-thumb:hover, .galeria-thumb.activo { border-color: var(--azul); }
+    .galeria-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .loading-page{text-align:center;padding:5rem;color:var(--gris)}
     .error-page{text-align:center;padding:5rem;color:var(--gris)}
 
@@ -162,8 +170,28 @@ async function cargar(){
   document.getElementById('breadcrumb').innerHTML=`<a href="index.html">PlazaPY</a> › <a href="anuncios.html?cat=${a.categoria}">${a.categoria}</a> › ${a.titulo}`;
   document.title=a.titulo+' — PlazaPY';
 
-  // Imagen
-  document.getElementById('imgPrincipal').textContent=ICONS[a.categoria]||'📦';
+  // Galería de fotos
+  const principal = document.getElementById('imgPrincipal');
+  const thumbsEl = document.getElementById('galeriaThumbs');
+
+  let fotos = [];
+  try { fotos = a.fotos_urls ? JSON.parse(a.fotos_urls) : []; } catch(e) {}
+  if (a.foto_url && !fotos.length) fotos = [a.foto_url];
+
+  if (fotos.length) {
+    // Mostrar primera foto como principal
+    principal.innerHTML = `<img src="${fotos[0]}" alt="${a.titulo}" />`;
+    // Thumbnails si hay más de una
+    if (fotos.length > 1) {
+      thumbsEl.innerHTML = fotos.map((url, i) => `
+        <div class="galeria-thumb${i===0?' activo':''}" onclick="verFoto(${i})" id="thumb${i}">
+          <img src="${url}" alt="foto ${i+1}" loading="lazy"/>
+        </div>
+      `).join('');
+    }
+  } else {
+    principal.textContent = ICONS[a.categoria]||'📦';
+  }
 
   // Badges
   let badges='';
@@ -214,6 +242,14 @@ async function cargar(){
   document.getElementById('pageContent').style.display='grid';
 }
 
+function verFoto(idx){
+  const fotos=JSON.parse(document.querySelector('.galeria-principal img')?.closest('.galeria')?.dataset?.fotos||'[]');
+  // Recargar con el índice correcto
+  const imgs=document.querySelectorAll('.galeria-thumb img');
+  if(!imgs[idx])return;
+  document.getElementById('imgPrincipal').innerHTML=`<img src="${imgs[idx].src}" alt="foto ${idx+1}"/>`;
+  document.querySelectorAll('.galeria-thumb').forEach((t,i)=>t.classList.toggle('activo',i===idx));
+}
 function mostrarError(){
   document.getElementById('loadingPage').style.display='none';
   document.getElementById('errorPage').style.display='block';

@@ -100,7 +100,12 @@
     .foto-zone:hover { border-color: var(--azul); }
     .foto-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
     .foto-previews { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .75rem; }
-    .foto-previews img { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--arena); }
+    .foto-preview-item { position: relative; width: 90px; height: 90px; }
+    .foto-preview-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--arena); display: block; }
+    .foto-preview-item .foto-principal { position: absolute; bottom: 3px; left: 3px; background: #1565C0; color: white; font-size: .55rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; }
+    .foto-preview-item .foto-del { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #E53935; color: white; border: none; cursor: pointer; font-size: .7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; line-height: 1; }
+    .foto-limite { font-size: .78rem; color: var(--gris); margin-top: .4rem; }
+    .foto-limite.lleno { color: #E53935; font-weight: 600; }
 
     /* MAPA */
     #mapa { height: 280px; border-radius: 8px; border: 1.5px solid var(--arena); margin-top: .4rem; }
@@ -257,12 +262,14 @@
     <div class="panel">
       <div class="panel-title">📸 Fotos</div>
       <div class="campo">
-        <div class="foto-zone">
-          <input type="file" id="fotos" accept="image/*" multiple onchange="verFotos(event)" />
+        <div class="foto-zone" id="fotoZone">
+          <input type="file" id="fotos" accept="image/jpeg,image/png,image/webp" multiple onchange="agregarFotos(event)" />
           <div style="font-size:2rem;margin-bottom:.5rem">📷</div>
-          <div style="font-size:.9rem;color:var(--gris)"><strong style="color:var(--azul)">Click o arrastrá</strong> tus fotos aquí · hasta 8 fotos</div>
+          <div style="font-size:.9rem;color:var(--gris)"><strong style="color:var(--azul)">Click o arrastrá</strong> tus fotos aquí</div>
+          <div style="font-size:.78rem;color:var(--gris);margin-top:.3rem">JPG, PNG, WEBP · Máx 5MB por foto</div>
         </div>
         <div class="foto-previews" id="fotoPrev"></div>
+        <div class="foto-limite" id="fotoLimite">0 / 5 fotos</div>
       </div>
     </div>
     <div class="panel">
@@ -417,19 +424,89 @@ document.getElementById('desc').addEventListener('input', function() {
 });
 
 // ── FOTOS ──
-function verFotos(e) {
-  const files = Array.from(e.target.files).slice(0, 8);
-  const prev = document.getElementById('fotoPrev');
-  prev.innerHTML = '';
-  files.forEach(f => {
+const MAX_FOTOS = 5;
+const MAX_SIZE_MB = 5;
+let archivosSeleccionados = []; // {file, preview}
+
+function agregarFotos(e) {
+  const nuevos = Array.from(e.target.files);
+  const disponibles = MAX_FOTOS - archivosSeleccionados.length;
+  if (disponibles <= 0) { mostrarToast('Ya tenés el máximo de 5 fotos.', 'error'); return; }
+
+  const agregados = nuevos.slice(0, disponibles);
+  const rechazados = [];
+
+  agregados.forEach(f => {
+    if (f.size > MAX_SIZE_MB * 1024 * 1024) {
+      rechazados.push(f.name);
+      return;
+    }
+    archivosSeleccionados.push({ file: f, preview: null });
+    const idx = archivosSeleccionados.length - 1;
     const r = new FileReader();
     r.onload = ev => {
-      const img = document.createElement('img');
-      img.src = ev.target.result;
-      prev.appendChild(img);
+      archivosSeleccionados[idx].preview = ev.target.result;
+      renderPreviews();
     };
     r.readAsDataURL(f);
   });
+
+  if (rechazados.length) mostrarToast('Fotos muy grandes (máx 5MB): ' + rechazados.join(', '), 'error');
+
+  // Reset input para permitir agregar más
+  e.target.value = '';
+}
+
+function quitarFoto(idx) {
+  archivosSeleccionados.splice(idx, 1);
+  renderPreviews();
+}
+
+function renderPreviews() {
+  const prev = document.getElementById('fotoPrev');
+  const limite = document.getElementById('fotoLimite');
+  const zone = document.getElementById('fotoZone');
+
+  prev.innerHTML = archivosSeleccionados.map((f, i) => `
+    <div class="foto-preview-item">
+      <img src="${f.preview}" alt="foto ${i+1}" />
+      ${i === 0 ? '<span class="foto-principal">Principal</span>' : ''}
+      <button class="foto-del" onclick="quitarFoto(${i})" type="button">✕</button>
+    </div>
+  `).join('');
+
+  const n = archivosSeleccionados.length;
+  limite.textContent = n + ' / 5 fotos';
+  limite.className = 'foto-limite' + (n >= MAX_FOTOS ? ' lleno' : '');
+
+  // Ocultar zona si llegó al límite
+  zone.style.opacity = n >= MAX_FOTOS ? '.4' : '1';
+  zone.style.pointerEvents = n >= MAX_FOTOS ? 'none' : 'auto';
+}
+
+async function subirFotos(anuncioId) {
+  if (!archivosSeleccionados.length) return [];
+  const urls = [];
+  for (let i = 0; i < archivosSeleccionados.length; i++) {
+    const { file } = archivosSeleccionados[i];
+    const ext = file.name.split('.').pop();
+    const path = `anuncios/${anuncioId}/foto_${i+1}_${Date.now()}.${ext}`;
+    const { data, error } = await db.storage.from('fotos').upload(path, file, { upsert: true });
+    if (!error) {
+      const { data: urlData } = db.storage.from('fotos').getPublicUrl(path);
+      urls.push(urlData.publicUrl);
+    }
+  }
+  return urls;
+}
+
+function mostrarToast(msg, tipo) {
+  // toast simple
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:${tipo==='error'?'#E53935':'#2E7D32'};color:white;padding:.85rem 1.3rem;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2)`;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
 }
 
 // ── MAPA (lazy) ──
@@ -527,15 +604,35 @@ async function enviar() {
 
   try {
     if (modoEdicion && anuncioEditId) {
+      // Subir fotos nuevas si las hay
+      if (archivosSeleccionados.length > 0) {
+        const urls = await subirFotos(anuncioEditId);
+        if (urls.length) {
+          datos.foto_url = urls[0];
+          datos.fotos_urls = JSON.stringify(urls);
+        }
+      }
       // EDITAR: UPDATE en lugar de INSERT
-      delete datos.created_at; // no tocar la fecha original
-      delete datos.estado;     // no resetear el estado al editar
+      delete datos.created_at;
+      delete datos.estado;
       const { error } = await db.from('anuncios').update(datos).eq('id', anuncioEditId).eq('user_id', datos.user_id);
       if (error) console.error('Supabase update:', error);
     } else {
-      // NUEVO: INSERT normal
-      const { error } = await db.from('anuncios').insert([datos]);
-      if (error) console.error('Supabase insert:', error);
+      // NUEVO: INSERT primero para obtener el ID
+      const { data: inserted, error: errIns } = await db.from('anuncios').insert([datos]).select().single();
+      if (errIns) { console.error('Supabase insert:', errIns); }
+      else if (inserted) {
+        // Subir fotos con el ID real del anuncio
+        if (archivosSeleccionados.length > 0) {
+          const urls = await subirFotos(inserted.id);
+          if (urls.length) {
+            await db.from('anuncios').update({
+              foto_url: urls[0],
+              fotos_urls: JSON.stringify(urls)
+            }).eq('id', inserted.id);
+          }
+        }
+      }
     }
   } catch(e) {
     console.error(e);
@@ -608,6 +705,20 @@ async function cargarParaEditar(id) {
 
     // Auto-check términos en edición
     document.getElementById('terminos').checked = true;
+
+    // Mostrar fotos existentes en modo edición
+    if (a.fotos_urls) {
+      try {
+        const existentes = JSON.parse(a.fotos_urls);
+        // Mostrar como previews de referencia (sin archivo local)
+        document.getElementById('fotoPrev').innerHTML = existentes.map((url, i) => `
+          <div class="foto-preview-item">
+            <img src="${url}" alt="foto existente ${i+1}" />
+            ${i === 0 ? '<span class="foto-principal">Principal</span>' : ''}
+          </div>
+        `).join('') + '<div style="font-size:.75rem;color:var(--gris);margin-top:.4rem;width:100%">Subí nuevas fotos para reemplazar las actuales.</div>';
+      } catch(e) {}
+    }
 
   }, 200);
 }
