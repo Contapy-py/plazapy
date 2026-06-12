@@ -4,6 +4,22 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Detalle — PlazaPY</title>
+  <!-- SEO dinámico - se actualiza por JS -->
+  <meta name="description" content="Encontrá los mejores anuncios en PlazaPY, el mercado digital paraguayo." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.plazapy.com/detalle.html" id="canonical" />
+  <!-- Open Graph (Facebook, WhatsApp) -->
+  <meta property="og:type" content="product" />
+  <meta property="og:site_name" content="PlazaPY" />
+  <meta property="og:title" content="PlazaPY — El mercado digital paraguayo" id="ogTitle" />
+  <meta property="og:description" content="Encontrá los mejores anuncios en Paraguay." id="ogDesc" />
+  <meta property="og:image" content="https://www.plazapy.com/og-default.png" id="ogImage" />
+  <meta property="og:url" content="https://www.plazapy.com/detalle.html" id="ogUrl" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="PlazaPY" id="twTitle" />
+  <meta name="twitter:description" content="Encontrá los mejores anuncios en Paraguay." id="twDesc" />
+  <meta name="twitter:image" content="https://www.plazapy.com/og-default.png" id="twImage" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -80,10 +96,22 @@
     .error-page{text-align:center;padding:5rem;color:var(--gris)}
 
     @media(max-width:768px){
-      .page{grid-template-columns:1fr;padding:1rem}
+      .page{grid-template-columns:1fr;padding:.75rem;gap:1rem}
       .side-col{position:static}
       nav{padding:0 1rem}
-      .breadcrumb{padding:.65rem 1rem}
+      .breadcrumb{padding:.55rem 1rem;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .anuncio-titulo{font-size:1.25rem}
+      .anuncio-precio{font-size:1.6rem}
+      .img-placeholder,.galeria-principal{height:240px}
+      .detalle-grid{grid-template-columns:1fr 1fr}
+      .panel{padding:1rem}
+      .contact-card{padding:1.1rem}
+      .btn-wa{font-size:.95rem;padding:.8rem}
+      .safety-card{padding:.85rem}
+    }
+    @media(max-width:480px){
+      .detalle-grid{grid-template-columns:1fr}
+      .galeria-principal{height:200px}
     }
   </style>
 </head>
@@ -168,7 +196,44 @@ async function cargar(){
 
   // Breadcrumb
   document.getElementById('breadcrumb').innerHTML=`<a href="index.html">PlazaPY</a> › <a href="anuncios.html?cat=${a.categoria}">${a.categoria}</a> › ${a.titulo}`;
-  document.title=a.titulo+' — PlazaPY';
+  // SEO dinámico
+  const pageTitle = a.titulo + ' — PlazaPY';
+  const pageDesc = (a.descripcion||'').substring(0,155) + (a.descripcion?.length > 155 ? '...' : '');
+  const pageUrl = 'https://www.plazapy.com/detalle.html?id=' + a.id;
+  const pageImg = a.foto_url || 'https://www.plazapy.com/og-default.png';
+  const pagePrice = 'Gs. ' + Number(a.precio).toLocaleString();
+
+  document.title = pageTitle;
+  document.getElementById('canonical').href = pageUrl;
+  document.querySelector('meta[name=description]').content = pageDesc;
+  document.getElementById('ogTitle').content = pageTitle;
+  document.getElementById('ogDesc').content = pageDesc;
+  document.getElementById('ogImage').content = pageImg;
+  document.getElementById('ogUrl').content = pageUrl;
+  document.getElementById('twTitle').content = pageTitle;
+  document.getElementById('twDesc').content = pageDesc;
+  document.getElementById('twImage').content = pageImg;
+
+  // Schema.org — datos estructurados para Google
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": a.titulo,
+    "description": a.descripcion || '',
+    "image": pageImg,
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "PYG",
+      "price": a.precio,
+      "availability": "https://schema.org/InStock",
+      "seller": { "@type": "Person", "name": a.nombre_contacto || 'PlazaPY' }
+    },
+    "url": pageUrl
+  };
+  const schemaEl = document.createElement('script');
+  schemaEl.type = 'application/ld+json';
+  schemaEl.textContent = JSON.stringify(schema);
+  document.head.appendChild(schemaEl);
 
   // Galería de fotos
   const principal = document.getElementById('imgPrincipal');
