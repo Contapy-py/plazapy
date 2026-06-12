@@ -234,6 +234,9 @@
     <div class="nav-item" onclick="verSeccion('rechazados')">
       <span class="ico">🚫</span> Rechazados
     </div>
+    <div class="nav-item" onclick="verSeccion('vencidos')">
+      <span class="ico">⏰</span> Vencidos
+    </div>
 
     <div class="sidebar-footer">
       <button class="btn-logout" onclick="logout()">← Cerrar sesión</button>
@@ -247,7 +250,11 @@
         <div class="main-title" id="mainTitle">Anuncios pendientes</div>
         <div class="main-sub" id="mainSub">Revisá y aprobá los anuncios antes de publicarlos</div>
       </div>
-      <button onclick="cargarAnuncios()" style="background:var(--azul);color:white;border:none;padding:.6rem 1.2rem;border-radius:8px;font-size:.85rem;cursor:pointer;font-weight:600;">↺ Actualizar</button>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+        <button onclick="cargarAnuncios()" style="background:var(--azul);color:white;border:none;padding:.6rem 1.2rem;border-radius:8px;font-size:.85rem;cursor:pointer;font-weight:600;">↺ Actualizar</button>
+        <button onclick="limpiarRechazados()" style="background:#fde8e8;color:var(--rojo);border:none;padding:.6rem 1.2rem;border-radius:8px;font-size:.85rem;cursor:pointer;font-weight:600;">🗑 Limpiar rechazados</button>
+        <button onclick="limpiarVencidos()" style="background:#fff3cd;color:#856404;border:none;padding:.6rem 1.2rem;border-radius:8px;font-size:.85rem;cursor:pointer;font-weight:600;">⏰ Limpiar vencidos</button>
+      </div>
     </div>
 
     <!-- STATS -->
@@ -267,6 +274,10 @@
       <div class="stat-card">
         <div class="stat-label">Total anuncios</div>
         <div class="stat-num" id="statTotal">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Vencidos (+30d)</div>
+        <div class="stat-num" id="statVenc" style="color:#856404">—</div>
       </div>
     </div>
 
@@ -328,7 +339,7 @@ const db = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // !! CAMBIÁ ESTAS CREDENCIALES ANTES DE SUBIR !!
 const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'cardozomereles20#';
+const ADMIN_PASS = 'plazapy2025';
 
 // ── STATE ──
 let todosAnuncios = [];
@@ -424,6 +435,9 @@ function renderTabla() {
 
   if (filtroEstado === null) {
     lista = lista.filter(a => a.destacado);
+  } else if (filtroEstado === 'vencido') {
+    const hace30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    lista = lista.filter(a => new Date(a.created_at) < hace30);
   } else {
     lista = lista.filter(a => a.estado === filtroEstado);
   }
@@ -469,7 +483,8 @@ function renderTabla() {
           <button class="btn-accion btn-ver" onclick="verDetalle('${a.id}')">Ver</button>
           ${a.estado !== 'aprobado' ? `<button class="btn-accion btn-aprobar" onclick="cambiarEstado('${a.id}','aprobado')">✓</button>` : ''}
           ${a.estado !== 'rechazado' ? `<button class="btn-accion btn-rechazar" onclick="cambiarEstado('${a.id}','rechazado')">✗</button>` : ''}
-          ${!a.destacado ? `<button class="btn-accion btn-destacar" onclick="toggleDestacado('${a.id}',true)">⭐</button>` : `<button class="btn-accion btn-destacar" onclick="toggleDestacado('${a.id}',false)">★</button>`}
+          ${!a.destacado ? `<button class="btn-accion btn-destacar" onclick="toggleDestacado('${a.id}',true)">⭐</button>` : `<button class="btn-accion btn-destacar" onclick="renovarDestacado('${a.id}')">↺ Renovar</button>`}
+          <button class="btn-accion btn-eliminar" onclick="eliminarAnuncio('${a.id}')">🗑</button>
         </div>
       </td>
     </tr>
