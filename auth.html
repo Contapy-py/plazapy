@@ -182,7 +182,9 @@ async function login(){
   btn.disabled=true;btn.textContent='Ingresando...';
   const{error}=await db.auth.signInWithPassword({email,password:pass});
   if(error){mostrarAlerta('Email o contraseña incorrectos.','error');btn.disabled=false;btn.textContent='Ingresar';return;}
-  window.location.href='cuenta.html';
+  const redir = sessionStorage.getItem('redirectAfterLogin') || 'cuenta.html';
+  sessionStorage.removeItem('redirectAfterLogin');
+  window.location.href = redir;
 }
 
 async function registro(){
@@ -216,8 +218,10 @@ async function registro(){
     });
   }
 
-  mostrarAlerta('¡Cuenta creada! Revisá tu email para confirmar.','success');
-  setTimeout(()=>window.location.href='cuenta.html',1500);
+  mostrarAlerta('¡Cuenta creada! Completá tu perfil.','success');
+  const redir2 = sessionStorage.getItem('redirectAfterLogin') || 'cuenta.html';
+  sessionStorage.removeItem('redirectAfterLogin');
+  setTimeout(()=>window.location.href=redir2,1500);
 }
 
 async function loginGoogle(){
