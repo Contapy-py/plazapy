@@ -172,9 +172,39 @@
   <!-- ÉXITO -->
   <div class="exito" id="exito">
     <div class="exito-icon">🎉</div>
-    <h2>¡Anuncio enviado!</h2>
-    <p>Está en revisión. Te avisamos por WhatsApp cuando esté activo.</p>
-    <a href="index.html" class="btn-home">← Volver a PlazaPY</a>
+    <h2 id="exitoTitulo">¡Anuncio enviado!</h2>
+    <p id="exitoDesc">Está en revisión. Te avisamos por WhatsApp cuando esté activo.</p>
+
+    <!-- OFERTA DE DESTACADO (solo en anuncios nuevos) -->
+    <div id="ofertaDestacado" style="background:#FFF8E7;border:2px solid #F5A623;border-radius:14px;padding:1.5rem;margin:1.5rem 0;text-align:left;display:none">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">⭐</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.4rem">¿Querés que aparezca primero?</div>
+      <div style="font-size:.88rem;color:#666;line-height:1.6;margin-bottom:1rem">Los anuncios <strong>destacados</strong> aparecen arriba de todos y reciben hasta <strong>5x más contactos</strong>. Solo Gs. 50.000 por 30 días.</div>
+      <div style="background:white;border-radius:10px;padding:1rem;margin-bottom:1rem;border:1px solid #E0E0E0">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.6rem;color:#1565C0">💳 Opciones de pago</div>
+        <div style="font-size:.85rem;line-height:1.9;color:#333">
+          <strong>Tigo Money:</strong> 0981 000 000<br>
+          <strong>Personal Pay:</strong> 0971 000 000<br>
+          <strong>Transferencia bancaria:</strong><br>
+          &nbsp;&nbsp;Banco: Visión Banco<br>
+          &nbsp;&nbsp;Cuenta: 0000000-0<br>
+          &nbsp;&nbsp;Titular: PlazaPY
+        </div>
+      </div>
+      <div style="font-size:.82rem;color:#666;margin-bottom:1rem">
+        📱 Después del pago, enviá el comprobante y el <strong>número de tu anuncio</strong> por WhatsApp:
+      </div>
+      <a id="btnWaDestacado" href="#" target="_blank"
+        style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#25D366;color:white;padding:.8rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.75rem">
+        💬 Enviar comprobante por WhatsApp
+      </a>
+      <div style="font-size:.75rem;color:#999;text-align:center">Activamos el destacado en menos de 2 horas hábiles</div>
+    </div>
+
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+      <a href="cuenta.html" style="display:inline-block;background:#1565C0;color:white;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem">Ver mis anuncios</a>
+      <a href="index.html" style="display:inline-block;background:#F8F8F8;color:#111;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;border:1.5px solid #E0E0E0">← Volver al inicio</a>
+    </div>
   </div>
 
   <!-- PASO 1 -->
@@ -364,6 +394,19 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+// ── VERIFICAR SESIÓN OBLIGATORIA ──
+(async () => {
+  const SUPA_URL_CHK = 'https://ayjlnbxcojqglcufqzob.supabase.co';
+  const SUPA_KEY_CHK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+  const chk = window.supabase.createClient(SUPA_URL_CHK, SUPA_KEY_CHK);
+  const { data: { session } } = await chk.auth.getSession();
+  if (!session && !new URLSearchParams(window.location.search).get('editar')) {
+    // Guardar destino para redirigir después del login
+    sessionStorage.setItem('redirectAfterLogin', window.location.href);
+    window.location.href = 'auth.html?next=publicar';
+  }
+})();
+
 // ── CONFIG SUPABASE ──
 const SUPA_URL = 'https://ayjlnbxcojqglcufqzob.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
@@ -632,6 +675,8 @@ async function enviar() {
             }).eq('id', inserted.id);
           }
         }
+        // Guardar ID para la pantalla de destacado
+        window._nuevoAnuncioId = inserted.id;
       }
     }
   } catch(e) {
@@ -644,8 +689,18 @@ async function enviar() {
   document.querySelector('h1').style.display = 'none';
   document.querySelector('.sub').style.display = 'none';
   const exitoEl = document.getElementById('exito');
-  exitoEl.querySelector('h2').textContent = modoEdicion ? '¡Anuncio actualizado!' : '¡Anuncio enviado!';
-  exitoEl.querySelector('p').textContent = modoEdicion ? 'Los cambios fueron guardados correctamente.' : 'Está en revisión. Te avisamos por WhatsApp cuando esté activo.';
+  document.getElementById('exitoTitulo').textContent = modoEdicion ? '¡Anuncio actualizado!' : '¡Anuncio enviado!';
+  document.getElementById('exitoDesc').textContent = modoEdicion ? 'Los cambios fueron guardados correctamente.' : 'Está en revisión. Te avisamos por WhatsApp cuando esté activo.';
+
+  // Mostrar oferta de destacado solo en anuncios nuevos
+  if (!modoEdicion && window._nuevoAnuncioId) {
+    const oferta = document.getElementById('ofertaDestacado');
+    oferta.style.display = 'block';
+    // Link de WhatsApp con el número de anuncio
+    const msg = encodeURIComponent('Hola! Quiero destacar mi anuncio en PlazaPY.\nID del anuncio: ' + window._nuevoAnuncioId + '\nAdjunto el comprobante de pago.');
+    document.getElementById('btnWaDestacado').href = 'https://wa.me/595981000000?text=' + msg;
+  }
+
   exitoEl.classList.add('v');
 }
 
