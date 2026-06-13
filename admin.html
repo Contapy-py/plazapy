@@ -558,6 +558,65 @@ function formatFecha(iso) {
   return d.toLocaleDateString('es-PY', { day:'2-digit', month:'2-digit', year:'numeric' });
 }
 
+
+// ── ELIMINAR INDIVIDUAL ──
+async function eliminarAnuncio(id) {
+  if (!confirm('¿Eliminar este anuncio permanentemente?')) return;
+  const { error } = await db.from('anuncios').delete().eq('id', id);
+  if (error) { toast('Error: ' + error.message, 'rojo'); return; }
+  todosAnuncios = todosAnuncios.filter(a => a.id !== id);
+  actualizarStats();
+  renderTabla();
+  toast('Anuncio eliminado.', 'verde');
+  cerrarModal();
+}
+
+// ── LIMPIAR RECHAZADOS ──
+async function limpiarRechazados() {
+  const rechazados = todosAnuncios.filter(a => a.estado === 'rechazado');
+  if (!rechazados.length) { toast('No hay anuncios rechazados.', ''); return; }
+  if (!confirm('¿Eliminar permanentemente ' + rechazados.length + ' anuncio(s) rechazado(s)?')) return;
+  const ids = rechazados.map(a => a.id);
+  const { error } = await db.from('anuncios').delete().in('id', ids);
+  if (error) { toast('Error al eliminar: ' + error.message, 'rojo'); return; }
+  todosAnuncios = todosAnuncios.filter(a => a.estado !== 'rechazado');
+  actualizarStats();
+  renderTabla();
+  toast('✓ ' + ids.length + ' anuncio(s) rechazado(s) eliminados.', 'verde');
+}
+
+// ── LIMPIAR VENCIDOS ──
+async function limpiarVencidos() {
+  const hace30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const vencidos = todosAnuncios.filter(a => new Date(a.created_at) < hace30 && !a.destacado);
+  if (!vencidos.length) { toast('No hay anuncios vencidos.', ''); return; }
+  if (!confirm('¿Eliminar permanentemente ' + vencidos.length + ' anuncio(s) vencido(s)?')) return;
+  const ids = vencidos.map(a => a.id);
+  const { error } = await db.from('anuncios').delete().in('id', ids);
+  if (error) { toast('Error al eliminar: ' + error.message, 'rojo'); return; }
+  todosAnuncios = todosAnuncios.filter(a => !ids.includes(a.id));
+  actualizarStats();
+  renderTabla();
+  toast('✓ ' + ids.length + ' anuncio(s) vencido(s) eliminados.', 'verde');
+}
+
+// ── RENOVAR DESTACADO ──
+async function renovarDestacado(id) {
+  const { error } = await db.from('anuncios').update({
+    created_at: new Date().toISOString(),
+    destacado: true
+  }).eq('id', id);
+  if (error) { toast('Error al renovar.', 'rojo'); return; }
+  const idx = todosAnuncios.findIndex(a => a.id === id);
+  if (idx > -1) {
+    todosAnuncios[idx].created_at = new Date().toISOString();
+    todosAnuncios[idx].destacado = true;
+  }
+  renderTabla();
+  toast('⭐ Destacado renovado por 30 días.', 'verde');
+  cerrarModal();
+}
+
 function toast(msg, tipo) {
   const t = document.getElementById('toast');
   t.textContent = msg;
