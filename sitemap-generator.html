@@ -37,7 +37,7 @@ async function generar(){
   document.getElementById('status').textContent='Cargando anuncios...';
   document.getElementById('output').value='';
 
-  const{data,error}=await db.from('anuncios').select('id,titulo,categoria,created_at,updated_at').eq('estado','aprobado').order('created_at',{ascending:false});
+  const{data,error}=await db.from('anuncios').select('id,titulo,categoria,created_at').eq('estado','aprobado').order('created_at',{ascending:false});
 
   if(error){document.getElementById('status').textContent='Error: '+error.message;return;}
 
@@ -80,7 +80,7 @@ async function generar(){
 `;
 
   anuncios.forEach(a=>{
-    const fecha=(a.updated_at||a.created_at||hoy).split('T')[0];
+    const fecha=(a.created_at||hoy).split('T')[0];
     const titulo=(a.titulo||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     xml+=`  <url>
     <loc>https://www.plazapy.com/detalle.html?id=${a.id}</loc>
