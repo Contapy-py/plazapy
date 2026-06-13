@@ -386,5 +386,23 @@ cargar();
   if(el&&session){el.textContent='Mi cuenta';el.href='cuenta.html';}
 })();
 </script>
+
+<!-- LINKS SEO PARA GOOGLE CRAWLER - visualmente ocultos pero indexables -->
+<div id="seoLinks" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true"></div>
+
+<script>
+// Cargar links para Google crawler
+(async function(){
+  const SUPA_URL2='https://ayjlnbxcojqglcufqzob.supabase.co';
+  const SUPA_KEY2='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+  const db2=window.supabase.createClient(SUPA_URL2,SUPA_KEY2);
+  const{data}=await db2.from('anuncios').select('id,titulo,categoria,ciudad,precio').eq('estado','aprobado').limit(100);
+  if(!data||!data.length)return;
+  const el=document.getElementById('seoLinks');
+  if(el) el.innerHTML=data.map(a=>
+    `<a href="/detalle.html?id=${a.id}">${a.titulo} - ${a.categoria} en ${a.ciudad||'Paraguay'} - Gs. ${Number(a.precio).toLocaleString()}</a>`
+  ).join('');
+})();
+</script>
 </body>
 </html>

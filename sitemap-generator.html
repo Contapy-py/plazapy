@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Generador de Sitemap — PlazaPY Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body{font-family:monospace;background:#111;color:#0f0;padding:2rem;max-width:900px;margin:0 auto}
+    h1{color:#F5A623;font-size:1.2rem;margin-bottom:1rem}
+    .btn{background:#1565C0;color:white;border:none;padding:.75rem 1.5rem;border-radius:6px;font-size:1rem;cursor:pointer;margin-bottom:1rem;font-family:monospace}
+    .btn:hover{background:#0D47A1}
+    .btn-copy{background:#2E7D32;color:white;border:none;padding:.75rem 1.5rem;border-radius:6px;font-size:1rem;cursor:pointer;margin-left:.5rem;font-family:monospace}
+    textarea{width:100%;height:400px;background:#000;color:#0f0;border:1px solid #333;padding:1rem;font-size:.8rem;font-family:monospace;resize:vertical}
+    .status{color:#F5A623;margin-bottom:.5rem;font-size:.9rem}
+    .info{color:#888;font-size:.8rem;margin-bottom:1rem;line-height:1.6}
+    a{color:#F5A623}
+  </style>
+</head>
+<body>
+<h1>🗺️ Generador de Sitemap — PlazaPY</h1>
+<div class="info">
+  Este generador crea el sitemap.xml con todos los anuncios aprobados.<br>
+  Copiá el contenido y reemplazá el archivo sitemap.xml en GitHub.<br>
+  Después avisale a Google desde <a href="https://search.google.com/search-console" target="_blank">Search Console → Sitemaps</a>.
+</div>
+<button class="btn" onclick="generar()">⚡ Generar sitemap ahora</button>
+<button class="btn-copy" onclick="copiar()">📋 Copiar XML</button>
+<div class="status" id="status">Listo para generar...</div>
+<textarea id="output" readonly placeholder="El sitemap aparecerá aquí..."></textarea>
+
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+
+async function generar(){
+  document.getElementById('status').textContent='Cargando anuncios...';
+  document.getElementById('output').value='';
+
+  const{data,error}=await db.from('anuncios').select('id,titulo,categoria,created_at,updated_at').eq('estado','aprobado').order('created_at',{ascending:false});
+
+  if(error){document.getElementById('status').textContent='Error: '+error.message;return;}
+
+  const anuncios=data||[];
+  const hoy=new Date().toISOString().split('T')[0];
+
+  let xml=`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Páginas principales -->
+  <url>
+    <loc>https://www.plazapy.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <lastmod>${hoy}</lastmod>
+  </url>
+  <url>
+    <loc>https://www.plazapy.com/anuncios.html</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>${hoy}</lastmod>
+  </url>
+  <url>
+    <loc>https://www.plazapy.com/publicar.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.plazapy.com/terminos.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.plazapy.com/privacidad.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Anuncios individuales (${anuncios.length} anuncios aprobados) -->
+`;
+
+  anuncios.forEach(a=>{
+    const fecha=(a.updated_at||a.created_at||hoy).split('T')[0];
+    const titulo=(a.titulo||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    xml+=`  <url>
+    <loc>https://www.plazapy.com/detalle.html?id=${a.id}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>${fecha}</lastmod>
+    <!-- ${titulo} -->
+  </url>
+`;
+  });
+
+  xml+=`</urlset>`;
+
+  document.getElementById('output').value=xml;
+  document.getElementById('status').textContent=`✓ Sitemap generado con ${anuncios.length} anuncios. Copiá el XML y reemplazá sitemap.xml en GitHub.`;
+}
+
+function copiar(){
+  const txt=document.getElementById('output').value;
+  if(!txt){alert('Primero generá el sitemap.');return;}
+  navigator.clipboard.writeText(txt).then(()=>{
+    document.getElementById('status').textContent='✓ Copiado al portapapeles. Pegalo en sitemap.xml en GitHub.';
+  });
+}
+</script>
+</body>
+</html>

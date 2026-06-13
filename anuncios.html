@@ -429,5 +429,16 @@ function irPag(n){pagina=n;renderGrid();window.scrollTo({top:0,behavior:'smooth'
 
 cargar();
 </script>
+
+<!-- LINKS SEO PARA GOOGLE -->
+<div id="seoLinksAnuncios" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true"></div>
+<script>
+(async function(){
+  // Inyectar links reales cuando se rendericen los anuncios
+  const origRender = window.renderGrid;
+  // Los links ya están en las tarjetas como <a href="detalle.html?id=...">
+  // Solo necesitamos asegurarnos que el grid se renderiza con links reales
+})();
+</script>
 </body>
 </html>
