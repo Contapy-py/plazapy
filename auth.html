@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ingresar — PlazaPY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--rojo:#EE4D2D;--rojo-dark:#D8431F;--rojo-light:#FFF1EC;--naranja:#FF7043;--amarillo:#FFCA28;--negro:#212121;--gris:#757575;--borde:#EEEEEE;--blanco:#fff;--fondo:#F5F5F5;--verde:#26A65B}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro);min-height:100vh;display:flex;flex-direction:column}
+    nav{background:white;height:64px;display:flex;align-items:center;padding:0 2rem;border-bottom:1px solid var(--borde)}
+    .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none}
+    .nav-logo span{color:var(--naranja)}
+
+    .wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;background:linear-gradient(135deg,#FFF1EC 0%,#FFF8E1 100%)}
+    .box{background:white;border-radius:14px;border:1.5px solid var(--borde);padding:2.5rem;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+
+    .tabs{display:flex;border-bottom:2px solid var(--borde);margin-bottom:2rem}
+    .tab{flex:1;padding:.75rem;text-align:center;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;color:var(--gris);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+    .tab.activo{color:var(--rojo);border-bottom-color:var(--rojo)}
+
+    .form{display:none}
+    .form.activo{display:block}
+
+    .campo{margin-bottom:1rem}
+    .campo label{display:block;font-size:.82rem;font-weight:600;margin-bottom:.35rem;color:var(--negro)}
+    .campo input{width:100%;padding:.72rem .9rem;border:1.5px solid var(--borde);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.92rem;color:var(--negro);background:var(--fondo);outline:none;transition:border-color .2s}
+    .campo input:focus{border-color:var(--rojo);background:white}
+    .campo input.mal{border-color:var(--rojo)}
+    .hint{font-size:.75rem;color:var(--gris);margin-top:.3rem}
+    .err{font-size:.75rem;color:var(--rojo);margin-top:.3rem;display:none}
+    .err.v{display:block}
+
+    .btn-main{width:100%;background:var(--rojo);color:white;border:none;padding:.82rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:background .2s;margin-top:.5rem}
+    .btn-main:hover{background:var(--rojo-dark)}
+    .btn-main:disabled{opacity:.6;cursor:not-allowed}
+
+    .divider{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;color:var(--gris);font-size:.8rem}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--borde)}
+
+    .btn-google{width:100%;background:white;color:var(--negro);border:1.5px solid var(--borde);padding:.72rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6rem;transition:border-color .2s}
+    .btn-google:hover{border-color:#aaa}
+
+    .alert{padding:.85rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem;display:none}
+    .alert.v{display:block}
+    .alert.error{background:#fde8e8;color:var(--rojo);border:1px solid #f5c6c6}
+    .alert.success{background:#e8f5e9;color:var(--verde);border:1px solid #c8e6c9}
+
+    .footer-link{text-align:center;font-size:.82rem;color:var(--gris);margin-top:1.25rem}
+    .footer-link a{color:var(--rojo);text-decoration:none;font-weight:600}
+
+    .pass-wrap{position:relative}
+    .pass-toggle{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--gris)}
+
+    .next-banner{background:var(--rojo-light);color:var(--rojo-dark);border-radius:8px;padding:.75rem 1rem;font-size:.85rem;font-weight:600;margin-bottom:1.25rem;text-align:center}
+  </style>
+</head>
+<body>
+<nav><a href="index.html" class="nav-logo">Plaza<span>PY</span></a></nav>
+
+<div class="wrap">
+  <div class="box">
+    <div class="next-banner" id="nextBanner" style="display:none">🏪 Necesitás una cuenta para crear tu tienda</div>
+
+    <div class="tabs">
+      <div class="tab activo" onclick="verTab('login')">Ingresar</div>
+      <div class="tab" onclick="verTab('registro')">Registrarse</div>
+    </div>
+
+    <div class="alert" id="alerta"></div>
+
+    <div class="form activo" id="formLogin">
+      <div class="campo">
+        <label>Email</label>
+        <input type="email" id="lEmail" placeholder="tu@email.com" onkeydown="if(event.key==='Enter')login()"/>
+      </div>
+      <div class="campo">
+        <label>Contraseña</label>
+        <div class="pass-wrap">
+          <input type="password" id="lPass" placeholder="Tu contraseña" onkeydown="if(event.key==='Enter')login()"/>
+          <button class="pass-toggle" onclick="togglePass('lPass',this)" type="button">👁</button>
+        </div>
+      </div>
+      <div style="text-align:right;margin-bottom:.5rem">
+        <a href="#" onclick="verTab('reset')" style="font-size:.8rem;color:var(--rojo)">¿Olvidaste tu contraseña?</a>
+      </div>
+      <button class="btn-main" id="btnLogin" onclick="login()">Ingresar</button>
+      <div class="divider">o</div>
+      <button class="btn-google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+      <div class="footer-link">¿No tenés cuenta? <a href="#" onclick="verTab('registro')">Registrate gratis</a></div>
+    </div>
+
+    <div class="form" id="formRegistro">
+      <div class="campo">
+        <label>Nombre completo</label>
+        <input type="text" id="rNombre" placeholder="Tu nombre"/>
+        <div class="err" id="errNombre">Ingresá tu nombre.</div>
+      </div>
+      <div class="campo">
+        <label>WhatsApp</label>
+        <input type="tel" id="rWa" placeholder="+595 981 123 456"/>
+        <div class="hint">Para que los compradores puedan contactarte.</div>
+      </div>
+      <div class="campo">
+        <label>Email</label>
+        <input type="email" id="rEmail" placeholder="tu@email.com"/>
+        <div class="err" id="errEmail">Ingresá un email válido.</div>
+      </div>
+      <div class="campo">
+        <label>Contraseña</label>
+        <div class="pass-wrap">
+          <input type="password" id="rPass" placeholder="Mínimo 6 caracteres"/>
+          <button class="pass-toggle" onclick="togglePass('rPass',this)" type="button">👁</button>
+        </div>
+        <div class="err" id="errPass">Mínimo 6 caracteres.</div>
+      </div>
+      <div class="campo">
+        <label>Repetir contraseña</label>
+        <input type="password" id="rPass2" placeholder="Repetí tu contraseña"/>
+        <div class="err" id="errPass2">Las contraseñas no coinciden.</div>
+      </div>
+      <button class="btn-main" id="btnReg" onclick="registro()">Crear cuenta gratis</button>
+      <div class="divider">o</div>
+      <button class="btn-google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+      <div class="footer-link">¿Ya tenés cuenta? <a href="#" onclick="verTab('login')">Ingresá</a></div>
+    </div>
+
+    <div class="form" id="formReset">
+      <p style="font-size:.88rem;color:var(--gris);margin-bottom:1.25rem;line-height:1.6">Ingresá tu email y te enviamos un link para restablecer tu contraseña.</p>
+      <div class="campo">
+        <label>Email</label>
+        <input type="email" id="resetEmail" placeholder="tu@email.com"/>
+      </div>
+      <button class="btn-main" onclick="resetPass()">Enviar link</button>
+      <div class="footer-link" style="margin-top:1rem"><a href="#" onclick="verTab('login')">← Volver al login</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+
+db.auth.getSession().then(({data})=>{
+  if(data.session){
+    const redir=sessionStorage.getItem('redirectAfterLogin')||'cuenta.html';
+    sessionStorage.removeItem('redirectAfterLogin');
+    window.location.href=redir;
+  }
+});
+
+const params=new URLSearchParams(window.location.search);
+if(params.get('next')==='publicar'){
+  document.getElementById('nextBanner').style.display='block';
+  document.getElementById('nextBanner').textContent='📝 Necesitás una cuenta para publicar';
+}
+if(params.get('next')==='mi-tienda'){
+  document.getElementById('nextBanner').style.display='block';
+  document.getElementById('nextBanner').textContent='🏪 Necesitás una cuenta para crear tu tienda';
+}
+
+function verTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('activo',['login','registro','reset'][i]===tab));
+  document.querySelectorAll('.form').forEach(f=>f.classList.remove('activo'));
+  const ids={login:'formLogin',registro:'formRegistro',reset:'formReset'};
+  document.getElementById(ids[tab]).classList.add('activo');
+  ocultarAlerta();
+}
+
+function mostrarAlerta(msg,tipo){
+  const a=document.getElementById('alerta');
+  a.textContent=msg; a.className=`alert v ${tipo}`;
+}
+function ocultarAlerta(){document.getElementById('alerta').classList.remove('v')}
+
+function togglePass(id,btn){
+  const el=document.getElementById(id);
+  el.type=el.type==='password'?'text':'password';
+  btn.textContent=el.type==='password'?'👁':'🙈';
+}
+
+async function login(){
+  const email=document.getElementById('lEmail').value.trim();
+  const pass=document.getElementById('lPass').value;
+  if(!email||!pass){mostrarAlerta('Completá todos los campos.','error');return;}
+  const btn=document.getElementById('btnLogin');
+  btn.disabled=true;btn.textContent='Ingresando...';
+  const{error}=await db.auth.signInWithPassword({email,password:pass});
+  if(error){mostrarAlerta('Email o contraseña incorrectos.','error');btn.disabled=false;btn.textContent='Ingresar';return;}
+  const redir=sessionStorage.getItem('redirectAfterLogin')||'cuenta.html';
+  sessionStorage.removeItem('redirectAfterLogin');
+  window.location.href=redir;
+}
+
+async function registro(){
+  const nombre=document.getElementById('rNombre').value.trim();
+  const wa=document.getElementById('rWa').value.trim();
+  const email=document.getElementById('rEmail').value.trim();
+  const pass=document.getElementById('rPass').value;
+  const pass2=document.getElementById('rPass2').value;
+  let ok=true;
+
+  if(!nombre){document.getElementById('errNombre').classList.add('v');ok=false;}
+  else document.getElementById('errNombre').classList.remove('v');
+  if(!email||!email.includes('@')){document.getElementById('errEmail').classList.add('v');ok=false;}
+  else document.getElementById('errEmail').classList.remove('v');
+  if(pass.length<6){document.getElementById('errPass').classList.add('v');ok=false;}
+  else document.getElementById('errPass').classList.remove('v');
+  if(pass!==pass2){document.getElementById('errPass2').classList.add('v');ok=false;}
+  else document.getElementById('errPass2').classList.remove('v');
+  if(!ok)return;
+
+  const btn=document.getElementById('btnReg');
+  btn.disabled=true;btn.textContent='Creando cuenta...';
+
+  const{data,error}=await db.auth.signUp({email,password:pass});
+  if(error){mostrarAlerta(error.message,'error');btn.disabled=false;btn.textContent='Crear cuenta gratis';return;}
+
+  if(data.user){
+    await db.from('perfiles').insert({id:data.user.id,nombre,whatsapp:wa,email});
+  }
+
+  mostrarAlerta('¡Cuenta creada! Completá tu perfil.','success');
+  const redir2=sessionStorage.getItem('redirectAfterLogin')||'cuenta.html';
+  sessionStorage.removeItem('redirectAfterLogin');
+  setTimeout(()=>window.location.href=redir2,1500);
+}
+
+async function loginGoogle(){
+  const next=params.get('next');
+  if(next==='publicar')sessionStorage.setItem('redirectAfterLogin','publicar.html');
+  if(next==='mi-tienda')sessionStorage.setItem('redirectAfterLogin','mi-tienda.html');
+  await db.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo:window.location.origin+'/cuenta.html'}
+  });
+}
+
+async function resetPass(){
+  const email=document.getElementById('resetEmail').value.trim();
+  if(!email){mostrarAlerta('Ingresá tu email.','error');return;}
+  const{error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+'/auth.html'});
+  if(error){mostrarAlerta('Error al enviar. Verificá el email.','error');return;}
+  mostrarAlerta('¡Listo! Revisá tu bandeja de entrada.','success');
+}
+</script>
+</body>
+</html>
