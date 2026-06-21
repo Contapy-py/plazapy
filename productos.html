@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Productos — PlazaPY</title>
+<meta name="description" content="Explorá miles de productos en tiendas locales paraguayas. Filtrá por categoría, precio y ciudad. Delivery disponible."/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--rojo:#EE4D2D;--rojo-dark:#D8431F;--rojo-light:#FFF1EC;--naranja:#FF7043;--amarillo:#FFCA28;--negro:#212121;--gris:#757575;--borde:#EEEEEE;--blanco:#fff;--fondo:#F5F5F5;--verde:#26A65B}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
+
+nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;align-items:center;padding:0 2rem;gap:1rem;border-bottom:1px solid var(--borde)}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none;flex-shrink:0}
+.nav-logo span{color:var(--naranja)}
+.nav-search{flex:1;max-width:500px;display:flex;background:white;border-radius:6px;overflow:hidden;border:1.5px solid var(--rojo)}
+.nav-search input{flex:1;border:none;outline:none;padding:.55rem .9rem;font-size:.9rem}
+.nav-search button{background:var(--rojo);border:none;padding:0 1.1rem;cursor:pointer;color:white}
+.nav-right{margin-left:auto;display:flex;gap:1rem;align-items:center}
+.nav-icon{color:var(--negro);text-decoration:none;font-size:.82rem}
+.btn-tienda{background:var(--rojo);color:white;padding:.5rem 1.1rem;border-radius:6px;text-decoration:none;font-size:.85rem;font-weight:700}
+
+.pills-mobile{display:none;gap:.5rem;overflow-x:auto;padding:.65rem 1rem;background:white;border-bottom:1px solid var(--borde);scrollbar-width:none}
+.pill-m{padding:.38rem .85rem;border-radius:100px;border:1.5px solid var(--borde);font-size:.8rem;white-space:nowrap;cursor:pointer;flex-shrink:0;background:var(--fondo)}
+.pill-m.ok{background:var(--rojo);color:white;border-color:var(--rojo)}
+
+.layout{display:grid;grid-template-columns:230px 1fr;gap:1.5rem;max-width:1280px;margin:0 auto;padding:1.5rem}
+
+.sidebar{position:sticky;top:84px;height:fit-content;display:flex;flex-direction:column;gap:.75rem}
+.filtro-box{background:white;border-radius:10px;border:1.5px solid var(--borde);padding:1.1rem}
+.filtro-titulo{font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gris);margin-bottom:.8rem;padding-bottom:.6rem;border-bottom:1px solid var(--borde)}
+.filtro-item{display:flex;align-items:center;gap:.55rem;padding:.32rem 0;cursor:pointer;font-size:.85rem;color:var(--negro)}
+.filtro-item:hover{color:var(--rojo)}
+.filtro-item input{accent-color:var(--rojo);cursor:pointer}
+.precio-row{display:flex;gap:.4rem;align-items:center;margin-top:.5rem}
+.precio-row input{flex:1;padding:.45rem .6rem;border:1.5px solid var(--borde);border-radius:6px;font-size:.8rem;outline:none;background:var(--fondo)}
+.btn-filtrar{width:100%;background:var(--rojo);color:white;border:none;padding:.6rem;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;margin-top:.75rem}
+.btn-limpiar{width:100%;background:transparent;color:var(--gris);border:1.5px solid var(--borde);padding:.5rem;border-radius:7px;font-size:.8rem;cursor:pointer;margin-top:.4rem}
+
+.content-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.results-count{font-size:.85rem;color:var(--gris)}
+.results-count strong{color:var(--negro)}
+.sort-select{padding:.42rem .75rem;border:1.5px solid var(--borde);border-radius:7px;font-size:.83rem;background:white}
+
+.filtros-activos{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
+.tag-filtro{display:inline-flex;align-items:center;gap:.3rem;background:var(--rojo-light);color:var(--rojo);font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:100px;cursor:pointer}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.card{background:white;border:1px solid var(--borde);border-radius:8px;overflow:hidden;transition:all .2s;text-decoration:none;display:block;color:var(--negro)}
+.card:hover{box-shadow:0 6px 20px rgba(0,0,0,.1);border-color:#ddd}
+.card-img{height:175px;background:var(--fondo);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2.8rem}
+.card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.b-oferta{position:absolute;top:.5rem;left:.5rem;background:var(--rojo);color:white;font-size:.63rem;font-weight:700;padding:2px 7px;border-radius:4px;z-index:1}
+.b-dest{position:absolute;top:.5rem;right:.5rem;background:var(--amarillo);color:#333;font-size:.63rem;font-weight:700;padding:2px 7px;border-radius:4px;z-index:1}
+.card-body{padding:.8rem}
+.card-tienda{font-size:.7rem;color:var(--rojo);font-weight:600;margin-bottom:.3rem}
+.card-nombre{font-size:.85rem;line-height:1.35;margin-bottom:.5rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.3em}
+.card-precio{font-size:1.05rem;font-weight:700;color:var(--rojo)}
+.card-precio-orig{font-size:.75rem;color:#bbb;text-decoration:line-through;margin-left:.3rem}
+.card-footer{display:flex;justify-content:space-between;margin-top:.4rem}
+.card-ciudad{font-size:.72rem;color:var(--gris)}
+
+.loading-msg,.empty-msg{grid-column:1/-1;text-align:center;padding:4rem;color:var(--gris)}
+.empty-msg a{color:var(--rojo)}
+
+.paginacion{display:flex;gap:.4rem;justify-content:center;margin-top:1.75rem;flex-wrap:wrap}
+.pag-btn{padding:.45rem .85rem;border-radius:6px;border:1.5px solid var(--borde);background:white;font-size:.83rem;cursor:pointer}
+.pag-btn.activo{background:var(--rojo);color:white;border-color:var(--rojo)}
+
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr;padding:.75rem;gap:.75rem}
+  .sidebar{display:none}
+  .pills-mobile{display:flex}
+  nav{padding:0 1rem;gap:.5rem}
+  .nav-search{flex:1}
+  .nav-right .nav-icon{display:none}
+  .grid{grid-template-columns:repeat(2,1fr);gap:.65rem}
+  .card-img{height:135px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
+  <div class="nav-search">
+    <input type="text" id="searchInput" placeholder="Buscar productos..." onkeydown="if(event.key==='Enter')aplicar()"/>
+    <button onclick="aplicar()">🔍</button>
+  </div>
+  <div class="nav-right">
+    <a href="tiendas.html" class="nav-icon">🏪 Tiendas</a>
+    <a href="cuenta.html" class="nav-icon">👤 Mi cuenta</a>
+    <a href="mi-tienda.html" class="btn-tienda">+ Abrir tienda</a>
+  </div>
+</nav>
+
+<div class="pills-mobile" id="pillsMobile">
+  <div class="pill-m ok" onclick="selPillMobile('',this)">Todos</div>
+  <div class="pill-m" onclick="selPillMobile('electronica',this)">📱 Electrónica</div>
+  <div class="pill-m" onclick="selPillMobile('ropa',this)">👗 Ropa</div>
+  <div class="pill-m" onclick="selPillMobile('hogar',this)">🏠 Hogar</div>
+  <div class="pill-m" onclick="selPillMobile('deportes',this)">⚽ Deportes</div>
+  <div class="pill-m" onclick="selPillMobile('belleza',this)">💄 Belleza</div>
+  <div class="pill-m" onclick="selPillMobile('alimentos',this)">🍔 Alimentos</div>
+  <div class="pill-m" onclick="selPillMobile('mascotas',this)">🐾 Mascotas</div>
+  <div class="pill-m" onclick="selPillMobile('autos',this)">🚗 Autos</div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="filtro-box">
+      <div class="filtro-titulo">Categoría</div>
+      <label class="filtro-item"><input type="radio" name="cat" value="" checked onchange="aplicar()"> Todas</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="electronica" onchange="aplicar()"> 📱 Electrónica</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="ropa" onchange="aplicar()"> 👗 Ropa y moda</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="hogar" onchange="aplicar()"> 🏠 Hogar</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="deportes" onchange="aplicar()"> ⚽ Deportes</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="belleza" onchange="aplicar()"> 💄 Belleza</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="alimentos" onchange="aplicar()"> 🍔 Alimentos</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="juguetes" onchange="aplicar()"> 🧸 Juguetes</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="mascotas" onchange="aplicar()"> 🐾 Mascotas</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="autos" onchange="aplicar()"> 🚗 Autos y motos</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="servicios" onchange="aplicar()"> 🔧 Servicios</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="libros" onchange="aplicar()"> 📚 Libros</label>
+      <label class="filtro-item"><input type="radio" name="cat" value="otros" onchange="aplicar()"> 📦 Otros</label>
+    </div>
+
+    <div class="filtro-box">
+      <div class="filtro-titulo">Precio (Gs.)</div>
+      <div class="precio-row">
+        <input type="number" id="pMin" placeholder="Mín"/>
+        <span style="color:var(--gris)">—</span>
+        <input type="number" id="pMax" placeholder="Máx"/>
+      </div>
+      <button class="btn-filtrar" onclick="aplicar()">Aplicar filtros</button>
+      <button class="btn-limpiar" onclick="limpiar()">Limpiar todo</button>
+    </div>
+
+    <div class="filtro-box">
+      <div class="filtro-titulo">Mostrar</div>
+      <label class="filtro-item"><input type="checkbox" id="soloOferta" onchange="aplicar()"> 🔥 Solo ofertas</label>
+      <label class="filtro-item"><input type="checkbox" id="soloDest" onchange="aplicar()"> ⭐ Solo destacados</label>
+    </div>
+  </aside>
+
+  <div>
+    <div class="filtros-activos" id="tagsActivos"></div>
+    <div class="content-header">
+      <div class="results-count" id="countTxt">Cargando...</div>
+      <select class="sort-select" id="sortSel" onchange="aplicar()">
+        <option value="nuevos">Más recientes</option>
+        <option value="precio_asc">Precio: menor a mayor</option>
+        <option value="precio_desc">Precio: mayor a menor</option>
+        <option value="destacados">Destacados primero</option>
+      </select>
+    </div>
+    <div class="grid" id="grid"><div class="loading-msg">⏳ Cargando productos...</div></div>
+    <div class="paginacion" id="paginacion"></div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const ICONS={electronica:'📱',ropa:'👗',hogar:'🏠',deportes:'⚽',belleza:'💄',alimentos:'🍔',juguetes:'🧸',mascotas:'🐾',autos:'🚗',servicios:'🔧',libros:'📚',otros:'📦'};
+const POR_PAG=20;
+let todos=[],filtrados=[],pagina=1;
+
+async function cargar(){
+  const{data,error}=await db.from('productos').select('*,tiendas(nombre,ciudad)').eq('estado','aprobado').eq('disponible',true).order('destacado',{ascending:false}).order('created_at',{ascending:false});
+  if(error){document.getElementById('grid').innerHTML='<div class="loading-msg">⚠️ Error al cargar.</div>';return;}
+  todos=data||[];
+
+  const p=new URLSearchParams(window.location.search);
+  if(p.get('cat')){
+    const r=document.querySelector(`input[name=cat][value="${p.get('cat')}"]`);
+    if(r)r.checked=true;
+    document.querySelectorAll('.pill-m').forEach(pl=>pl.classList.toggle('ok',pl.getAttribute('onclick').includes(`'${p.get('cat')}'`)));
+  }
+  if(p.get('q'))document.getElementById('searchInput').value=p.get('q');
+  if(p.get('oferta'))document.getElementById('soloOferta').checked=true;
+
+  aplicar();
+}
+
+function aplicar(){
+  const cat=document.querySelector('input[name=cat]:checked')?.value||'';
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  const pMin=Number(document.getElementById('pMin').value)||0;
+  const pMax=Number(document.getElementById('pMax').value)||Infinity;
+  const soloOferta=document.getElementById('soloOferta').checked;
+  const soloDest=document.getElementById('soloDest').checked;
+  const orden=document.getElementById('sortSel').value;
+
+  filtrados=todos.filter(p=>{
+    if(cat&&p.categoria!==cat)return false;
+    if(q&&!(p.nombre||'').toLowerCase().includes(q)&&!(p.descripcion||'').toLowerCase().includes(q))return false;
+    const precio=p.precio_oferta||p.precio;
+    if(precio<pMin||precio>pMax)return false;
+    if(soloOferta&&!(p.oferta||p.precio_oferta))return false;
+    if(soloDest&&!p.destacado)return false;
+    return true;
+  });
+
+  if(orden==='precio_asc')filtrados.sort((a,b)=>(a.precio_oferta||a.precio)-(b.precio_oferta||b.precio));
+  else if(orden==='precio_desc')filtrados.sort((a,b)=>(b.precio_oferta||b.precio)-(a.precio_oferta||a.precio));
+  else if(orden==='destacados')filtrados.sort((a,b)=>(b.destacado?1:0)-(a.destacado?1:0));
+  else filtrados.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+
+  const tags=[];
+  if(cat)tags.push([cat,'cat']);
+  if(q)tags.push([`"${q}"`,'q']);
+  if(soloOferta)tags.push(['Solo ofertas','oferta']);
+  document.getElementById('tagsActivos').innerHTML=tags.map(([l,t])=>`<span class="tag-filtro" onclick="limpiarTag('${t}')">✕ ${l}</span>`).join('');
+
+  pagina=1;
+  renderGrid();
+}
+
+function limpiarTag(t){
+  if(t==='cat')document.querySelectorAll('input[name=cat]')[0].checked=true;
+  if(t==='q')document.getElementById('searchInput').value='';
+  if(t==='oferta')document.getElementById('soloOferta').checked=false;
+  aplicar();
+}
+
+function limpiar(){
+  document.querySelectorAll('input[name=cat]')[0].checked=true;
+  document.getElementById('searchInput').value='';
+  document.getElementById('pMin').value='';
+  document.getElementById('pMax').value='';
+  document.getElementById('soloOferta').checked=false;
+  document.getElementById('soloDest').checked=false;
+  document.getElementById('sortSel').value='nuevos';
+  document.querySelectorAll('.pill-m').forEach((p,i)=>p.classList.toggle('ok',i===0));
+  aplicar();
+}
+
+function selPillMobile(cat,el){
+  document.querySelectorAll('.pill-m').forEach(p=>p.classList.remove('ok'));
+  el.classList.add('ok');
+  const r=document.querySelector(`input[name=cat][value="${cat}"]`);
+  if(r)r.checked=true;else document.querySelectorAll('input[name=cat]')[0].checked=true;
+  aplicar();
+}
+
+function renderGrid(){
+  const total=filtrados.length;
+  const inicio=(pagina-1)*POR_PAG;
+  const pag=filtrados.slice(inicio,inicio+POR_PAG);
+  document.getElementById('countTxt').innerHTML=`<strong>${total}</strong> producto${total!==1?'s':''} encontrado${total!==1?'s':''}`;
+
+  if(!total){
+    document.getElementById('grid').innerHTML=`<div class="empty-msg">🔍<br><strong>No encontramos productos</strong><br>Probá otros filtros o <a href="mi-tienda.html">publicá el primero</a></div>`;
+    document.getElementById('paginacion').innerHTML='';
+    return;
+  }
+
+  document.getElementById('grid').innerHTML=pag.map(p=>{
+    const precioFinal=p.precio_oferta||p.precio;
+    const img=p.foto_url?`<img src="${p.foto_url}" alt="${p.nombre}" loading="lazy"/>`:`<span>${ICONS[p.categoria]||'📦'}</span>`;
+    return`
+    <a href="producto.html?id=${p.id}" class="card">
+      <div class="card-img">${img}
+        ${p.precio_oferta?'<span class="b-oferta">🔥 Oferta</span>':''}
+        ${p.destacado?'<span class="b-dest">⭐</span>':''}
+      </div>
+      <div class="card-body">
+        <div class="card-tienda">🏪 ${p.tiendas?.nombre||''}</div>
+        <div class="card-nombre">${p.nombre}</div>
+        <div><span class="card-precio">Gs. ${Number(precioFinal).toLocaleString()}</span>${p.precio_oferta?`<span class="card-precio-orig">Gs. ${Number(p.precio).toLocaleString()}</span>`:''}</div>
+        <div class="card-footer"><span class="card-ciudad">📍 ${p.tiendas?.ciudad||'Paraguay'}</span></div>
+      </div>
+    </a>`;
+  }).join('');
+
+  const totalPags=Math.ceil(total/POR_PAG);
+  if(totalPags<=1){document.getElementById('paginacion').innerHTML='';return;}
+  let html='';
+  if(pagina>1)html+=`<button class="pag-btn" onclick="irPag(${pagina-1})">← Ant.</button>`;
+  for(let i=1;i<=totalPags;i++){
+    if(i===1||i===totalPags||Math.abs(i-pagina)<=1)html+=`<button class="pag-btn${i===pagina?' activo':''}" onclick="irPag(${i})">${i}</button>`;
+    else if(Math.abs(i-pagina)===2)html+=`<span style="padding:.4rem .2rem;color:#bbb">…</span>`;
+  }
+  if(pagina<totalPags)html+=`<button class="pag-btn" onclick="irPag(${pagina+1})">Sig. →</button>`;
+  document.getElementById('paginacion').innerHTML=html;
+}
+
+function irPag(n){pagina=n;renderGrid();window.scrollTo({top:0,behavior:'smooth'});}
+
+cargar();
+</script>
+</body>
+</html>
