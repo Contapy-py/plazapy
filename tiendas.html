@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tiendas — PlazaPY</title>
+<meta name="description" content="Descubrí tiendas locales paraguayas verificadas en PlazaPY."/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--rojo:#EE4D2D;--rojo-dark:#D8431F;--rojo-light:#FFF1EC;--naranja:#FF7043;--amarillo:#FFCA28;--negro:#212121;--gris:#757575;--borde:#EEEEEE;--blanco:#fff;--fondo:#F5F5F5;--verde:#26A65B;--verde-light:#E8F8EF}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
+
+nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;align-items:center;padding:0 2rem;gap:1rem;border-bottom:1px solid var(--borde)}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none}
+.nav-logo span{color:var(--naranja)}
+.nav-search{flex:1;max-width:500px;display:flex;background:white;border-radius:6px;overflow:hidden;border:1.5px solid var(--rojo)}
+.nav-search input{flex:1;border:none;outline:none;padding:.55rem .9rem;font-size:.9rem}
+.nav-search button{background:var(--rojo);border:none;padding:0 1.1rem;cursor:pointer;color:white}
+.nav-right{margin-left:auto;display:flex;gap:1rem;align-items:center}
+.nav-icon{color:var(--negro);text-decoration:none;font-size:.82rem}
+.btn-tienda{background:var(--rojo);color:white;padding:.5rem 1.1rem;border-radius:6px;text-decoration:none;font-size:.85rem;font-weight:700}
+
+.hero{background:linear-gradient(135deg,var(--rojo),var(--naranja));padding:2.5rem 2rem;text-align:center;color:white}
+.hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;margin-bottom:.4rem}
+.hero p{opacity:.9;font-size:.92rem}
+
+.container{max-width:1280px;margin:0 auto;padding:1.75rem 1.5rem}
+.content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem}
+.results-count{font-size:.85rem;color:var(--gris)}
+.results-count strong{color:var(--negro)}
+
+.tiendas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.25rem}
+.tienda-card{background:white;border-radius:12px;overflow:hidden;border:1px solid var(--borde);transition:all .2s;text-decoration:none;display:block;color:var(--negro)}
+.tienda-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.1);transform:translateY(-2px)}
+.tienda-banner{height:90px;background:linear-gradient(135deg,var(--rojo),var(--naranja));position:relative}
+.tienda-banner img{width:100%;height:100%;object-fit:cover}
+.tienda-logo{width:60px;height:60px;border-radius:14px;background:white;border:3px solid white;position:absolute;bottom:-30px;left:1.1rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:var(--rojo);box-shadow:0 2px 8px rgba(0,0,0,.12);overflow:hidden}
+.tienda-logo img{width:100%;height:100%;object-fit:cover}
+.tienda-body{padding:2.25rem 1.1rem 1.1rem}
+.badge-verif{background:var(--verde-light);color:var(--verde);font-size:.65rem;font-weight:700;padding:1px 7px;border-radius:100px;display:inline-block;margin-bottom:.4rem}
+.tienda-nombre{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.3rem}
+.tienda-desc{font-size:.78rem;color:var(--gris);line-height:1.5;margin-bottom:.6rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.3em}
+.tienda-meta{display:flex;justify-content:space-between;font-size:.75rem;color:var(--gris)}
+
+.empty-msg{grid-column:1/-1;text-align:center;padding:4rem;color:var(--gris)}
+.empty-msg a{color:var(--rojo)}
+.loading-msg{grid-column:1/-1;text-align:center;padding:4rem;color:var(--gris)}
+
+@media(max-width:768px){
+  nav{padding:0 1rem;gap:.5rem}
+  .nav-right .nav-icon{display:none}
+  .hero{padding:1.5rem 1rem}
+  .container{padding:1.25rem 1rem}
+  .tiendas-grid{grid-template-columns:repeat(2,1fr);gap:.85rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
+  <div class="nav-search">
+    <input type="text" id="searchInput" placeholder="Buscar tiendas..." onkeydown="if(event.key==='Enter')buscar()"/>
+    <button onclick="buscar()">🔍</button>
+  </div>
+  <div class="nav-right">
+    <a href="productos.html" class="nav-icon">🛍️ Productos</a>
+    <a href="cuenta.html" class="nav-icon">👤 Mi cuenta</a>
+    <a href="mi-tienda.html" class="btn-tienda">+ Abrir tienda</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>🏪 Tiendas en PlazaPY</h1>
+  <p>Descubrí negocios locales paraguayos verificados</p>
+</div>
+
+<div class="container">
+  <div class="content-header">
+    <div class="results-count" id="countTxt">Cargando...</div>
+  </div>
+  <div class="tiendas-grid" id="grid">
+    <div class="loading-msg">⏳ Cargando tiendas...</div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+let todas=[];
+
+async function cargar(){
+  const{data,error}=await db.from('tiendas').select('*').eq('estado','activa').order('destacada',{ascending:false}).order('created_at',{ascending:false});
+  if(error){document.getElementById('grid').innerHTML='<div class="loading-msg">⚠️ Error al cargar.</div>';return;}
+  todas=data||[];
+  render(todas);
+}
+
+function buscar(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  if(!q){render(todas);return;}
+  render(todas.filter(t=>t.nombre.toLowerCase().includes(q)||(t.descripcion||'').toLowerCase().includes(q)));
+}
+
+function render(lista){
+  document.getElementById('countTxt').innerHTML=`<strong>${lista.length}</strong> tienda${lista.length!==1?'s':''} encontrada${lista.length!==1?'s':''}`;
+  if(!lista.length){
+    document.getElementById('grid').innerHTML=`<div class="empty-msg">🏪<br><strong>No encontramos tiendas</strong><br><a href="mi-tienda.html">¡Abrí la primera!</a></div>`;
+    return;
+  }
+  document.getElementById('grid').innerHTML=lista.map(t=>`
+    <a href="tienda.html?id=${t.id}" class="tienda-card">
+      <div class="tienda-banner" style="${t.banner_url?`background-image:url(${t.banner_url});background-size:cover`:''}">
+        <div class="tienda-logo">${t.logo_url?`<img src="${t.logo_url}"/>`:t.nombre[0].toUpperCase()}</div>
+      </div>
+      <div class="tienda-body">
+        ${t.verificado?'<span class="badge-verif">✓ Verificada</span>':''}
+        <div class="tienda-nombre">${t.nombre}</div>
+        <div class="tienda-desc">${t.descripcion||'Tienda en PlazaPY'}</div>
+        <div class="tienda-meta"><span>📍 ${t.ciudad||'Paraguay'}</span></div>
+      </div>
+    </a>`).join('');
+}
+
+cargar();
+</script>
+</body>
+</html>

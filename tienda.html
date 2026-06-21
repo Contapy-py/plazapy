@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tienda — PlazaPY</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+:root{--rojo:#EE4D2D;--rojo-dark:#D8431F;--rojo-light:#FFF1EC;--naranja:#FF7043;--amarillo:#FFCA28;--negro:#212121;--gris:#757575;--borde:#EEEEEE;--blanco:#fff;--fondo:#F5F5F5;--verde:#26A65B;--verde-light:#E8F8EF}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
+
+nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;align-items:center;padding:0 2rem;gap:1rem;border-bottom:1px solid var(--borde)}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none}
+.nav-logo span{color:var(--naranja)}
+.nav-back{color:var(--gris);text-decoration:none;font-size:.85rem;margin-left:auto}
+.nav-back:hover{color:var(--rojo)}
+
+.loading-page,.error-page{text-align:center;padding:5rem;color:var(--gris)}
+
+.banner-tienda{height:220px;background:linear-gradient(135deg,var(--rojo),var(--naranja));position:relative}
+.banner-tienda img{width:100%;height:100%;object-fit:cover}
+
+.header-tienda{max-width:1100px;margin:0 auto;padding:0 1.5rem;position:relative}
+.tienda-card-header{background:white;border-radius:14px;border:1px solid var(--borde);padding:1.5rem;margin-top:-60px;position:relative;display:flex;gap:1.25rem;align-items:flex-start;flex-wrap:wrap}
+.tienda-logo-big{width:90px;height:90px;border-radius:16px;background:var(--rojo-light);border:4px solid white;box-shadow:0 4px 16px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:var(--rojo);flex-shrink:0;overflow:hidden;margin-top:-45px}
+.tienda-logo-big img{width:100%;height:100%;object-fit:cover}
+.tienda-info-header{flex:1;min-width:200px}
+.tienda-nombre-h{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;margin-bottom:.3rem}
+.badge-verif-h{background:var(--verde-light);color:var(--verde);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:100px;display:inline-block;margin-bottom:.5rem}
+.tienda-desc-h{font-size:.88rem;color:var(--gris);line-height:1.5;margin-bottom:.6rem;max-width:500px}
+.tienda-meta-h{display:flex;gap:1.25rem;font-size:.82rem;color:var(--gris);flex-wrap:wrap}
+.tienda-acciones{display:flex;gap:.6rem;flex-shrink:0}
+.btn-contactar{display:flex;align-items:center;gap:.5rem;background:#25D366;color:white;padding:.7rem 1.3rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:.88rem}
+.btn-contactar:hover{background:#1da851}
+.btn-mapa{display:flex;align-items:center;gap:.5rem;background:var(--fondo);color:var(--negro);padding:.7rem 1.3rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:.88rem;border:1.5px solid var(--borde)}
+.btn-mapa:hover{border-color:var(--rojo);color:var(--rojo)}
+
+.container{max-width:1100px;margin:0 auto;padding:1.5rem}
+.tabs-tienda{display:flex;gap:0;border-bottom:2px solid var(--borde);margin-bottom:1.5rem}
+.tab-tienda{padding:.75rem 1.25rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--gris);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab-tienda.activo{color:var(--rojo);border-bottom-color:var(--rojo)}
+
+.seccion-t{display:none}
+.seccion-t.v{display:block}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1rem}
+.card{background:white;border:1px solid var(--borde);border-radius:8px;overflow:hidden;transition:all .2s;text-decoration:none;display:block;color:var(--negro)}
+.card:hover{box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.card-img{height:165px;background:var(--fondo);position:relative;display:flex;align-items:center;justify-content:center;font-size:2.6rem}
+.card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.b-oferta{position:absolute;top:.5rem;left:.5rem;background:var(--rojo);color:white;font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:4px}
+.card-body{padding:.75rem}
+.card-nombre{font-size:.84rem;line-height:1.35;margin-bottom:.5rem;min-height:2.2em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-precio{font-weight:700;color:var(--rojo);font-size:1rem}
+
+.info-panel{background:white;border-radius:10px;border:1px solid var(--borde);padding:1.5rem;margin-bottom:1rem}
+.info-row{display:flex;gap:.6rem;padding:.6rem 0;border-bottom:1px solid var(--borde);font-size:.88rem}
+.info-row:last-child{border-bottom:none}
+.info-label{font-weight:600;min-width:130px;color:var(--gris)}
+#mapaTiendaPublic{height:220px;border-radius:8px;margin-top:.5rem}
+
+.empty-msg{grid-column:1/-1;text-align:center;padding:3rem;color:var(--gris)}
+
+@media(max-width:768px){
+  nav{padding:0 1rem}
+  .header-tienda{padding:0 1rem}
+  .tienda-card-header{flex-direction:column;margin-top:-50px}
+  .tienda-acciones{width:100%}
+  .btn-contactar,.btn-mapa{flex:1;justify-content:center}
+  .container{padding:1rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
+  <a href="productos.html" class="nav-back">← Ver todos los productos</a>
+</nav>
+
+<div id="loadingPage" class="loading-page">⏳ Cargando tienda...</div>
+<div id="errorPage" class="error-page" style="display:none">⚠️ Tienda no encontrada. <a href="tiendas.html" style="color:var(--rojo)">Ver todas las tiendas</a></div>
+
+<div id="pageContent" style="display:none">
+  <div class="banner-tienda" id="bannerTienda"></div>
+
+  <div class="header-tienda">
+    <div class="tienda-card-header">
+      <div class="tienda-logo-big" id="logoTienda">🏪</div>
+      <div class="tienda-info-header">
+        <div class="tienda-nombre-h" id="nombreTienda"></div>
+        <div id="verifBadgeWrap"></div>
+        <div class="tienda-desc-h" id="descTienda"></div>
+        <div class="tienda-meta-h">
+          <span id="metaCiudad">📍 —</span>
+          <span id="metaProductos">📦 0 productos</span>
+        </div>
+      </div>
+      <div class="tienda-acciones">
+        <a href="#" class="btn-contactar" id="btnContactarTienda" target="_blank">💬 Contactar</a>
+        <a href="#" class="btn-mapa" id="btnVerMapa" onclick="event.preventDefault();toggleMapa()">📍 Ver ubicación</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="tabs-tienda">
+      <div class="tab-tienda activo" onclick="verTab('productos',this)">Productos</div>
+      <div class="tab-tienda" onclick="verTab('info',this)">Información</div>
+    </div>
+
+    <div class="seccion-t v" id="secProductosT">
+      <div class="grid" id="gridProductosTienda"><div class="empty-msg">Cargando productos...</div></div>
+    </div>
+
+    <div class="seccion-t" id="secInfoT">
+      <div class="info-panel">
+        <div class="info-row"><span class="info-label">Dirección</span><span id="infoDireccion">—</span></div>
+        <div class="info-row"><span class="info-label">Ciudad</span><span id="infoCiudad">—</span></div>
+        <div class="info-row"><span class="info-label">WhatsApp</span><span id="infoWa">—</span></div>
+        <div class="info-row"><span class="info-label">Instagram</span><span id="infoInsta">—</span></div>
+        <div class="info-row"><span class="info-label">Miembro desde</span><span id="infoFecha">—</span></div>
+      </div>
+      <div class="info-panel" id="mapaPanel" style="display:none">
+        <div id="mapaTiendaPublic"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const ICONS={electronica:'📱',ropa:'👗',hogar:'🏠',deportes:'⚽',belleza:'💄',alimentos:'🍔',juguetes:'🧸',mascotas:'🐾',autos:'🚗',servicios:'🔧',libros:'📚',otros:'📦'};
+let tiendaData=null,mapaT=null;
+
+async function cargar(){
+  const id=new URLSearchParams(window.location.search).get('id');
+  if(!id){mostrarError();return;}
+  const{data,error}=await db.from('tiendas').select('*').eq('id',id).eq('estado','activa').single();
+  if(error||!data){mostrarError();return;}
+  tiendaData=data;
+  document.title=data.nombre+' — PlazaPY';
+
+  document.getElementById('bannerTienda').innerHTML=data.banner_url?`<img src="${data.banner_url}"/>`:'';
+  document.getElementById('logoTienda').innerHTML=data.logo_url?`<img src="${data.logo_url}"/>`:data.nombre[0].toUpperCase();
+  document.getElementById('nombreTienda').textContent=data.nombre;
+  if(data.verificado)document.getElementById('verifBadgeWrap').innerHTML='<span class="badge-verif-h">✓ Tienda verificada</span>';
+  document.getElementById('descTienda').textContent=data.descripcion||'';
+  document.getElementById('metaCiudad').textContent='📍 '+(data.ciudad||'Paraguay');
+
+  const wa=(data.whatsapp||'').replace(/\D/g,'');
+  document.getElementById('btnContactarTienda').href=`https://wa.me/${wa}?text=${encodeURIComponent('Hola! Vi tu tienda '+data.nombre+' en PlazaPY.')}`;
+
+  document.getElementById('infoDireccion').textContent=data.direccion||'—';
+  document.getElementById('infoCiudad').textContent=(data.ciudad||'—')+(data.barrio?' · '+data.barrio:'');
+  document.getElementById('infoWa').textContent=data.whatsapp||'—';
+  document.getElementById('infoInsta').textContent=data.instagram||'—';
+  document.getElementById('infoFecha').textContent=new Date(data.created_at).toLocaleDateString('es-PY',{month:'long',year:'numeric'});
+
+  const{data:productos}=await db.from('productos').select('*').eq('tienda_id',id).eq('estado','aprobado').eq('disponible',true).order('created_at',{ascending:false});
+  const ps=productos||[];
+  document.getElementById('metaProductos').textContent='📦 '+ps.length+' producto'+(ps.length!==1?'s':'');
+
+  const grid=document.getElementById('gridProductosTienda');
+  if(ps.length){
+    grid.innerHTML=ps.map(p=>{
+      const precioFinal=p.precio_oferta||p.precio;
+      const img=p.foto_url?`<img src="${p.foto_url}"/>`:`<span>${ICONS[p.categoria]||'📦'}</span>`;
+      return`<a href="producto.html?id=${p.id}" class="card">
+        <div class="card-img">${img}${p.precio_oferta?'<span class="b-oferta">🔥</span>':''}</div>
+        <div class="card-body"><div class="card-nombre">${p.nombre}</div><div class="card-precio">Gs. ${Number(precioFinal).toLocaleString()}</div></div>
+      </a>`;
+    }).join('');
+  } else {
+    grid.innerHTML='<div class="empty-msg">Esta tienda todavía no tiene productos publicados.</div>';
+  }
+
+  document.getElementById('loadingPage').style.display='none';
+  document.getElementById('pageContent').style.display='block';
+}
+
+function verTab(tab,el){
+  document.querySelectorAll('.tab-tienda').forEach(t=>t.classList.remove('activo'));
+  document.querySelectorAll('.seccion-t').forEach(s=>s.classList.remove('v'));
+  el.classList.add('activo');
+  document.getElementById('sec'+tab.charAt(0).toUpperCase()+tab.slice(1)+'T').classList.add('v');
+}
+
+function toggleMapa(){
+  verTab('info',document.querySelectorAll('.tab-tienda')[1]);
+  if(tiendaData.lat&&tiendaData.lng){
+    document.getElementById('mapaPanel').style.display='block';
+    setTimeout(()=>{
+      if(!mapaT){
+        mapaT=L.map('mapaTiendaPublic').setView([tiendaData.lat,tiendaData.lng],15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(mapaT);
+        L.marker([tiendaData.lat,tiendaData.lng]).addTo(mapaT);
+      } else mapaT.invalidateSize();
+    },100);
+  }
+}
+
+function mostrarError(){
+  document.getElementById('loadingPage').style.display='none';
+  document.getElementById('errorPage').style.display='block';
+}
+
+cargar();
+</script>
+</body>
+</html>
