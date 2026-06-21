@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Producto — PlazaPY</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+:root{--rojo:#EE4D2D;--rojo-dark:#D8431F;--rojo-light:#FFF1EC;--naranja:#FF7043;--amarillo:#FFCA28;--negro:#212121;--gris:#757575;--borde:#EEEEEE;--blanco:#fff;--fondo:#F5F5F5;--verde:#26A65B;--verde-light:#E8F8EF}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
+
+nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;align-items:center;padding:0 2rem;gap:1rem;border-bottom:1px solid var(--borde)}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none}
+.nav-logo span{color:var(--naranja)}
+.nav-search{flex:1;max-width:480px;display:flex;background:white;border-radius:6px;overflow:hidden;border:1.5px solid var(--rojo)}
+.nav-search input{flex:1;border:none;outline:none;padding:.55rem .9rem;font-size:.9rem}
+.nav-search button{background:var(--rojo);border:none;padding:0 1.1rem;cursor:pointer;color:white}
+.nav-icon{margin-left:auto;color:var(--negro);text-decoration:none;font-size:.85rem;display:flex;align-items:center;gap:.4rem}
+
+.breadcrumb{background:white;border-bottom:1px solid var(--borde);padding:.65rem 2rem;font-size:.8rem;color:var(--gris);max-width:1280px;margin:0 auto}
+.breadcrumb a{color:var(--rojo);text-decoration:none}
+.breadcrumb a:hover{text-decoration:underline}
+
+.page{max-width:1280px;margin:0 auto;padding:1.5rem}
+.layout{display:grid;grid-template-columns:440px 1fr 320px;gap:1.5rem}
+
+/* GALERÍA */
+.galeria-wrap{background:white;border-radius:10px;border:1px solid var(--borde);padding:1rem}
+.galeria-principal{height:420px;border-radius:8px;overflow:hidden;background:var(--fondo);display:flex;align-items:center;justify-content:center;font-size:5rem;margin-bottom:.75rem;position:relative}
+.galeria-principal img{width:100%;height:100%;object-fit:cover}
+.galeria-thumbs{display:flex;gap:.5rem;flex-wrap:wrap}
+.gal-thumb{width:64px;height:64px;border-radius:6px;border:2px solid var(--borde);overflow:hidden;cursor:pointer;flex-shrink:0}
+.gal-thumb.activo{border-color:var(--rojo)}
+.gal-thumb img{width:100%;height:100%;object-fit:cover}
+.share-row{display:flex;gap:.6rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--borde)}
+.share-btn{flex:1;background:var(--fondo);border:1px solid var(--borde);border-radius:7px;padding:.5rem;font-size:.78rem;color:var(--gris);cursor:pointer;text-align:center;text-decoration:none;display:block}
+.share-btn:hover{border-color:var(--rojo);color:var(--rojo)}
+
+/* INFO CENTRAL */
+.info-col{background:white;border-radius:10px;border:1px solid var(--borde);padding:1.5rem}
+.prod-tienda-link{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--rojo);text-decoration:none;margin-bottom:.85rem;font-weight:600}
+.prod-titulo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;line-height:1.3;margin-bottom:.85rem}
+.badges-row{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.badge{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:4px;text-transform:uppercase}
+.badge-oferta{background:var(--rojo);color:white}
+.badge-dest{background:var(--amarillo);color:#333}
+.badge-stock{background:var(--verde-light);color:var(--verde)}
+
+.precio-box{background:var(--rojo-light);border-radius:10px;padding:1.1rem;margin-bottom:1.25rem}
+.precio-actual{font-family:'Syne',sans-serif;font-weight:800;font-size:1.9rem;color:var(--rojo)}
+.precio-original{font-size:1rem;color:var(--gris);text-decoration:line-through;margin-left:.5rem}
+.precio-descuento{display:inline-block;background:var(--rojo);color:white;font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:.5rem}
+
+.detalle-tabla{margin-bottom:1.25rem}
+.dt-row{display:flex;padding:.5rem 0;border-bottom:1px solid var(--borde);font-size:.86rem}
+.dt-row:last-child{border-bottom:none}
+.dt-label{min-width:120px;color:var(--gris);font-weight:500}
+.dt-val{color:var(--negro)}
+
+.desc-titulo{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin:1.25rem 0 .6rem;padding-top:1rem;border-top:1px solid var(--borde)}
+.desc-texto{font-size:.88rem;line-height:1.75;color:#333;white-space:pre-wrap}
+
+/* COMPRA COL */
+.compra-col{position:sticky;top:84px;height:fit-content}
+.compra-box{background:white;border-radius:10px;border:1px solid var(--borde);padding:1.25rem;margin-bottom:1rem}
+.compra-titulo{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--borde)}
+
+.entrega-opciones{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.1rem}
+.entrega-opcion{display:flex;align-items:flex-start;gap:.7rem;padding:.85rem;border:1.5px solid var(--borde);border-radius:8px;cursor:pointer;transition:all .15s}
+.entrega-opcion:hover{border-color:var(--rojo)}
+.entrega-opcion.sel{border-color:var(--rojo);background:var(--rojo-light)}
+.entrega-opcion input{margin-top:2px;accent-color:var(--rojo);cursor:pointer}
+.eo-info{flex:1}
+.eo-titulo{font-weight:600;font-size:.86rem;display:flex;justify-content:space-between;align-items:center}
+.eo-precio{color:var(--rojo);font-weight:700}
+.eo-desc{font-size:.76rem;color:var(--gris);margin-top:.2rem}
+
+.cantidad-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.cantidad-label{font-size:.86rem;font-weight:600}
+.cantidad-control{display:flex;align-items:center;border:1.5px solid var(--borde);border-radius:7px}
+.cantidad-btn{width:32px;height:32px;border:none;background:var(--fondo);cursor:pointer;font-size:1rem;font-weight:700}
+.cantidad-val{width:42px;text-align:center;font-weight:600;font-size:.9rem}
+
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:.85rem 0;border-top:1.5px solid var(--borde);margin-bottom:1rem}
+.total-label{font-size:.88rem;font-weight:600}
+.total-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--rojo)}
+
+.btn-comprar{width:100%;background:var(--rojo);color:white;border:none;padding:.95rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:.6rem;transition:background .2s}
+.btn-comprar:hover{background:var(--rojo-dark)}
+.btn-wa-consulta{width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem;background:#25D366;color:white;border:none;padding:.85rem;border-radius:8px;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
+.btn-wa-consulta:hover{background:#1da851}
+
+.vendedor-box{display:flex;align-items:center;gap:.75rem}
+.vendedor-avatar{width:48px;height:48px;border-radius:50%;background:var(--rojo-light);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--rojo);font-size:1.2rem;flex-shrink:0;overflow:hidden}
+.vendedor-avatar img{width:100%;height:100%;object-fit:cover}
+.vendedor-info{flex:1}
+.vendedor-nombre{font-weight:700;font-size:.88rem}
+.vendedor-ciudad{font-size:.78rem;color:var(--gris)}
+.btn-ver-tienda{display:block;text-align:center;margin-top:.85rem;background:var(--fondo);border:1.5px solid var(--borde);color:var(--negro);padding:.6rem;border-radius:7px;font-size:.82rem;font-weight:600;text-decoration:none}
+.btn-ver-tienda:hover{border-color:var(--rojo);color:var(--rojo)}
+
+.safety-box{background:#FFF8E1;border:1px solid #FFE082;border-radius:8px;padding:.85rem;font-size:.78rem;color:#8a6b00;line-height:1.6}
+
+/* MODAL CHECKOUT */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.v{display:flex}
+.modal{background:white;border-radius:16px;padding:1.75rem;max-width:480px;width:100%;max-height:92vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--gris)}
+.modal-titulo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:.3rem}
+.modal-sub{font-size:.85rem;color:var(--gris);margin-bottom:1.25rem}
+.resumen-box{background:var(--fondo);border-radius:8px;padding:.85rem;margin-bottom:1.25rem;font-size:.85rem}
+.resumen-row{display:flex;justify-content:space-between;padding:.3rem 0}
+.resumen-row.total{border-top:1px solid var(--borde);margin-top:.3rem;padding-top:.5rem;font-weight:700;font-size:.95rem}
+
+.campo{margin-bottom:.9rem}
+.campo label{display:block;font-size:.82rem;font-weight:600;margin-bottom:.35rem}
+.campo input,.campo select,.campo textarea{width:100%;padding:.65rem .85rem;border:1.5px solid var(--borde);border-radius:8px;font-size:.88rem;background:var(--fondo);outline:none;font-family:'DM Sans',sans-serif}
+.campo input:focus,.campo textarea:focus{border-color:var(--rojo);background:white}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+#mapaCheckout{height:180px;border-radius:8px;margin-top:.4rem;display:none}
+.map-hint{font-size:.76rem;color:var(--gris);margin-top:.35rem}
+
+.btn-confirmar-pedido{width:100%;background:var(--rojo);color:white;border:none;padding:.9rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;margin-top:.5rem}
+.btn-confirmar-pedido:hover{background:var(--rojo-dark)}
+.btn-confirmar-pedido:disabled{opacity:.6;cursor:not-allowed}
+
+.exito-pedido{text-align:center;padding:2rem 1rem}
+.exito-icon{font-size:3.5rem;margin-bottom:1rem}
+.exito-pedido h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:.5rem}
+.exito-pedido p{color:var(--gris);font-size:.88rem;margin-bottom:1.5rem;line-height:1.6}
+.btn-wa-exito{display:flex;align-items:center;justify-content:center;gap:.5rem;background:#25D366;color:white;padding:.85rem;border-radius:8px;font-weight:700;text-decoration:none;margin-bottom:.6rem}
+
+.loading-page,.error-page{text-align:center;padding:5rem;color:var(--gris)}
+
+@media(max-width:1000px){
+  .layout{grid-template-columns:1fr}
+  .compra-col{position:static}
+  nav{padding:0 1rem}
+  .breadcrumb{padding:.6rem 1rem}
+  .page{padding:1rem}
+  .galeria-principal{height:300px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
+  <div class="nav-search">
+    <input type="text" id="searchInput" placeholder="Buscar productos..." onkeydown="if(event.key==='Enter')buscar()"/>
+    <button onclick="buscar()">🔍</button>
+  </div>
+  <a href="cuenta.html" class="nav-icon">👤 Mi cuenta</a>
+</nav>
+
+<div class="breadcrumb" id="breadcrumb">
+  <a href="index.html">PlazaPY</a> › <a href="productos.html">Productos</a> › Cargando...
+</div>
+
+<div id="loadingPage" class="loading-page">⏳ Cargando producto...</div>
+<div id="errorPage" class="error-page" style="display:none">⚠️ Producto no encontrado. <a href="productos.html" style="color:var(--rojo)">Ver todos los productos</a></div>
+
+<div class="page" id="pageContent" style="display:none">
+  <div class="layout">
+
+    <!-- GALERÍA -->
+    <div class="galeria-wrap">
+      <div class="galeria-principal" id="imgPrincipal">📦</div>
+      <div class="galeria-thumbs" id="galeriaThumbs"></div>
+      <div class="share-row">
+        <a href="#" class="share-btn" id="btnShareWa" target="_blank">💬 WhatsApp</a>
+        <a href="#" class="share-btn" id="btnShareFb" target="_blank">📘 Facebook</a>
+        <button class="share-btn" onclick="copiarLink()">🔗 Copiar link</button>
+      </div>
+    </div>
+
+    <!-- INFO CENTRAL -->
+    <div class="info-col">
+      <a href="#" class="prod-tienda-link" id="tiendaLink">🏪 Cargando tienda...</a>
+      <div class="prod-titulo" id="prodTitulo"></div>
+      <div class="badges-row" id="badgesRow"></div>
+
+      <div class="precio-box">
+        <span class="precio-actual" id="precioActual"></span>
+        <span id="precioOriginalWrap" style="display:none"><span class="precio-original" id="precioOriginal"></span><span class="precio-descuento" id="precioDescuento"></span></span>
+      </div>
+
+      <div class="detalle-tabla" id="detalleTabla"></div>
+
+      <div class="desc-titulo">📝 Descripción</div>
+      <div class="desc-texto" id="descTexto"></div>
+    </div>
+
+    <!-- COMPRA -->
+    <div class="compra-col">
+      <div class="compra-box">
+        <div class="compra-titulo">🚚 Opciones de entrega</div>
+        <div class="entrega-opciones">
+          <label class="entrega-opcion sel" onclick="selEntrega('asuncion',this)">
+            <input type="radio" name="entrega" checked/>
+            <div class="eo-info">
+              <div class="eo-titulo">Delivery Asunción <span class="eo-precio">Gs. 15.000</span></div>
+              <div class="eo-desc">Entrega a domicilio en Asunción capital · 24-48hs</div>
+            </div>
+          </label>
+          <label class="entrega-opcion" onclick="selEntrega('gran-asuncion',this)">
+            <input type="radio" name="entrega"/>
+            <div class="eo-info">
+              <div class="eo-titulo">Delivery Gran Asunción <span class="eo-precio">Gs. 25.000</span></div>
+              <div class="eo-desc">San Lorenzo, Luque, Lambaré, Fernando, etc.</div>
+            </div>
+          </label>
+          <label class="entrega-opcion" onclick="selEntrega('retiro',this)">
+            <input type="radio" name="entrega"/>
+            <div class="eo-info">
+              <div class="eo-titulo">Retiro en tienda <span class="eo-precio" style="color:var(--verde)">Gratis</span></div>
+              <div class="eo-desc">Coordinás directo con el vendedor</div>
+            </div>
+          </label>
+        </div>
+
+        <div class="cantidad-row">
+          <span class="cantidad-label">Cantidad</span>
+          <div class="cantidad-control">
+            <button class="cantidad-btn" onclick="cambiarCantidad(-1)">−</button>
+            <span class="cantidad-val" id="cantidadVal">1</span>
+            <button class="cantidad-btn" onclick="cambiarCantidad(1)">+</button>
+          </div>
+        </div>
+
+        <div class="total-row">
+          <span class="total-label">Total</span>
+          <span class="total-val" id="totalVal">Gs. 0</span>
+        </div>
+
+        <button class="btn-comprar" onclick="abrirCheckout()">🛒 Comprar ahora</button>
+        <a href="#" class="btn-wa-consulta" id="btnConsultaWa" target="_blank">💬 Consultar al vendedor</a>
+      </div>
+
+      <div class="compra-box">
+        <div class="compra-titulo">🏪 Vendido por</div>
+        <div class="vendedor-box">
+          <div class="vendedor-avatar" id="vendedorAvatar">🏪</div>
+          <div class="vendedor-info">
+            <div class="vendedor-nombre" id="vendedorNombre">—</div>
+            <div class="vendedor-ciudad" id="vendedorCiudad">—</div>
+          </div>
+        </div>
+        <a href="#" class="btn-ver-tienda" id="btnVerTienda">Ver toda la tienda →</a>
+      </div>
+
+      <div class="safety-box">
+        🛡️ <strong>Tips de seguridad:</strong> Verificá el producto al recibirlo. No hagas pagos por fuera de PlazaPY. Reportá cualquier irregularidad.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CHECKOUT -->
+<div class="modal-bg" id="modalCheckout" onclick="if(event.target===this)cerrarCheckout()">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarCheckout()">✕</button>
+
+    <div id="checkoutForm">
+      <div class="modal-titulo">Confirmar pedido</div>
+      <div class="modal-sub">Completá tus datos para coordinar la entrega</div>
+
+      <div class="resumen-box" id="resumenBox"></div>
+
+      <div class="campo"><label>Nombre y apellido <span style="color:var(--rojo)">*</span></label><input type="text" id="cNombre" placeholder="Tu nombre completo"/></div>
+      <div class="campo"><label>WhatsApp <span style="color:var(--rojo)">*</span></label><input type="tel" id="cWa" placeholder="+595 981 123 456"/></div>
+
+      <div id="camposEntrega">
+        <div class="campo"><label>Dirección exacta <span style="color:var(--rojo)">*</span></label><input type="text" id="cDireccion" placeholder="Calle, número, referencia"/></div>
+        <div class="grid2">
+          <div class="campo"><label>Ciudad</label><input type="text" id="cCiudad" placeholder="Asunción" disabled/></div>
+          <div class="campo"><label>Barrio</label><input type="text" id="cBarrio" placeholder="Ej: Villa Morra"/></div>
+        </div>
+        <div class="campo">
+          <label>Marcá tu ubicación en el mapa</label>
+          <div id="mapaCheckout"></div>
+          <div class="map-hint" id="mapaCheckoutHint">📍 Opcional — ayuda a ubicar mejor tu domicilio.</div>
+        </div>
+      </div>
+
+      <div class="campo"><label>Notas adicionales (opcional)</label><textarea id="cNotas" placeholder="Color, talle, horario preferido..." style="min-height:60px"></textarea></div>
+
+      <button class="btn-confirmar-pedido" id="btnConfirmarPedido" onclick="confirmarPedido()">Confirmar pedido</button>
+    </div>
+
+    <div id="checkoutExito" style="display:none">
+      <div class="exito-pedido">
+        <div class="exito-icon">🎉</div>
+        <h3>¡Pedido enviado!</h3>
+        <p>El vendedor se va a contactar por WhatsApp para confirmar tu pedido y coordinar la entrega.</p>
+        <a href="#" class="btn-wa-exito" id="btnWaFinal" target="_blank">💬 Avisar también por WhatsApp</a>
+        <button class="btn-comprar" onclick="cerrarCheckout();window.location.reload()" style="background:var(--fondo);color:var(--negro);border:1.5px solid var(--borde)">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const ICONS={electronica:'📱',ropa:'👗',hogar:'🏠',deportes:'⚽',belleza:'💄',alimentos:'🍔',juguetes:'🧸',mascotas:'🐾',autos:'🚗',servicios:'🔧',libros:'📚',otros:'📦'};
+
+let producto=null,tienda=null,cantidad=1,tipoEntrega='asuncion',costoEntrega=15000;
+let mapaCheck=null,markerCheck=null,latCheck=null,lngCheck=null;
+
+async function cargar(){
+  const id=new URLSearchParams(window.location.search).get('id');
+  if(!id){mostrarError();return;}
+
+  const{data,error}=await db.from('productos').select('*,tiendas(*)').eq('id',id).eq('estado','aprobado').single();
+  if(error||!data){mostrarError();return;}
+
+  producto=data;
+  tienda=data.tiendas;
+
+  document.title=producto.nombre+' — PlazaPY';
+  document.getElementById('breadcrumb').innerHTML=`<a href="index.html">PlazaPY</a> › <a href="productos.html?cat=${producto.categoria}">${producto.categoria}</a> › ${producto.nombre}`;
+
+  // Galería
+  let fotos=[];
+  try{fotos=producto.fotos_urls?JSON.parse(producto.fotos_urls):[];}catch(e){}
+  if(producto.foto_url&&!fotos.length)fotos=[producto.foto_url];
+
+  const principal=document.getElementById('imgPrincipal');
+  if(fotos.length){
+    principal.innerHTML=`<img src="${fotos[0]}" alt="${producto.nombre}"/>`;
+    if(fotos.length>1){
+      document.getElementById('galeriaThumbs').innerHTML=fotos.map((url,i)=>`
+        <div class="gal-thumb${i===0?' activo':''}" onclick="verFoto(${i})"><img src="${url}"/></div>`).join('');
+    }
+  } else {
+    principal.textContent=ICONS[producto.categoria]||'📦';
+  }
+  window._fotos=fotos;
+
+  // Info
+  document.getElementById('prodTitulo').textContent=producto.nombre;
+  const precioFinal=producto.precio_oferta||producto.precio;
+  document.getElementById('precioActual').textContent='Gs. '+Number(precioFinal).toLocaleString();
+  if(producto.precio_oferta){
+    const desc=Math.round((1-producto.precio_oferta/producto.precio)*100);
+    document.getElementById('precioOriginalWrap').style.display='inline';
+    document.getElementById('precioOriginal').textContent='Gs. '+Number(producto.precio).toLocaleString();
+    document.getElementById('precioDescuento').textContent='-'+desc+'%';
+  }
+
+  let badges='';
+  if(producto.oferta)badges+='<span class="badge badge-oferta">🔥 Oferta</span>';
+  if(producto.destacado)badges+='<span class="badge badge-dest">⭐ Destacado</span>';
+  if(producto.disponible)badges+='<span class="badge badge-stock">✓ Disponible</span>';
+  document.getElementById('badgesRow').innerHTML=badges;
+
+  document.getElementById('detalleTabla').innerHTML=`
+    <div class="dt-row"><span class="dt-label">Categoría</span><span class="dt-val">${producto.categoria}${producto.subcategoria?' › '+producto.subcategoria:'':''}</span></div>
+    <div class="dt-row"><span class="dt-label">Stock</span><span class="dt-val">${producto.stock||1} disponibles</span></div>
+    <div class="dt-row"><span class="dt-label">Publicado</span><span class="dt-val">${new Date(producto.created_at).toLocaleDateString('es-PY')}</span></div>`;
+
+  document.getElementById('descTexto').textContent=producto.descripcion||'Sin descripción.';
+
+  // Tienda
+  if(tienda){
+    document.getElementById('tiendaLink').innerHTML='🏪 '+tienda.nombre;
+    document.getElementById('tiendaLink').href='tienda.html?id='+tienda.id;
+    document.getElementById('vendedorAvatar').innerHTML=tienda.logo_url?`<img src="${tienda.logo_url}"/>`:tienda.nombre[0].toUpperCase();
+    document.getElementById('vendedorNombre').textContent=tienda.nombre;
+    document.getElementById('vendedorCiudad').textContent='📍 '+(tienda.ciudad||'Paraguay');
+    document.getElementById('btnVerTienda').href='tienda.html?id='+tienda.id;
+    const msgWa=encodeURIComponent(`Hola! Vi tu producto "${producto.nombre}" en PlazaPY. ¿Está disponible?`);
+    document.getElementById('btnConsultaWa').href=`https://wa.me/${(tienda.whatsapp||'').replace(/\D/g,'')}?text=${msgWa}`;
+  }
+
+  // Share
+  const shareUrl=window.location.href;
+  document.getElementById('btnShareWa').href='https://wa.me/?text='+encodeURIComponent(producto.nombre+' - '+shareUrl);
+  document.getElementById('btnShareFb').href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl);
+
+  actualizarTotal();
+  document.getElementById('loadingPage').style.display='none';
+  document.getElementById('pageContent').style.display='block';
+}
+
+function verFoto(i){
+  document.getElementById('imgPrincipal').innerHTML=`<img src="${window._fotos[i]}" alt="foto"/>`;
+  document.querySelectorAll('.gal-thumb').forEach((t,idx)=>t.classList.toggle('activo',idx===i));
+}
+
+function copiarLink(){
+  navigator.clipboard.writeText(window.location.href);
+  alert('Link copiado al portapapeles');
+}
+
+function selEntrega(tipo,el){
+  document.querySelectorAll('.entrega-opcion').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  el.querySelector('input').checked=true;
+  tipoEntrega=tipo;
+  costoEntrega=tipo==='asuncion'?15000:tipo==='gran-asuncion'?25000:0;
+  document.getElementById('camposEntrega').style.display=tipo==='retiro'?'none':'block';
+  actualizarTotal();
+}
+
+function cambiarCantidad(delta){
+  cantidad=Math.max(1,cantidad+delta);
+  document.getElementById('cantidadVal').textContent=cantidad;
+  actualizarTotal();
+}
+
+function actualizarTotal(){
+  if(!producto)return;
+  const precioFinal=producto.precio_oferta||producto.precio;
+  const total=precioFinal*cantidad+costoEntrega;
+  document.getElementById('totalVal').textContent='Gs. '+Number(total).toLocaleString();
+}
+
+function abrirCheckout(){
+  const precioFinal=producto.precio_oferta||producto.precio;
+  const subtotal=precioFinal*cantidad;
+  const total=subtotal+costoEntrega;
+  document.getElementById('resumenBox').innerHTML=`
+    <div class="resumen-row"><span>${producto.nombre} x${cantidad}</span><span>Gs. ${Number(subtotal).toLocaleString()}</span></div>
+    <div class="resumen-row"><span>Envío (${tipoEntrega==='retiro'?'Retiro en tienda':tipoEntrega==='asuncion'?'Delivery Asunción':'Delivery Gran Asunción'})</span><span>${costoEntrega?'Gs. '+Number(costoEntrega).toLocaleString():'Gratis'}</span></div>
+    <div class="resumen-row total"><span>Total</span><span>Gs. ${Number(total).toLocaleString()}</span></div>`;
+  if(tipoEntrega!=='retiro'){
+    document.getElementById('cCiudad').value=tipoEntrega==='asuncion'?'Asunción':'Gran Asunción';
+    setTimeout(initMapaCheckout,200);
+  }
+  document.getElementById('checkoutForm').style.display='block';
+  document.getElementById('checkoutExito').style.display='none';
+  document.getElementById('modalCheckout').classList.add('v');
+}
+function cerrarCheckout(){document.getElementById('modalCheckout').classList.remove('v');}
+
+function initMapaCheckout(){
+  document.getElementById('mapaCheckout').style.display='block';
+  if(mapaCheck){setTimeout(()=>mapaCheck.invalidateSize(),100);return;}
+  mapaCheck=L.map('mapaCheckout').setView([-25.2867,-57.647],12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(mapaCheck);
+  mapaCheck.on('click',e=>{
+    latCheck=e.latlng.lat;lngCheck=e.latlng.lng;
+    if(markerCheck)mapaCheck.removeLayer(markerCheck);
+    markerCheck=L.marker([latCheck,lngCheck]).addTo(mapaCheck);
+    document.getElementById('mapaCheckoutHint').textContent='📍 Ubicación marcada';
+  });
+}
+
+async function confirmarPedido(){
+  const nombre=document.getElementById('cNombre').value.trim();
+  const wa=document.getElementById('cWa').value.trim();
+  if(!nombre||!wa){alert('Completá tu nombre y WhatsApp.');return;}
+
+  let direccion='',ciudad='',barrio='';
+  if(tipoEntrega!=='retiro'){
+    direccion=document.getElementById('cDireccion').value.trim();
+    if(!direccion){alert('Ingresá tu dirección.');return;}
+    ciudad=document.getElementById('cCiudad').value;
+    barrio=document.getElementById('cBarrio').value.trim();
+  }
+
+  const btn=document.getElementById('btnConfirmarPedido');
+  btn.disabled=true;btn.textContent='Enviando...';
+
+  const precioFinal=producto.precio_oferta||producto.precio;
+  const total=precioFinal*cantidad+costoEntrega;
+
+  const pedido={
+    tienda_id:tienda.id,producto_id:producto.id,
+    nombre_cliente:nombre,whatsapp_cliente:wa,
+    direccion_entrega:direccion,ciudad_entrega:ciudad,barrio_entrega:barrio,
+    lat_entrega:latCheck,lng_entrega:lngCheck,
+    tipo_entrega:tipoEntrega,costo_delivery:costoEntrega,
+    cantidad,total,
+    notas:document.getElementById('cNotas').value.trim(),
+    estado:'nuevo'
+  };
+
+  const{error}=await db.from('pedidos').insert([pedido]);
+  btn.disabled=false;btn.textContent='Confirmar pedido';
+  if(error){alert('Error al enviar el pedido. Intentá de nuevo.');console.error(error);return;}
+
+  // Notificar al vendedor por WhatsApp
+  const msgVendedor=encodeURIComponent(
+    `🛒 Nuevo pedido en PlazaPY\n\n`+
+    `Producto: ${producto.nombre} x${cantidad}\n`+
+    `Total: Gs. ${Number(total).toLocaleString()}\n\n`+
+    `Cliente: ${nombre}\n`+
+    `WhatsApp: ${wa}\n`+
+    `Entrega: ${tipoEntrega==='retiro'?'Retiro en tienda':direccion+', '+ciudad+(barrio?' - '+barrio:'')}\n`+
+    (latCheck?`Ubicación: https://maps.google.com/?q=${latCheck},${lngCheck}\n`:'')
+  );
+
+  document.getElementById('btnWaFinal').href=`https://wa.me/${(tienda.whatsapp||'').replace(/\D/g,'')}?text=${msgVendedor}`;
+  document.getElementById('checkoutForm').style.display='none';
+  document.getElementById('checkoutExito').style.display='block';
+}
+
+function buscar(){
+  const q=document.getElementById('searchInput').value.trim();
+  if(q)window.location.href='productos.html?q='+encodeURIComponent(q);
+}
+
+function mostrarError(){
+  document.getElementById('loadingPage').style.display='none';
+  document.getElementById('errorPage').style.display='block';
+}
+
+cargar();
+</script>
+</body>
+</html>
