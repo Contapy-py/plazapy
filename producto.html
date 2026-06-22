@@ -361,7 +361,7 @@ async function cargar(){
   document.getElementById('badgesRow').innerHTML=badges;
 
   document.getElementById('detalleTabla').innerHTML=`
-    <div class="dt-row"><span class="dt-label">Categoría</span><span class="dt-val">${producto.categoria}${producto.subcategoria?' › '+producto.subcategoria:'':''}</span></div>
+    <div class="dt-row"><span class="dt-label">Categoría</span><span class="dt-val">${producto.categoria}${producto.subcategoria?' › '+producto.subcategoria:''}</span></div>
     <div class="dt-row"><span class="dt-label">Stock</span><span class="dt-val">${producto.stock||1} disponibles</span></div>
     <div class="dt-row"><span class="dt-label">Publicado</span><span class="dt-val">${new Date(producto.created_at).toLocaleDateString('es-PY')}</span></div>`;
 
