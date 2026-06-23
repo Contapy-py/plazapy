@@ -108,6 +108,31 @@
 
     .bloqueo-banner{background:#fde8e8;border:1.5px solid #f5c6c6;border-radius:10px;padding:1rem;margin-bottom:1.5rem;font-size:.88rem;color:#a02817;line-height:1.6}
 
+    /* ESTADISTICAS */
+    .stats-grid-mt{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem}
+    .stat-card-mt{background:white;border-radius:12px;border:1.5px solid var(--borde);padding:1.25rem;text-align:center}
+    .stat-num-mt{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;line-height:1;color:var(--rojo)}
+    .stat-lbl-mt{font-size:.78rem;color:var(--gris);margin-top:.4rem}
+    .stat-sub-mt{font-size:.7rem;color:#999;margin-top:.2rem}
+
+    .grafico-box{background:white;border-radius:12px;border:1.5px solid var(--borde);padding:1.5rem;margin-bottom:1.25rem}
+    .grafico-barras{display:flex;align-items:flex-end;gap:.4rem;height:140px;margin-top:1rem}
+    .barra-dia{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;height:100%;justify-content:flex-end}
+    .barra-fill{width:100%;background:linear-gradient(180deg,var(--naranja),var(--rojo));border-radius:4px 4px 0 0;min-height:3px;transition:height .3s}
+    .barra-label{font-size:.62rem;color:var(--gris);white-space:nowrap}
+    .barra-val{font-size:.65rem;font-weight:700;color:var(--rojo)}
+
+    .ranking-row{display:flex;align-items:center;gap:.75rem;padding:.7rem 0;border-bottom:1px solid var(--borde)}
+    .ranking-row:last-child{border-bottom:none}
+    .ranking-pos{width:24px;height:24px;border-radius:50%;background:var(--fondo);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--gris);flex-shrink:0}
+    .ranking-pos.top1{background:var(--amarillo);color:#333}
+    .ranking-thumb{width:44px;height:44px;border-radius:7px;background:var(--fondo);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;overflow:hidden}
+    .ranking-thumb img{width:100%;height:100%;object-fit:cover}
+    .ranking-info{flex:1;min-width:0}
+    .ranking-nombre{font-weight:600;font-size:.86rem}
+    .ranking-meta{font-size:.74rem;color:var(--gris)}
+    .ranking-vistas{font-weight:700;color:var(--rojo);font-size:.88rem;flex-shrink:0}
+
     @media(max-width:600px){.grid2{grid-template-columns:1fr}.upload-row{flex-direction:column}}
   </style>
 </head>
@@ -208,6 +233,7 @@
 
     <div class="tabs-mt">
       <div class="tab-mt activo" onclick="verTabMt('productos',this)">Productos <span class="tmb" id="badgeProdPend" style="display:none">0</span></div>
+      <div class="tab-mt" onclick="verTabMt('stats',this)">📊 Estadísticas</div>
       <div class="tab-mt" onclick="verTabMt('editar',this)">⚙️ Editar tienda</div>
     </div>
 
@@ -223,6 +249,35 @@
     </div>
 
     <!-- TAB EDITAR TIENDA -->
+    <!-- TAB ESTADISTICAS -->
+    <div class="seccion-mt" id="secMtStats">
+      <div class="stats-grid-mt">
+        <div class="stat-card-mt">
+          <div class="stat-num-mt" id="statVistas7">0</div>
+          <div class="stat-lbl-mt">Vistas (últimos 7 días)</div>
+        </div>
+        <div class="stat-card-mt">
+          <div class="stat-num-mt" id="statPedidos7">0</div>
+          <div class="stat-lbl-mt">Pedidos (últimos 7 días)</div>
+        </div>
+        <div class="stat-card-mt">
+          <div class="stat-num-mt" id="statConversion">0%</div>
+          <div class="stat-lbl-mt">Tasa de conversión</div>
+          <div class="stat-sub-mt">pedidos / vistas</div>
+        </div>
+      </div>
+
+      <div class="grafico-box">
+        <div class="panel-title" style="margin:0 0 .5rem;padding:0;border:none">Vistas de los últimos 14 días</div>
+        <div class="grafico-barras" id="graficoVistas"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">🏆 Tus productos más vistos</div>
+        <div id="rankingProductos"><div class="empty">Cargando...</div></div>
+      </div>
+    </div>
+
     <div class="seccion-mt" id="secMtEditar">
       <div class="panel">
         <div class="panel-title">📦 Información de tu tienda</div>
@@ -457,6 +512,70 @@ async function crearTienda(){
   toast('¡Tienda creada! En revisión.','verde');
 }
 
+// ── ESTADISTICAS ──
+let statsCargadas=false;
+async function cargarEstadisticas(){
+  if(statsCargadas)return;
+  statsCargadas=true;
+
+  const hace7=new Date(Date.now()-7*24*60*60*1000).toISOString();
+  const hace14=new Date(Date.now()-14*24*60*60*1000).toISOString();
+
+  const{data:vistas7}=await db.from('vistas_producto').select('id').eq('tienda_id',miTienda.id).gte('created_at',hace7);
+  const{data:vistas14}=await db.from('vistas_producto').select('producto_id,created_at').eq('tienda_id',miTienda.id).gte('created_at',hace14);
+  const{data:pedidos7}=await db.from('pedidos').select('id').eq('tienda_id',miTienda.id).gte('created_at',hace7);
+
+  const v7=vistas7?.length||0;
+  const p7=pedidos7?.length||0;
+  document.getElementById('statVistas7').textContent=v7;
+  document.getElementById('statPedidos7').textContent=p7;
+  document.getElementById('statConversion').textContent=v7>0?Math.round((p7/v7)*100)+'%':'0%';
+
+  // Gráfico de barras por día (14 días)
+  const conteoPorDia={};
+  for(let i=13;i>=0;i--){
+    const d=new Date(Date.now()-i*24*60*60*1000);
+    const key=d.toISOString().split('T')[0];
+    conteoPorDia[key]=0;
+  }
+  (vistas14||[]).forEach(v=>{
+    const key=v.created_at.split('T')[0];
+    if(conteoPorDia[key]!==undefined)conteoPorDia[key]++;
+  });
+  const maxVal=Math.max(1,...Object.values(conteoPorDia));
+  const dias=['D','L','M','M','J','V','S'];
+  document.getElementById('graficoVistas').innerHTML=Object.entries(conteoPorDia).map(([fecha,val])=>{
+    const d=new Date(fecha+'T12:00:00');
+    const altura=Math.max(3,(val/maxVal)*100);
+    return`<div class="barra-dia">
+      <span class="barra-val">${val>0?val:''}</span>
+      <div class="barra-fill" style="height:${altura}%"></div>
+      <span class="barra-label">${dias[d.getDay()]}</span>
+    </div>`;
+  }).join('');
+
+  // Ranking de productos más vistos
+  const conteoProducto={};
+  (vistas14||[]).forEach(v=>{conteoProducto[v.producto_id]=(conteoProducto[v.producto_id]||0)+1;});
+  const ranking=Object.entries(conteoProducto).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  const elRanking=document.getElementById('rankingProductos');
+  if(!ranking.length){
+    elRanking.innerHTML='<div class="empty">Aún no hay vistas registradas en tus productos.</div>';
+    return;
+  }
+  elRanking.innerHTML=ranking.map(([prodId,vistas],i)=>{
+    const p=misProductos.find(x=>x.id===prodId);
+    if(!p)return'';
+    return`<div class="ranking-row">
+      <div class="ranking-pos${i===0?' top1':''}">${i+1}</div>
+      <div class="ranking-thumb">${p.foto_url?`<img src="${p.foto_url}"/>`:'📦'}</div>
+      <div class="ranking-info"><div class="ranking-nombre">${p.nombre}</div><div class="ranking-meta">Gs. ${Number(p.precio_oferta||p.precio).toLocaleString()}</div></div>
+      <div class="ranking-vistas">👁️ ${vistas}</div>
+    </div>`;
+  }).join('');
+}
+
 // ── EDITAR TIENDA ──
 function precargarFormEdicion(){
   document.getElementById('eNombre').value=miTienda.nombre||'';
@@ -480,6 +599,7 @@ function verTabMt(tab,el){
   el.classList.add('activo');
   document.getElementById('secMt'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('v');
   if(tab==='editar')setTimeout(initMapaEdit,150);
+  if(tab==='stats')cargarEstadisticas();
 }
 
 function initMapaEdit(){
