@@ -91,6 +91,27 @@ tr:hover td{background:#fafafa}
 .seccion-admin{display:none}
 .seccion-admin.v{display:block}
 
+/* ANALITICAS */
+.an-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.an-panel{background:white;border-radius:12px;border:1.5px solid #e0e0e0;padding:1.5rem}
+.an-panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;margin-bottom:1.1rem;padding-bottom:.7rem;border-bottom:1.5px solid #e8e8e8}
+.an-row{display:flex;align-items:center;gap:.75rem;padding:.65rem 0;border-bottom:1px solid #f0f0f0}
+.an-row:last-child{border-bottom:none}
+.an-pos{width:26px;height:26px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#888;flex-shrink:0}
+.an-pos.top1{background:var(--amarillo);color:#333}
+.an-thumb{width:42px;height:42px;border-radius:7px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;overflow:hidden}
+.an-thumb img{width:100%;height:100%;object-fit:cover}
+.an-info{flex:1;min-width:0}
+.an-nombre{font-weight:600;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.an-meta{font-size:.72rem;color:#999}
+.an-val{font-weight:700;color:var(--rojo);font-size:.85rem;flex-shrink:0;text-align:right}
+.an-bar-row{display:flex;align-items:center;gap:.6rem;padding:.5rem 0}
+.an-bar-label{min-width:110px;font-size:.8rem;font-weight:500;flex-shrink:0}
+.an-bar-track{flex:1;height:10px;background:#f0f0f0;border-radius:5px;overflow:hidden}
+.an-bar-fill{height:100%;background:linear-gradient(90deg,var(--naranja),var(--rojo));border-radius:5px}
+.an-bar-val{font-size:.78rem;font-weight:700;color:var(--rojo);min-width:32px;text-align:right}
+@media(max-width:900px){.an-grid{grid-template-columns:1fr}}
+
 .filtros{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
 .filtro-btn{padding:.4rem .9rem;border-radius:100px;font-size:.8rem;font-weight:500;border:1.5px solid #ddd;background:white;cursor:pointer}
 .filtro-btn.activo{background:var(--rojo);color:white;border-color:var(--rojo)}
@@ -163,6 +184,9 @@ tr:hover td{background:#fafafa}
     </div>
     <div class="nav-item" onclick="verSeccion('banners',this)">
       <span class="ico">🎠</span> Banners
+    </div>
+    <div class="nav-item" onclick="verSeccion('analiticas',this)">
+      <span class="ico">📊</span> Analíticas
     </div>
 
     <div class="sidebar-footer">
@@ -249,6 +273,37 @@ tr:hover td{background:#fafafa}
           <tbody id="tbodyPedidos"></tbody>
         </table>
         <div class="empty" id="emptyPedidos" style="display:none">No hay pedidos todavía.</div>
+      </div>
+    </div>
+
+    <!-- ANALITICAS -->
+    <div class="seccion-admin" id="secAnaliticas">
+      <div class="main-header">
+        <div><div class="main-title">Analíticas de la plataforma</div><div class="main-sub">Vistas, conversión y ranking general</div></div>
+        <button class="btn-accion-top" onclick="cargarAnaliticas()">↺ Actualizar</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card"><div class="stat-label">Vistas (7 días)</div><div class="stat-num" id="anVistas7" style="color:var(--rojo)">—</div></div>
+        <div class="stat-card"><div class="stat-label">Pedidos (7 días)</div><div class="stat-num" id="anPedidos7" style="color:var(--verde)">—</div></div>
+        <div class="stat-card"><div class="stat-label">GMV confirmado</div><div class="stat-num" id="anGMV" style="font-size:1.3rem">—</div></div>
+        <div class="stat-card"><div class="stat-label">Conversión global</div><div class="stat-num" id="anConversion">—</div></div>
+      </div>
+
+      <div class="an-grid">
+        <div class="an-panel">
+          <div class="an-panel-title">🥇 Ranking de tiendas por vistas</div>
+          <div id="rankingTiendasAn"><div class="loading">Cargando...</div></div>
+        </div>
+        <div class="an-panel">
+          <div class="an-panel-title">📦 Productos más vistos (global)</div>
+          <div id="rankingProductosAn"><div class="loading">Cargando...</div></div>
+        </div>
+      </div>
+
+      <div class="an-panel">
+        <div class="an-panel-title">🔥 Categorías más populares</div>
+        <div id="rankingCategoriasAn"><div class="loading">Cargando...</div></div>
       </div>
     </div>
 
@@ -702,10 +757,104 @@ async function eliminarBanner(id){
   toast('Banner eliminado.','verde');
 }
 
+// ── ANALITICAS ──
+const ICONS_AN={electronica:'📱',ropa:'👗',hogar:'🏠',deportes:'⚽',belleza:'💄',alimentos:'🍔',juguetes:'🧸',mascotas:'🐾',autos:'🚗',servicios:'🔧',libros:'📚',otros:'📦'};
+let analiticasCargadas=false;
+
+async function cargarAnaliticas(){
+  document.getElementById('rankingTiendasAn').innerHTML='<div class="loading">Cargando...</div>';
+  document.getElementById('rankingProductosAn').innerHTML='<div class="loading">Cargando...</div>';
+  document.getElementById('rankingCategoriasAn').innerHTML='<div class="loading">Cargando...</div>';
+
+  const hace7=new Date(Date.now()-7*24*60*60*1000).toISOString();
+
+  const[{data:vistas7},{data:pedidos7},{data:pedidosConfirmados},{data:vistasTodas}]=await Promise.all([
+    db.from('vistas_producto').select('id,producto_id,tienda_id').gte('created_at',hace7),
+    db.from('pedidos').select('id').gte('created_at',hace7),
+    db.from('pedidos').select('total').eq('estado','confirmado'),
+    db.from('vistas_producto').select('producto_id,tienda_id')
+  ]);
+
+  const v7=vistas7?.length||0;
+  const p7=pedidos7?.length||0;
+  const gmv=(pedidosConfirmados||[]).reduce((sum,p)=>sum+(Number(p.total)||0),0);
+
+  document.getElementById('anVistas7').textContent=v7;
+  document.getElementById('anPedidos7').textContent=p7;
+  document.getElementById('anGMV').textContent='Gs. '+gmv.toLocaleString();
+  document.getElementById('anConversion').textContent=v7>0?Math.round((p7/v7)*100)+'%':'0%';
+
+  // Ranking de tiendas por vistas (todas)
+  const conteoTienda={};
+  (vistasTodas||[]).forEach(v=>{if(v.tienda_id)conteoTienda[v.tienda_id]=(conteoTienda[v.tienda_id]||0)+1;});
+  const topTiendas=Object.entries(conteoTienda).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  if(!topTiendas.length){
+    document.getElementById('rankingTiendasAn').innerHTML='<div class="empty">Aún no hay datos de vistas.</div>';
+  } else {
+    const idsT=topTiendas.map(([id])=>id);
+    const{data:tiendasData}=await db.from('tiendas').select('id,nombre,logo_url').in('id',idsT);
+    document.getElementById('rankingTiendasAn').innerHTML=topTiendas.map(([id,vistas],i)=>{
+      const t=(tiendasData||[]).find(x=>x.id===id);
+      if(!t)return'';
+      return`<div class="an-row">
+        <div class="an-pos${i===0?' top1':''}">${i+1}</div>
+        <div class="an-thumb">${t.logo_url?`<img src="${t.logo_url}"/>`:'🏪'}</div>
+        <div class="an-info"><div class="an-nombre">${t.nombre}</div></div>
+        <div class="an-val">👁️ ${vistas}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Ranking de productos más vistos (global)
+  const conteoProd={};
+  (vistasTodas||[]).forEach(v=>{conteoProd[v.producto_id]=(conteoProd[v.producto_id]||0)+1;});
+  const topProductos=Object.entries(conteoProd).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  if(!topProductos.length){
+    document.getElementById('rankingProductosAn').innerHTML='<div class="empty">Aún no hay datos de vistas.</div>';
+  } else {
+    const idsP=topProductos.map(([id])=>id);
+    const{data:prodsData}=await db.from('productos').select('id,nombre,foto_url,categoria,precio').in('id',idsP);
+    document.getElementById('rankingProductosAn').innerHTML=topProductos.map(([id,vistas],i)=>{
+      const p=(prodsData||[]).find(x=>x.id===id);
+      if(!p)return'';
+      return`<div class="an-row">
+        <div class="an-pos${i===0?' top1':''}">${i+1}</div>
+        <div class="an-thumb">${p.foto_url?`<img src="${p.foto_url}"/>`:(ICONS_AN[p.categoria]||'📦')}</div>
+        <div class="an-info"><div class="an-nombre">${p.nombre}</div><div class="an-meta">Gs. ${Number(p.precio).toLocaleString()}</div></div>
+        <div class="an-val">👁️ ${vistas}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Categorías más populares (por vistas, vía productos)
+  if(topProductos.length){
+    const idsAll=Object.keys(conteoProd);
+    const{data:prodsCat}=await db.from('productos').select('id,categoria').in('id',idsAll);
+    const conteoCat={};
+    (vistasTodas||[]).forEach(v=>{
+      const p=(prodsCat||[]).find(x=>x.id===v.producto_id);
+      if(p&&p.categoria)conteoCat[p.categoria]=(conteoCat[p.categoria]||0)+1;
+    });
+    const topCats=Object.entries(conteoCat).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const maxCat=Math.max(1,...topCats.map(c=>c[1]));
+    document.getElementById('rankingCategoriasAn').innerHTML=topCats.length?topCats.map(([cat,val])=>`
+      <div class="an-bar-row">
+        <span class="an-bar-label">${ICONS_AN[cat]||'📦'} ${cat}</span>
+        <div class="an-bar-track"><div class="an-bar-fill" style="width:${(val/maxCat)*100}%"></div></div>
+        <span class="an-bar-val">${val}</span>
+      </div>`).join(''):'<div class="empty">Sin datos suficientes.</div>';
+  } else {
+    document.getElementById('rankingCategoriasAn').innerHTML='<div class="empty">Sin datos suficientes.</div>';
+  }
+}
+
 // ── NAVEGACIÓN ──
 function verSeccion(sec,el){
   document.querySelectorAll('.seccion-admin').forEach(s=>s.classList.remove('v'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('activo'));
+  if(sec==='analiticas')cargarAnaliticas();
   document.getElementById('sec'+sec.charAt(0).toUpperCase()+sec.slice(1)).classList.add('v');
   el.classList.add('activo');
 }
