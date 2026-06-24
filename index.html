@@ -190,6 +190,11 @@
 </head>
 <body>
 
+  <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+</script>
 <div class="nav-top">
   <a href="auth.html">Iniciar sesión</a>
   <a href="auth.html">Registrarse</a>
