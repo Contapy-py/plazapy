@@ -510,6 +510,16 @@ async function crearTienda(){
   precargarFormEdicion();
   cargarProductos();
   toast('¡Tienda creada! En revisión.','verde');
+
+  notificarAdmin(`🏪 NUEVA TIENDA pendiente de aprobacion:\n\n${nombre}\nWhatsApp: ${wa}\nCiudad: ${nuevaTienda.ciudad||'-'}\n\nRevisar en plazapy.com/admin.html`);
+}
+
+// ── NOTIFICACIONES CALLMEBOT (admin) ──
+function notificarAdmin(mensaje){
+  const phone='595995676743';
+  const apikey='5999924';
+  const url=`https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(mensaje)}&apikey=${apikey}`;
+  fetch(url).then(()=>{}).catch(()=>{});
 }
 
 // ── ESTADISTICAS ──
@@ -758,6 +768,10 @@ async function guardarProducto(){
 
   cerrarModalProducto();cargarProductos();
   toast(editandoProductoId?'Producto actualizado.':'Producto agregado.','verde');
+
+  if(!editandoProductoId){
+    notificarAdmin(`📦 NUEVO PRODUCTO pendiente de aprobacion:\n\n${nombre}\nTienda: ${miTienda.nombre}\nPrecio: Gs. ${Number(precio).toLocaleString()}\n\nRevisar en plazapy.com/admin.html`);
+  }
 }
 
 async function eliminarProducto(id){

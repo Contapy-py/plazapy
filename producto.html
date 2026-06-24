@@ -504,6 +504,27 @@ async function confirmarPedido(){
   document.getElementById('btnWaFinal').href=`https://wa.me/${(tienda.whatsapp||'').replace(/\D/g,'')}?text=${msgVendedor}`;
   document.getElementById('checkoutForm').style.display='none';
   document.getElementById('checkoutExito').style.display='block';
+
+  // Notificar al admin SOLO si es delivery (no retiro en tienda)
+  if(tipoEntrega!=='retiro'){
+    notificarAdmin(
+      `🚚 PEDIDO CON ENVIO:\n\n`+
+      `Producto: ${producto.nombre} x${cantidad}\n`+
+      `Total: Gs. ${Number(total).toLocaleString()}\n`+
+      `Envio: ${tipoEntrega==='asuncion'?'Asuncion':'Gran Asuncion'} (Gs. ${Number(costoEntrega).toLocaleString()})\n\n`+
+      `Cliente: ${nombre} - ${wa}\n`+
+      `Direccion: ${direccion}, ${ciudad}${barrio?' - '+barrio:''}\n`+
+      `Tienda: ${tienda.nombre}`
+    );
+  }
+}
+
+// ── NOTIFICACIONES CALLMEBOT (admin) ──
+function notificarAdmin(mensaje){
+  const phone='595995676743';
+  const apikey='5999924';
+  const url=`https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(mensaje)}&apikey=${apikey}`;
+  fetch(url).then(()=>{}).catch(()=>{});
 }
 
 function buscar(){
