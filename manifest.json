@@ -1,0 +1,38 @@
+{
+  "name": "PlazaPY - El marketplace paraguayo",
+  "short_name": "PlazaPY",
+  "description": "Comprá en tiendas locales paraguayas con delivery a domicilio en Asunción y Gran Asunción.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#EE4D2D",
+  "orientation": "portrait-primary",
+  "lang": "es-PY",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
