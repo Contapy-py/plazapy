@@ -329,6 +329,84 @@ async function cargar(){
   db.from('vistas_producto').insert([{producto_id:producto.id,tienda_id:tienda?tienda.id:null}]).then(()=>{}).catch(()=>{});
   document.getElementById('breadcrumb').innerHTML=`<a href="index.html">PlazaPY</a> › <a href="productos.html?cat=${producto.categoria}">${producto.categoria}</a> › ${producto.nombre}`;
 
+  // ── SEO dinámico: meta tags + Schema.org con moneda PYG explícita ──
+  (function(){
+    const precioFinal=producto.precio_oferta||producto.precio;
+    const url='https://www.plazapy.com/producto.html?id='+producto.id;
+    const img=producto.foto_url||'https://www.plazapy.com/og-default.png';
+    const desc=(producto.descripcion||'').substring(0,300);
+    const tiendaNombre=(tienda&&tienda.nombre)||'PlazaPY';
+
+    function setMeta(attr,key,val){
+      let el=document.querySelector(`meta[${attr}="${key}"]`);
+      if(!el){el=document.createElement('meta');el.setAttribute(attr,key);document.head.appendChild(el);}
+      el.setAttribute('content',val);
+    }
+    setMeta('name','description',desc);
+    setMeta('property','og:title',producto.nombre+' — PlazaPY');
+    setMeta('property','og:description',desc);
+    setMeta('property','og:image',img);
+    setMeta('property','og:url',url);
+    setMeta('property','og:type','product');
+    setMeta('property','product:price:amount',String(precioFinal));
+    setMeta('property','product:price:currency','PYG');
+    setMeta('name','twitter:card','summary_large_image');
+    setMeta('name','twitter:title',producto.nombre+' — PlazaPY');
+    setMeta('name','twitter:image',img);
+
+    let canonical=document.querySelector('link[rel="canonical"]');
+    if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.appendChild(canonical);}
+    canonical.href=url;
+
+    const schema={
+      "@context":"https://schema.org",
+      "@type":"Product",
+      "name":producto.nombre,
+      "description":producto.descripcion||'',
+      "image":img,
+      "url":url,
+      "brand":{"@type":"Brand","name":tiendaNombre},
+      "category":producto.subcategoria||producto.categoria||'',
+      "offers":{
+        "@type":"Offer",
+        "priceCurrency":"PYG",
+        "price":precioFinal,
+        "priceValidUntil":new Date(Date.now()+30*24*60*60*1000).toISOString().split('T')[0],
+        "availability":producto.disponible?"https://schema.org/InStock":"https://schema.org/OutOfStock",
+        "itemCondition":"https://schema.org/NewCondition",
+        "seller":{"@type":"Organization","name":tiendaNombre},
+        "areaServed":{"@type":"Country","name":"Paraguay"},
+        "hasMerchantReturnPolicy":{
+          "@type":"MerchantReturnPolicy",
+          "applicableCountry":"PY",
+          "returnPolicyCategory":"https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays":0,
+          "returnMethod":"https://schema.org/ReturnInStore",
+          "returnFees":"https://schema.org/FreeReturn"
+        },
+        "shippingDetails":{
+          "@type":"OfferShippingDetails",
+          "shippingRate":{"@type":"MonetaryAmount","value":"15000","currency":"PYG"},
+          "shippingDestination":{"@type":"DefinedRegion","addressCountry":"PY"},
+          "deliveryTime":{
+            "@type":"ShippingDeliveryTime",
+            "handlingTime":{"@type":"QuantitativeValue","minValue":0,"maxValue":1,"unitCode":"DAY"},
+            "transitTime":{"@type":"QuantitativeValue","minValue":0,"maxValue":2,"unitCode":"DAY"}
+          }
+        }
+      }
+    };
+
+    let schemaEl=document.getElementById('schemaProducto');
+    if(!schemaEl){
+      schemaEl=document.createElement('script');
+      schemaEl.type='application/ld+json';
+      schemaEl.id='schemaProducto';
+      document.head.appendChild(schemaEl);
+    }
+    schemaEl.textContent=JSON.stringify(schema);
+  })();
+
   // Galería
   let fotos=[];
   try{fotos=producto.fotos_urls?JSON.parse(producto.fotos_urls):[];}catch(e){}
