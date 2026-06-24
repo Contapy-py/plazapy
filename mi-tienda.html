@@ -472,11 +472,40 @@ function prevBanner(e){
   r.readAsDataURL(f);
 }
 
+// ── COMPRESIÓN DE IMÁGENES (reduce peso antes de subir a Supabase) ──
+function comprimirImagen(file, maxAncho=1280, calidad=0.78){
+  return new Promise((resolve)=>{
+    if(!file.type.startsWith('image/')){resolve(file);return;}
+    const img=new Image();
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      img.onload=()=>{
+        let w=img.width,h=img.height;
+        if(w>maxAncho){h=Math.round(h*(maxAncho/w));w=maxAncho;}
+        const canvas=document.createElement('canvas');
+        canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,w,h);
+        canvas.toBlob((blob)=>{
+          if(!blob){resolve(file);return;}
+          const nombreFinal=file.name.replace(/\.(png|jpeg|jpg|webp)$/i,'.jpg');
+          resolve(new File([blob],nombreFinal,{type:'image/jpeg'}));
+        },'image/jpeg',calidad);
+      };
+      img.onerror=()=>resolve(file);
+      img.src=e.target.result;
+    };
+    reader.onerror=()=>resolve(file);
+    reader.readAsDataURL(file);
+  });
+}
+
 async function subirImagen(file,carpeta){
   if(!file)return null;
-  const ext=file.name.split('.').pop();
+  const archivoFinal=await comprimirImagen(file);
+  const ext=archivoFinal.name.split('.').pop();
   const path=`${carpeta}/${usuario.id}_${Date.now()}.${ext}`;
-  const{error}=await db.storage.from('fotos').upload(path,file,{upsert:true});
+  const{error}=await db.storage.from('fotos').upload(path,archivoFinal,{upsert:true,contentType:'image/jpeg'});
   if(error)return null;
   const{data}=db.storage.from('fotos').getPublicUrl(path);
   return data.publicUrl;
