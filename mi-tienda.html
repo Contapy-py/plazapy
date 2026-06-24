@@ -92,10 +92,17 @@
     .btn-cancel{flex:1;background:var(--fondo);border:1.5px solid var(--borde);color:var(--negro);padding:.7rem;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif}
     .btn-confirm{flex:1;background:var(--rojo);border:none;color:white;padding:.7rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
 
-    .foto-prod-zone{border:2px dashed var(--borde);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;position:relative}
+    .foto-prod-zone{border:2px dashed var(--borde);border-radius:10px;padding:1.25rem;text-align:center;cursor:pointer;position:relative;transition:border-color .2s}
+    .foto-prod-zone:hover{border-color:var(--rojo)}
+    .foto-prod-zone.lleno{opacity:.45;pointer-events:none}
     .foto-prod-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-    .foto-prod-preview{width:90px;height:90px;border-radius:8px;margin:0 auto;overflow:hidden;background:var(--fondo);display:flex;align-items:center;justify-content:center}
-    .foto-prod-preview img{width:100%;height:100%;object-fit:cover}
+    .foto-prod-previews{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.75rem}
+    .foto-prod-item{position:relative;width:80px;height:80px}
+    .foto-prod-item img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:1.5px solid var(--borde);display:block}
+    .foto-prod-item .fp-principal{position:absolute;bottom:3px;left:3px;background:var(--rojo);color:white;font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:3px;text-transform:uppercase}
+    .foto-prod-item .fp-del{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--rojo);color:white;border:none;cursor:pointer;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1}
+    .foto-prod-limite{font-size:.78rem;color:var(--gris);margin-top:.5rem}
+    .foto-prod-limite.lleno-txt{color:var(--rojo);font-weight:600}
 
     .toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:var(--negro);color:white;padding:.85rem 1.3rem;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .3s}
     .toast.v{transform:translateY(0);opacity:1}
@@ -342,9 +349,12 @@
     <div class="campo">
       <label>Foto del producto</label>
       <div class="foto-prod-zone" id="fotoProdZone">
-        <input type="file" id="fotoProdInput" accept="image/*" onchange="prevFotoProd(event)"/>
-        <div class="foto-prod-preview" id="fotoProdPreview">📷</div>
+        <input type="file" id="fotoProdInput" accept="image/*" multiple onchange="prevFotoProd(event)"/>
+        <div style="font-size:1.5rem;margin-bottom:.3rem">📷</div>
+        <div style="font-size:.85rem;color:var(--gris)">Click o arrastrá <strong style="color:var(--rojo)">hasta 5 fotos</strong></div>
       </div>
+      <div class="foto-prod-previews" id="fotoProdPreview"></div>
+      <div class="foto-prod-limite" id="fotoProdLimite">0 / 5 fotos</div>
     </div>
     <div class="campo"><label>Nombre del producto <span class="req">*</span></label><input type="text" id="pNombre" placeholder="Ej: Zapatillas deportivas talle 40"/></div>
     <div class="campo"><label>Descripción</label><textarea id="pDesc" placeholder="Detalles, materiales, talles disponibles..."></textarea></div>
@@ -392,7 +402,7 @@ const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 let usuario=null,miTienda=null,misProductos=[];
 let mapa=null,marker=null,lat=null,lng=null;
 let mapaEdit=null,markerEdit=null,latEdit=null,lngEdit=null;
-let logoFile=null,bannerFile=null,fotoProdFile=null;
+let logoFile=null,bannerFile=null,fotosProdFiles=[],fotosProdExistentes=[];
 let logoFileEdit=null,bannerFileEdit=null;
 let editandoProductoId=null;
 
@@ -701,19 +711,19 @@ function renderProductos(){
 }
 
 function abrirModalProducto(){
-  editandoProductoId=null;fotoProdFile=null;
+  editandoProductoId=null;fotosProdFiles=[];fotosProdExistentes=[];
   document.getElementById('modalProdTitulo').textContent='Agregar producto';
   document.getElementById('pNombre').value='';document.getElementById('pDesc').value='';
   document.getElementById('pCategoria').value='';document.getElementById('pStock').value='1';
   document.getElementById('pPrecio').value='';document.getElementById('pPrecioOferta').value='';
   document.getElementById('pDestacado').checked=false;
-  document.getElementById('fotoProdPreview').innerHTML='📷';
+  renderFotosProd();
   document.getElementById('modalProducto').classList.add('v');
 }
 
 function editarProducto(id){
   const p=misProductos.find(x=>x.id===id);if(!p)return;
-  editandoProductoId=id;fotoProdFile=null;
+  editandoProductoId=id;fotosProdFiles=[];
   document.getElementById('modalProdTitulo').textContent='Editar producto';
   document.getElementById('pNombre').value=p.nombre;
   document.getElementById('pDesc').value=p.descripcion||'';
@@ -722,17 +732,66 @@ function editarProducto(id){
   document.getElementById('pPrecio').value=p.precio;
   document.getElementById('pPrecioOferta').value=p.precio_oferta||'';
   document.getElementById('pDestacado').checked=p.destacado;
-  document.getElementById('fotoProdPreview').innerHTML=p.foto_url?`<img src="${p.foto_url}"/>`:'📷';
+
+  // Cargar fotos existentes (urls) para mostrarlas y permitir eliminarlas
+  try{fotosProdExistentes=p.fotos_urls?JSON.parse(p.fotos_urls):[];}catch(e){fotosProdExistentes=[];}
+  if(p.foto_url&&!fotosProdExistentes.length)fotosProdExistentes=[p.foto_url];
+
+  renderFotosProd();
   document.getElementById('modalProducto').classList.add('v');
 }
 
 function cerrarModalProducto(){document.getElementById('modalProducto').classList.remove('v');}
 
+const MAX_FOTOS_PROD=5;
+const MAX_SIZE_MB_PROD=5;
+
 function prevFotoProd(e){
-  const f=e.target.files[0];if(!f)return;fotoProdFile=f;
-  const r=new FileReader();
-  r.onload=ev=>{document.getElementById('fotoProdPreview').innerHTML=`<img src="${ev.target.result}"/>`;};
-  r.readAsDataURL(f);
+  const nuevos=Array.from(e.target.files);
+  const totalActual=fotosProdExistentes.length+fotosProdFiles.length;
+  const disponibles=MAX_FOTOS_PROD-totalActual;
+  if(disponibles<=0){toast('Ya tenés el máximo de 5 fotos.','rojo');e.target.value='';return;}
+
+  const aAgregar=nuevos.slice(0,disponibles);
+  aAgregar.forEach(f=>{
+    if(f.size>MAX_SIZE_MB_PROD*1024*1024){toast('Foto muy grande (máx 5MB): '+f.name,'rojo');return;}
+    fotosProdFiles.push({file:f,preview:null});
+    const idx=fotosProdFiles.length-1;
+    const r=new FileReader();
+    r.onload=ev=>{fotosProdFiles[idx].preview=ev.target.result;renderFotosProd();};
+    r.readAsDataURL(f);
+  });
+  e.target.value='';
+  renderFotosProd();
+}
+
+function quitarFotoProdExistente(idx){
+  fotosProdExistentes.splice(idx,1);
+  renderFotosProd();
+}
+function quitarFotoProdNueva(idx){
+  fotosProdFiles.splice(idx,1);
+  renderFotosProd();
+}
+
+function renderFotosProd(){
+  const cont=document.getElementById('fotoProdPreview');
+  const limite=document.getElementById('fotoProdLimite');
+  const zone=document.getElementById('fotoProdZone');
+
+  let html='';
+  fotosProdExistentes.forEach((url,i)=>{
+    html+=`<div class="foto-prod-item"><img src="${url}"/>${i===0&&!fotosProdFiles.length?'<span class="fp-principal">Principal</span>':''}<button class="fp-del" onclick="quitarFotoProdExistente(${i})" type="button">✕</button></div>`;
+  });
+  fotosProdFiles.forEach((f,i)=>{
+    if(f.preview)html+=`<div class="foto-prod-item"><img src="${f.preview}"/>${i===0&&!fotosProdExistentes.length?'<span class="fp-principal">Principal</span>':''}<button class="fp-del" onclick="quitarFotoProdNueva(${i})" type="button">✕</button></div>`;
+  });
+  cont.innerHTML=html;
+
+  const total=fotosProdExistentes.length+fotosProdFiles.length;
+  limite.textContent=total+' / 5 fotos';
+  limite.className='foto-prod-limite'+(total>=MAX_FOTOS_PROD?' lleno-txt':'');
+  zone.classList.toggle('lleno',total>=MAX_FOTOS_PROD);
 }
 
 async function guardarProducto(){
@@ -744,8 +803,14 @@ async function guardarProducto(){
   const btn=document.getElementById('btnGuardarProducto');
   btn.disabled=true;btn.textContent='Guardando...';
 
-  let fotoUrl=null;
-  if(fotoProdFile)fotoUrl=await subirImagen(fotoProdFile,'productos');
+  // Subir fotos nuevas
+  const urlsNuevas=[];
+  for(const f of fotosProdFiles){
+    const url=await subirImagen(f.file,'productos');
+    if(url)urlsNuevas.push(url);
+  }
+  // Combinar fotos existentes (que no se eliminaron) + nuevas
+  const todasLasFotos=[...fotosProdExistentes,...urlsNuevas];
 
   const precioOferta=Number(document.getElementById('pPrecioOferta').value)||null;
 
@@ -757,7 +822,10 @@ async function guardarProducto(){
     destacado:document.getElementById('pDestacado').checked,
     estado:'pendiente'
   };
-  if(fotoUrl)datos.foto_url=fotoUrl;
+  if(todasLasFotos.length){
+    datos.foto_url=todasLasFotos[0];
+    datos.fotos_urls=JSON.stringify(todasLasFotos);
+  }
 
   let error;
   if(editandoProductoId){({error}=await db.from('productos').update(datos).eq('id',editandoProductoId));}

@@ -29,8 +29,8 @@ nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;
 
 /* GALERÍA */
 .galeria-wrap{background:white;border-radius:10px;border:1px solid var(--borde);padding:1rem}
-.galeria-principal{height:420px;border-radius:8px;overflow:hidden;background:var(--fondo);display:flex;align-items:center;justify-content:center;font-size:5rem;margin-bottom:.75rem;position:relative}
-.galeria-principal img{width:100%;height:100%;object-fit:cover}
+.galeria-principal{aspect-ratio:1/1;max-height:420px;border-radius:8px;overflow:hidden;background:var(--fondo);display:flex;align-items:center;justify-content:center;font-size:5rem;margin-bottom:.75rem;position:relative}
+.galeria-principal img{width:100%;height:100%;object-fit:contain;background:var(--fondo)}
 .galeria-thumbs{display:flex;gap:.5rem;flex-wrap:wrap}
 .gal-thumb{width:64px;height:64px;border-radius:6px;border:2px solid var(--borde);overflow:hidden;cursor:pointer;flex-shrink:0}
 .gal-thumb.activo{border-color:var(--rojo)}
@@ -139,9 +139,27 @@ nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;
   .layout{grid-template-columns:1fr}
   .compra-col{position:static}
   nav{padding:0 1rem}
-  .breadcrumb{padding:.6rem 1rem}
-  .page{padding:1rem}
-  .galeria-principal{height:300px}
+  .breadcrumb{padding:.6rem 1rem;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .page{padding:.85rem}
+  .galeria-principal{max-height:360px}
+}
+@media(max-width:600px){
+  nav{gap:.5rem;padding:0 .85rem}
+  .nav-search{max-width:none}
+  .nav-icon{display:none}
+  .page{padding:.65rem}
+  .layout{gap:.85rem}
+  .galeria-wrap,.info-col,.compra-box{padding:1rem}
+  .galeria-principal{max-height:320px;font-size:3.5rem}
+  .gal-thumb{width:56px;height:56px}
+  .prod-titulo{font-size:1.15rem}
+  .precio-actual{font-size:1.5rem}
+  .precio-original{font-size:.85rem}
+  .entrega-opcion{padding:.7rem}
+  .eo-titulo{flex-wrap:wrap;gap:.3rem}
+  .vendedor-box{flex-wrap:wrap}
+  .share-row{flex-wrap:wrap}
+  .share-btn{flex:1 1 auto;min-width:90px}
 }
 </style>
 </head>
