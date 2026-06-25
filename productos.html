@@ -34,8 +34,10 @@ nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;
 .filtro-item{display:flex;align-items:center;gap:.55rem;padding:.32rem 0;cursor:pointer;font-size:.85rem;color:var(--negro)}
 .filtro-item:hover{color:var(--rojo)}
 .filtro-item input{accent-color:var(--rojo);cursor:pointer}
-.precio-row{display:flex;gap:.4rem;align-items:center;margin-top:.5rem}
-.precio-row input{flex:1;padding:.45rem .6rem;border:1.5px solid var(--borde);border-radius:6px;font-size:.8rem;outline:none;background:var(--fondo)}
+.precio-row{display:flex;gap:.5rem;align-items:center;margin-top:.5rem}
+.precio-row input{flex:1;min-width:0;width:100%;padding:.45rem .5rem;border:1.5px solid var(--borde);border-radius:6px;font-size:.78rem;outline:none;background:var(--fondo);-moz-appearance:textfield}
+.precio-row input::-webkit-outer-spin-button,.precio-row input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.precio-row span{flex-shrink:0;font-size:.8rem}
 .btn-filtrar{width:100%;background:var(--rojo);color:white;border:none;padding:.6rem;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;margin-top:.75rem}
 .btn-limpiar{width:100%;background:transparent;color:var(--gris);border:1.5px solid var(--borde);padding:.5rem;border-radius:7px;font-size:.8rem;cursor:pointer;margin-top:.4rem}
 
@@ -73,11 +75,20 @@ nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;
   .layout{grid-template-columns:1fr;padding:.75rem;gap:.75rem}
   .sidebar{display:none}
   .pills-mobile{display:flex}
-  nav{padding:0 1rem;gap:.5rem}
-  .nav-search{flex:1}
+  nav{padding:0 .75rem;gap:.5rem}
+  .nav-logo{font-size:1.25rem;flex-shrink:0}
+  .nav-search{flex:1;min-width:0}
+  .nav-search input{padding:.55rem .7rem;font-size:.85rem}
   .nav-right .nav-icon{display:none}
+  .nav-right{flex-shrink:0;gap:0}
+  .btn-tienda{padding:.5rem .7rem;font-size:.78rem;white-space:nowrap}
   .grid{grid-template-columns:repeat(2,1fr);gap:.65rem}
   .card-img{height:135px}
+}
+@media(max-width:420px){
+  .nav-logo{font-size:1.1rem}
+  .btn-tienda{padding:.5rem .55rem;font-size:.72rem}
+  .nav-search input{font-size:.8rem;padding:.5rem .55rem}
 }
 </style>
 </head>
