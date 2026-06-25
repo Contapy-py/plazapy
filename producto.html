@@ -29,9 +29,29 @@ nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;
 
 /* GALERÍA */
 .galeria-wrap{background:white;border-radius:10px;border:1px solid var(--borde);padding:1rem}
-.galeria-principal{aspect-ratio:1/1;max-height:420px;border-radius:8px;overflow:hidden;background:var(--fondo);display:flex;align-items:center;justify-content:center;font-size:5rem;margin-bottom:.75rem;position:relative}
+.galeria-principal{aspect-ratio:1/1;max-height:420px;border-radius:8px;overflow:hidden;background:var(--fondo);display:flex;align-items:center;justify-content:center;font-size:5rem;margin-bottom:.75rem;position:relative;cursor:zoom-in}
 .galeria-principal img{width:100%;height:100%;object-fit:contain;background:var(--fondo)}
+.zoom-hint{position:absolute;bottom:.6rem;right:.6rem;background:rgba(0,0,0,.55);color:white;font-size:.72rem;padding:4px 9px;border-radius:100px;display:flex;align-items:center;gap:.3rem;pointer-events:none;z-index:2}
 .galeria-thumbs{display:flex;gap:.5rem;flex-wrap:wrap}
+
+/* MODAL ZOOM */
+.zoom-modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;display:none;align-items:center;justify-content:center;touch-action:none;overflow:hidden}
+.zoom-modal.v{display:flex}
+.zoom-modal img{max-width:90vw;max-height:85vh;width:auto;height:auto;object-fit:contain;will-change:transform;transition:transform .15s ease-out;user-select:none;-webkit-user-drag:none;cursor:zoom-in}
+.zoom-close{position:absolute;top:1rem;right:1rem;z-index:1001;background:rgba(255,255,255,.15);color:white;border:none;width:42px;height:42px;border-radius:50%;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.zoom-close:hover{background:rgba(255,255,255,.25)}
+.zoom-controls{position:absolute;bottom:1.25rem;left:50%;transform:translateX(-50%);z-index:1001;display:flex;gap:.6rem;background:rgba(255,255,255,.12);padding:.5rem;border-radius:100px}
+.zoom-btn{background:rgba(255,255,255,.18);color:white;border:none;width:40px;height:40px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.zoom-btn:hover{background:rgba(255,255,255,.3)}
+.zoom-nav-thumbs{position:absolute;bottom:1.25rem;left:1.25rem;z-index:1001;display:flex;gap:.4rem}
+.zoom-nav-thumbs.oculto{display:none}
+.zoom-thumb{width:42px;height:42px;border-radius:6px;border:2px solid rgba(255,255,255,.3);overflow:hidden;cursor:pointer;flex-shrink:0}
+.zoom-thumb.activo{border-color:white}
+.zoom-thumb img{width:100%;height:100%;object-fit:cover}
+@media(max-width:600px){
+  .zoom-nav-thumbs{display:none}
+  .zoom-hint{display:none}
+}
 .gal-thumb{width:64px;height:64px;border-radius:6px;border:2px solid var(--borde);overflow:hidden;cursor:pointer;flex-shrink:0}
 .gal-thumb.activo{border-color:var(--rojo)}
 .gal-thumb img{width:100%;height:100%;object-fit:cover}
@@ -186,7 +206,9 @@ nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;
 
     <!-- GALERÍA -->
     <div class="galeria-wrap">
-      <div class="galeria-principal" id="imgPrincipal">📦</div>
+      <div class="galeria-principal" id="imgPrincipal" onclick="abrirZoom()">📦
+        <span class="zoom-hint" id="zoomHint" style="display:none">🔍 Click para zoom</span>
+      </div>
       <div class="galeria-thumbs" id="galeriaThumbs"></div>
       <div class="share-row">
         <a href="#" class="share-btn" id="btnShareWa" target="_blank">💬 WhatsApp</a>
@@ -321,6 +343,18 @@ nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;
   </div>
 </div>
 
+<!-- MODAL ZOOM IMAGEN -->
+<div class="zoom-modal" id="zoomModal" onclick="if(event.target===this)cerrarZoom()">
+  <button class="zoom-close" onclick="cerrarZoom()">✕</button>
+  <img id="zoomImg" src="" alt="zoom"/>
+  <div class="zoom-controls">
+    <button class="zoom-btn" onclick="zoomCambiar(-0.4)">−</button>
+    <button class="zoom-btn" onclick="zoomReset()" title="Restablecer">⟲</button>
+    <button class="zoom-btn" onclick="zoomCambiar(0.4)">+</button>
+  </div>
+  <div class="zoom-nav-thumbs" id="zoomNavThumbs"></div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
@@ -432,7 +466,7 @@ async function cargar(){
 
   const principal=document.getElementById('imgPrincipal');
   if(fotos.length){
-    principal.innerHTML=`<img src="${fotos[0]}" alt="${producto.nombre}"/>`;
+    principal.innerHTML=`<img src="${fotos[0]}" alt="${producto.nombre}"/><span class="zoom-hint">🔍 Click para zoom</span>`;
     if(fotos.length>1){
       document.getElementById('galeriaThumbs').innerHTML=fotos.map((url,i)=>`
         <div class="gal-thumb${i===0?' activo':''}" onclick="verFoto(${i})"><img src="${url}"/></div>`).join('');
@@ -441,6 +475,7 @@ async function cargar(){
     principal.textContent=ICONS[producto.categoria]||'📦';
   }
   window._fotos=fotos;
+  window._fotoActual=0;
 
   // Info
   document.getElementById('prodTitulo').textContent=producto.nombre;
@@ -489,9 +524,130 @@ async function cargar(){
 }
 
 function verFoto(i){
-  document.getElementById('imgPrincipal').innerHTML=`<img src="${window._fotos[i]}" alt="foto"/>`;
+  window._fotoActual=i;
+  document.getElementById('imgPrincipal').innerHTML=`<img src="${window._fotos[i]}" alt="foto"/><span class="zoom-hint">🔍 Click para zoom</span>`;
   document.querySelectorAll('.gal-thumb').forEach((t,idx)=>t.classList.toggle('activo',idx===i));
 }
+
+// ── ZOOM DE IMAGEN ──
+let zoomNivel=1,zoomX=0,zoomY=0;
+let zoomArrastrando=false,zoomStartX=0,zoomStartY=0;
+let zoomPinchDist=0;
+
+function abrirZoom(){
+  if(!window._fotos||!window._fotos.length)return;
+  const i=window._fotoActual||0;
+  const img=document.getElementById('zoomImg');
+  img.src=window._fotos[i];
+  zoomReset();
+  document.getElementById('zoomModal').classList.add('v');
+  document.body.style.overflow='hidden';
+
+  // Thumbnails de navegación dentro del zoom
+  const nav=document.getElementById('zoomNavThumbs');
+  if(window._fotos.length>1){
+    nav.classList.remove('oculto');
+    nav.innerHTML=window._fotos.map((url,idx)=>`
+      <div class="zoom-thumb${idx===i?' activo':''}" onclick="event.stopPropagation();zoomIrFoto(${idx})"><img src="${url}"/></div>`).join('');
+  } else {
+    nav.classList.add('oculto');
+  }
+}
+
+function zoomIrFoto(i){
+  window._fotoActual=i;
+  document.getElementById('zoomImg').src=window._fotos[i];
+  zoomReset();
+  document.querySelectorAll('.zoom-thumb').forEach((t,idx)=>t.classList.toggle('activo',idx===i));
+  // Sincronizar con la galería principal también
+  verFoto(i);
+}
+
+function cerrarZoom(){
+  document.getElementById('zoomModal').classList.remove('v');
+  document.body.style.overflow='';
+}
+
+function zoomAplicar(){
+  const img=document.getElementById('zoomImg');
+  img.style.transform=`translate(${zoomX}px,${zoomY}px) scale(${zoomNivel})`;
+  img.style.cursor=zoomNivel>1?'grab':'zoom-in';
+}
+
+function zoomReset(){
+  zoomNivel=1;zoomX=0;zoomY=0;
+  zoomAplicar();
+}
+
+function zoomCambiar(delta){
+  zoomNivel=Math.min(4,Math.max(1,zoomNivel+delta));
+  if(zoomNivel===1){zoomX=0;zoomY=0;}
+  zoomAplicar();
+}
+
+// Click en la imagen del modal: si está en zoom 1, hace zoom in; si ya está zoomeada, no hace nada (para permitir drag)
+document.addEventListener('DOMContentLoaded',()=>{
+  const zimg=document.getElementById('zoomImg');
+  if(!zimg)return;
+
+  zimg.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    if(zoomNivel===1){zoomNivel=2.2;zoomAplicar();}
+  });
+  zimg.addEventListener('dblclick',(e)=>{
+    e.stopPropagation();
+    zoomReset();
+  });
+
+  // Rueda del mouse = zoom (desktop)
+  zimg.addEventListener('wheel',(e)=>{
+    e.preventDefault();
+    zoomCambiar(e.deltaY<0?0.25:-0.25);
+  },{passive:false});
+
+  // Arrastrar para mover cuando está zoomeada (desktop)
+  zimg.addEventListener('mousedown',(e)=>{
+    if(zoomNivel<=1)return;
+    zoomArrastrando=true;zoomStartX=e.clientX-zoomX;zoomStartY=e.clientY-zoomY;
+    zimg.style.cursor='grabbing';
+  });
+  window.addEventListener('mousemove',(e)=>{
+    if(!zoomArrastrando)return;
+    zoomX=e.clientX-zoomStartX;zoomY=e.clientY-zoomStartY;
+    zoomAplicar();
+  });
+  window.addEventListener('mouseup',()=>{zoomArrastrando=false;if(zimg)zimg.style.cursor=zoomNivel>1?'grab':'zoom-in';});
+
+  // Pinch-to-zoom y drag (mobile/touch)
+  zimg.addEventListener('touchstart',(e)=>{
+    if(e.touches.length===2){
+      zoomPinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    } else if(e.touches.length===1&&zoomNivel>1){
+      zoomArrastrando=true;zoomStartX=e.touches[0].clientX-zoomX;zoomStartY=e.touches[0].clientY-zoomY;
+    }
+  },{passive:true});
+
+  zimg.addEventListener('touchmove',(e)=>{
+    if(e.touches.length===2){
+      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      const delta=(dist-zoomPinchDist)/200;
+      zoomNivel=Math.min(4,Math.max(1,zoomNivel+delta));
+      if(zoomNivel===1){zoomX=0;zoomY=0;}
+      zoomAplicar();
+      zoomPinchDist=dist;
+    } else if(e.touches.length===1&&zoomArrastrando){
+      zoomX=e.touches[0].clientX-zoomStartX;zoomY=e.touches[0].clientY-zoomStartY;
+      zoomAplicar();
+    }
+  },{passive:true});
+
+  zimg.addEventListener('touchend',()=>{zoomArrastrando=false;});
+
+  // Cerrar con tecla Escape
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='Escape'&&document.getElementById('zoomModal').classList.contains('v'))cerrarZoom();
+  });
+});
 
 function copiarLink(){
   navigator.clipboard.writeText(window.location.href);
