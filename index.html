@@ -221,7 +221,7 @@ if ('serviceWorker' in navigator) {
   <div class="nav-right">
     <a href="tiendas.html" class="nav-icon"><span class="ni">🏪</span>Tiendas</a>
     <a href="cuenta.html" class="nav-icon" id="navCuenta"><span class="ni">👤</span>Mi cuenta</a>
-    <a href="mi-tienda.html" class="btn-tienda">+ Abrir tienda</a>
+    <a href="vender.html" class="btn-tienda">+ Abrir tienda</a>
   </div>
 </nav>
 
@@ -259,7 +259,7 @@ if ('serviceWorker' in navigator) {
           <span class="slide-tag">🏪 Para comerciantes</span>
           <div class="slide-title">Abrí tu tienda<br>online gratis</div>
           <div class="slide-desc">Sin costos fijos. Llegá a miles de compradores en todo Paraguay.</div>
-          <a href="mi-tienda.html" class="btn-slide">Crear mi tienda →</a>
+          <a href="vender.html" class="btn-slide">Crear mi tienda →</a>
         </div>
       </div>
       <div class="slide">
@@ -321,7 +321,7 @@ if ('serviceWorker' in navigator) {
         </div>
         <div class="ob-emoji">🔥</div>
       </div>
-      <div class="offer-banner b2" onclick="window.location.href='mi-tienda.html'">
+      <div class="offer-banner b2" onclick="window.location.href='vender.html'">
         <div class="ob-text">
           <div class="ob-tag" style="color:var(--verde)">Para vendedores</div>
           <div class="ob-title">Abrí tu tienda gratis</div>
@@ -400,7 +400,7 @@ if ('serviceWorker' in navigator) {
       <div class="footer-col">
         <h4>Vender</h4>
         <ul>
-          <li><a href="mi-tienda.html">Abrir mi tienda</a></li>
+          <li><a href="vender.html">Abrir mi tienda</a></li>
           <li><a href="cuenta.html">Mi cuenta</a></li>
           <li><a href="terminos.html">Términos</a></li>
         </ul>
@@ -477,7 +477,7 @@ function iconCat(cat){
 }
 
 function emptyState(txt){
-  return`<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:.5rem">📭</div><div style="font-weight:600;margin-bottom:.3rem">${txt}</div><div style="font-size:.82rem"><a href="mi-tienda.html" style="color:var(--rojo)">¡Publicá el primero!</a></div></div>`;
+  return`<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:.5rem">📭</div><div style="font-weight:600;margin-bottom:.3rem">${txt}</div><div style="font-size:.82rem"><a href="vender.html" style="color:var(--rojo)">¡Publicá el primero!</a></div></div>`;
 }
 
 async function cargar(){
@@ -488,6 +488,13 @@ async function cargar(){
 
   const ts=tiendas||[];
   const ps=productos||[];
+
+  // Las tiendas "destacadas" pierden ese estado visual si su período ya venció,
+  // aunque el campo destacada siga en true en la base (el admin puede limpiarlo cuando quiera).
+  const ahora=new Date();
+  ts.forEach(t=>{ if(t.destacada_hasta && new Date(t.destacada_hasta) < ahora) t.destacada=false; });
+  ts.sort((a,b)=>(b.destacada?1:0)-(a.destacada?1:0));
+
   const tMap={};
   ts.forEach(t=>tMap[t.id]=t.nombre);
 
@@ -515,7 +522,7 @@ async function cargar(){
         </div>
       </a>`).join('');
   } else {
-    gridT.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div style="font-size:2.5rem;margin-bottom:.5rem">🏪</div><div style="font-weight:600;margin-bottom:.3rem">Aún no hay tiendas</div><div style="font-size:.82rem"><a href="mi-tienda.html" style="color:var(--rojo)">¡Abrí la primera!</a></div></div>`;
+    gridT.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div style="font-size:2.5rem;margin-bottom:.5rem">🏪</div><div style="font-weight:600;margin-bottom:.3rem">Aún no hay tiendas</div><div style="font-size:.82rem"><a href="vender.html" style="color:var(--rojo)">¡Abrí la primera!</a></div></div>`;
   }
 
   if(dest.length>0){

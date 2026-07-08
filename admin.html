@@ -72,6 +72,9 @@ tr:hover td{background:#fafafa}
 .badge-nuevo{background:#E3F0FF;color:#1565C0}
 .badge-confirmado{background:var(--verde-light);color:var(--verde)}
 .badge-entregado{background:#f0e8fb;color:#7c3aed}
+.badge-plan-dest{background:#fff8d6;color:#8a6b00}
+.badge-plan-verif{background:#E3F0FF;color:#1565C0}
+.badge-plan-pend{background:#fde8e8;color:#a02817}
 
 .acciones{display:flex;gap:.35rem;flex-wrap:wrap}
 .btn-accion{padding:.32rem .65rem;border-radius:6px;border:none;font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap}
@@ -85,6 +88,8 @@ tr:hover td{background:#fafafa}
 .btn-eliminar:hover{background:#fde8e8;color:var(--rojo)}
 .btn-destacar{background:#fff8d6;color:#8a6b00}
 .btn-destacar:hover{background:var(--amarillo);color:#333}
+.btn-verificar{background:#E3F0FF;color:#1565C0}
+.btn-verificar:hover{background:#1565C0;color:white}
 
 .empty{text-align:center;padding:3rem;color:var(--gris)}
 .loading{text-align:center;padding:2.5rem;color:var(--gris)}
@@ -199,7 +204,7 @@ tr:hover td{background:#fafafa}
     <!-- TIENDAS -->
     <div class="seccion-admin v" id="secTiendas">
       <div class="main-header">
-        <div><div class="main-title">Tiendas</div><div class="main-sub">Aprobá o rechazá las tiendas registradas</div></div>
+        <div><div class="main-title">Tiendas</div><div class="main-sub">Aprobá, destacá o verificá las tiendas registradas</div></div>
         <button class="btn-accion-top" onclick="cargarTodo()">↺ Actualizar</button>
       </div>
       <div class="stats cinco">
@@ -215,11 +220,12 @@ tr:hover td{background:#fafafa}
         <button class="filtro-btn" onclick="filtrarTiendas('activa',this)">Activas</button>
         <button class="filtro-btn" onclick="filtrarTiendas('rechazada',this)">Rechazadas</button>
         <button class="filtro-btn" onclick="filtrarTiendas('bloqueada',this)">🚫 Bloqueadas</button>
+        <button class="filtro-btn" onclick="filtrarTiendas('con_plan_pendiente',this)">📩 Con solicitud de plan</button>
       </div>
       <div class="tabla-wrap">
         <div id="loadingTiendas" class="loading">Cargando tiendas...</div>
         <table id="tablaTiendas" style="display:none">
-          <thead><tr><th>Logo</th><th>Tienda</th><th>Contacto</th><th>Ciudad</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead>
+          <thead><tr><th>Logo</th><th>Tienda</th><th>Contacto</th><th>Ciudad</th><th>Estado</th><th>Plan</th><th>Fecha</th><th>Acciones</th></tr></thead>
           <tbody id="tbodyTiendas"></tbody>
         </table>
         <div class="empty" id="emptyTiendas" style="display:none">No hay tiendas en esta sección.</div>
@@ -430,7 +436,8 @@ function filtrarTiendas(f,el){
 function renderTiendas(){
   document.getElementById('loadingTiendas').style.display='none';
   let lista=todasTiendas;
-  if(filtroTiendaEstado!=='todos')lista=lista.filter(t=>t.estado===filtroTiendaEstado);
+  if(filtroTiendaEstado==='con_plan_pendiente')lista=lista.filter(t=>!!t.plan_solicitado);
+  else if(filtroTiendaEstado!=='todos')lista=lista.filter(t=>t.estado===filtroTiendaEstado);
   if(!lista.length){document.getElementById('tablaTiendas').style.display='none';document.getElementById('emptyTiendas').style.display='block';return;}
   document.getElementById('tablaTiendas').style.display='table';
   document.getElementById('emptyTiendas').style.display='none';
@@ -441,11 +448,19 @@ function renderTiendas(){
       <td>${t.whatsapp||'—'}</td>
       <td>${t.ciudad||'—'}</td>
       <td><span class="badge badge-${t.estado}">${t.estado}</span></td>
+      <td>
+        ${t.destacada?'<span class="badge badge-plan-dest">⭐ Destacada</span><br>':''}
+        ${t.verificado?'<span class="badge badge-plan-verif">✓ Verificada</span><br>':''}
+        ${t.plan_solicitado?`<span class="badge badge-plan-pend">📩 pidió: ${t.plan_solicitado}</span>`:''}
+        ${!t.destacada&&!t.verificado&&!t.plan_solicitado?'—':''}
+      </td>
       <td style="font-size:.78rem;color:var(--gris)">${formatFecha(t.created_at)}</td>
       <td><div class="acciones">
         <button class="btn-accion btn-ver" onclick="verTienda('${t.id}')">Ver</button>
         ${t.estado!=='activa'?`<button class="btn-accion btn-aprobar" onclick="cambiarEstadoTienda('${t.id}','activa')">✓</button>`:''}
         ${t.estado!=='rechazada'?`<button class="btn-accion btn-rechazar" onclick="cambiarEstadoTienda('${t.id}','rechazada')">✗</button>`:''}
+        <button class="btn-accion btn-destacar" onclick="toggleDestacadaTienda('${t.id}',${!t.destacada})">${t.destacada?'Quitar ⭐':'⭐ Destacar'}</button>
+        <button class="btn-accion btn-verificar" onclick="toggleVerificadaTienda('${t.id}',${!t.verificado})">${t.verificado?'Quitar ✓':'✓ Verificar'}</button>
         ${t.estado!=='bloqueada'?`<button class="btn-accion" style="background:#212121;color:white" onclick="abrirBloqueoTienda('${t.id}')">🚫 Bloquear</button>`:`<button class="btn-accion btn-aprobar" onclick="cambiarEstadoTienda('${t.id}','activa')">Desbloquear</button>`}
         <button class="btn-accion btn-eliminar" onclick="eliminarTienda('${t.id}')">🗑</button>
       </div></td>
@@ -459,6 +474,35 @@ async function cambiarEstadoTienda(id,estado){
   toast(estado==='activa'?'✓ Tienda aprobada':'✗ Tienda rechazada',estado==='activa'?'verde':'rojo');
   cerrarModal();
 }
+
+// ── PLANES DE TIENDA (destacado / verificado) ──
+async function toggleDestacadaTienda(id,val){
+  const datos={destacada:val};
+  if(val){
+    const hasta=new Date();hasta.setDate(hasta.getDate()+30);
+    datos.destacada_hasta=hasta.toISOString();
+    datos.plan_solicitado=null;
+  } else {
+    datos.destacada_hasta=null;
+  }
+  const{error}=await db.from('tiendas').update(datos).eq('id',id);
+  if(error){toast('Error: '+error.message,'rojo');return;}
+  const idx=todasTiendas.findIndex(t=>t.id===id);
+  if(idx>-1)Object.assign(todasTiendas[idx],datos);
+  renderTiendas();
+  toast(val?'⭐ Tienda destacada por 30 días.':'Destacado removido.',val?'verde':'rojo');
+}
+async function toggleVerificadaTienda(id,val){
+  const datos={verificado:val};
+  if(val)datos.plan_solicitado=null;
+  const{error}=await db.from('tiendas').update(datos).eq('id',id);
+  if(error){toast('Error: '+error.message,'rojo');return;}
+  const idx=todasTiendas.findIndex(t=>t.id===id);
+  if(idx>-1)Object.assign(todasTiendas[idx],datos);
+  renderTiendas();
+  toast(val?'✓ Tienda verificada.':'Verificación removida.',val?'verde':'rojo');
+}
+
 function abrirBloqueoTienda(id){
   const t=todasTiendas.find(x=>x.id===id);if(!t)return;
   document.getElementById('modalTitulo').textContent='🚫 Bloquear: '+t.nombre;
@@ -505,10 +549,15 @@ function verTienda(id){
     <div class="modal-row"><span class="modal-label">Ciudad</span><span>${t.ciudad||'—'} ${t.barrio?'· '+t.barrio:''}</span></div>
     <div class="modal-row"><span class="modal-label">Ubicación</span><span>${t.lat&&t.lng?t.lat+', '+t.lng:'—'}</span></div>
     <div class="modal-row"><span class="modal-label">Instagram</span><span>${t.instagram||'—'}</span></div>
-    <div class="modal-row"><span class="modal-label">Estado</span><span class="badge badge-${t.estado}">${t.estado}</span></div>`;
+    <div class="modal-row"><span class="modal-label">Estado</span><span class="badge badge-${t.estado}">${t.estado}</span></div>
+    <div class="modal-row"><span class="modal-label">Destacada</span><span>${t.destacada?'Sí, hasta '+(t.destacada_hasta?formatFecha(t.destacada_hasta):'—'):'No'}</span></div>
+    <div class="modal-row"><span class="modal-label">Verificada</span><span>${t.verificado?'Sí':'No'}</span></div>
+    <div class="modal-row"><span class="modal-label">Plan solicitado</span><span>${t.plan_solicitado||'—'}</span></div>`;
   document.getElementById('modalAcciones').innerHTML=`
     ${t.estado!=='activa'?`<button class="btn-modal" style="background:var(--verde-light);color:var(--verde)" onclick="cambiarEstadoTienda('${t.id}','activa')">✓ Aprobar</button>`:''}
-    ${t.estado!=='rechazada'?`<button class="btn-modal" style="background:#fde8e8;color:var(--rojo)" onclick="cambiarEstadoTienda('${t.id}','rechazada')">✗ Rechazar</button>`:''}`;
+    ${t.estado!=='rechazada'?`<button class="btn-modal" style="background:#fde8e8;color:var(--rojo)" onclick="cambiarEstadoTienda('${t.id}','rechazada')">✗ Rechazar</button>`:''}
+    <button class="btn-modal" style="background:#fff8d6;color:#8a6b00" onclick="toggleDestacadaTienda('${t.id}',${!t.destacada})">${t.destacada?'Quitar ⭐':'⭐ Destacar 30 días'}</button>
+    <button class="btn-modal" style="background:#E3F0FF;color:#1565C0" onclick="toggleVerificadaTienda('${t.id}',${!t.verificado})">${t.verificado?'Quitar ✓':'✓ Verificar'}</button>`;
   document.getElementById('modalBg').classList.add('v');
 }
 

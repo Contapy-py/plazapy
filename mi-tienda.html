@@ -140,7 +140,15 @@
     .ranking-meta{font-size:.74rem;color:var(--gris)}
     .ranking-vistas{font-weight:700;color:var(--rojo);font-size:.88rem;flex-shrink:0}
 
-    @media(max-width:600px){.grid2{grid-template-columns:1fr}.upload-row{flex-direction:column}}
+    /* PLANES */
+    .plan-card-mt{border:1.5px solid var(--borde);border-radius:12px;padding:1.5rem}
+    .plan-card-mt.dest{border:2px solid var(--rojo)}
+    .plan-nombre-mt{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:.2rem}
+    .plan-precio-mt{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--rojo);margin-bottom:.75rem}
+    .plan-precio-mt small{font-size:.7rem;color:var(--gris);font-weight:500}
+    .plan-lista-mt{font-size:.82rem;color:#444;padding-left:1.1rem;line-height:1.7;margin-bottom:1.1rem}
+
+    @media(max-width:600px){.grid2{grid-template-columns:1fr}.upload-row{flex-direction:column}#planesGrid{grid-template-columns:1fr !important}}
   </style>
 </head>
 <body>
@@ -241,6 +249,7 @@
     <div class="tabs-mt">
       <div class="tab-mt activo" onclick="verTabMt('productos',this)">Productos <span class="tmb" id="badgeProdPend" style="display:none">0</span></div>
       <div class="tab-mt" onclick="verTabMt('stats',this)">📊 Estadísticas</div>
+      <div class="tab-mt" onclick="verTabMt('planes',this)">🚀 Planes</div>
       <div class="tab-mt" onclick="verTabMt('editar',this)">⚙️ Editar tienda</div>
     </div>
 
@@ -255,7 +264,6 @@
       </div>
     </div>
 
-    <!-- TAB EDITAR TIENDA -->
     <!-- TAB ESTADISTICAS -->
     <div class="seccion-mt" id="secMtStats">
       <div class="stats-grid-mt">
@@ -285,6 +293,46 @@
       </div>
     </div>
 
+    <!-- TAB PLANES -->
+    <div class="seccion-mt" id="secMtPlanes">
+      <div class="panel">
+        <div class="panel-title">🚀 Hacé crecer tu tienda</div>
+        <p style="font-size:.88rem;color:var(--gris);margin-bottom:1.5rem;line-height:1.6">
+          Tu tienda ya está publicada gratis. Si querés más visibilidad, elegí uno de estos planes.
+        </p>
+        <div id="planesEstadoActual" style="display:none;background:var(--verde-light);color:var(--verde);border-radius:8px;padding:.85rem 1rem;font-size:.85rem;font-weight:600;margin-bottom:1.25rem"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem" id="planesGrid">
+          <div class="plan-card-mt dest">
+            <div class="plan-nombre-mt">⭐ Destacado</div>
+            <div class="plan-precio-mt">Gs. 80.000 <small>/ 30 días</small></div>
+            <ul class="plan-lista-mt">
+              <li>Aparecés primero en tiendas.html y en el inicio</li>
+              <li>Insignia ⭐ destacada visible para compradores</li>
+            </ul>
+            <button class="btn-add" style="width:100%" id="btnPlanDestacado" onclick="solicitarPlan('destacado')">Solicitar destacado</button>
+          </div>
+          <div class="plan-card-mt">
+            <div class="plan-nombre-mt">✓ Verificado</div>
+            <div class="plan-precio-mt">Gs. 120.000 <small>pago único</small></div>
+            <ul class="plan-lista-mt">
+              <li>Insignia ✓ de tienda verificada</li>
+              <li>Más confianza para tus compradores</li>
+            </ul>
+            <button class="btn-add" style="width:100%;background:var(--fondo);color:var(--negro);border:1.5px solid var(--borde)" id="btnPlanVerificado" onclick="solicitarPlan('verificado')">Solicitar verificación</button>
+          </div>
+        </div>
+
+        <div style="background:var(--fondo);border-radius:10px;padding:1.1rem;margin-top:1.25rem;font-size:.85rem;line-height:1.8">
+          <strong>💳 Cómo pagar:</strong><br>
+          Tigo Money: 0981 000 000<br>
+          Personal Pay: 0971 000 000<br>
+          Transferencia: Visión Banco, Cuenta 0000000-0, Titular PlazaPY<br>
+          <span style="color:var(--gris)">Después de pagar, tocá "Solicitar" arriba: te va a abrir WhatsApp con tu tienda ya identificada para que mandes el comprobante. Activamos en menos de 2 horas hábiles.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB EDITAR TIENDA -->
     <div class="seccion-mt" id="secMtEditar">
       <div class="panel">
         <div class="panel-title">📦 Información de tu tienda</div>
@@ -418,6 +466,7 @@ async function init(){
     miTienda=tienda;
     document.getElementById('panelTienda').style.display='block';
     actualizarEstadoBox();
+    actualizarPanelPlanes();
     precargarFormEdicion();
     cargarProductos();
   } else {
@@ -446,6 +495,49 @@ function actualizarEstadoBox(){
     txt.textContent='Tu tienda está en revisión';
     sub.textContent='La aprobamos en menos de 24 horas. Mientras tanto, podés cargar tus productos.';
   }
+}
+
+// ── PLANES ──
+function actualizarPanelPlanes(){
+  const estadoEl=document.getElementById('planesEstadoActual');
+  const partes=[];
+  if(miTienda.destacada){
+    const hasta=miTienda.destacada_hasta?new Date(miTienda.destacada_hasta).toLocaleDateString('es-PY'):null;
+    partes.push('⭐ Tu tienda ya está destacada'+(hasta?' hasta el '+hasta:''));
+    document.getElementById('btnPlanDestacado').textContent='Ya tenés este plan';
+    document.getElementById('btnPlanDestacado').disabled=true;
+  }
+  if(miTienda.verificado){
+    partes.push('✓ Tu tienda ya está verificada');
+    document.getElementById('btnPlanVerificado').textContent='Ya tenés este plan';
+    document.getElementById('btnPlanVerificado').disabled=true;
+  }
+  if(miTienda.plan_solicitado){
+    partes.push('📩 Ya enviaste una solicitud de plan "'+miTienda.plan_solicitado+'", la estamos revisando.');
+  }
+  if(partes.length){
+    estadoEl.style.display='block';
+    estadoEl.innerHTML=partes.join('<br>');
+  }
+}
+
+async function solicitarPlan(tipo){
+  if(!miTienda)return;
+  await db.from('tiendas').update({
+    plan_solicitado: tipo,
+    plan_solicitado_en: new Date().toISOString()
+  }).eq('id', miTienda.id);
+  miTienda.plan_solicitado=tipo;
+  actualizarPanelPlanes();
+
+  const msg = encodeURIComponent(
+    `Hola! Quiero el plan "${tipo}" para mi tienda en PlazaPY.\n`+
+    `Tienda: ${miTienda.nombre}\n`+
+    `ID: ${miTienda.id}\n`+
+    `Adjunto el comprobante de pago.`
+  );
+  window.open('https://wa.me/595995676743?text='+msg, '_blank');
+  toast('Solicitud registrada. Te abrimos WhatsApp para enviar el comprobante.', 'verde');
 }
 
 function initMapa(){
@@ -546,6 +638,7 @@ async function crearTienda(){
   document.getElementById('formCrearTienda').style.display='none';
   document.getElementById('panelTienda').style.display='block';
   actualizarEstadoBox();
+  actualizarPanelPlanes();
   precargarFormEdicion();
   cargarProductos();
   toast('¡Tienda creada! En revisión.','verde');
