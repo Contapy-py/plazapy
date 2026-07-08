@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vendé online en Paraguay gratis — Abrí tu tienda en PlazaPY</title>
+  <meta name="description" content="Creá tu tienda online gratis en PlazaPY. Sin costos fijos, sin comisión por publicar. Llegá a compradores de Asunción y todo Paraguay, con delivery incluido."/>
+  <meta name="keywords" content="vender online paraguay, abrir tienda online gratis, marketplace paraguayo, vender por internet paraguay, tienda online asuncion, crear tienda online gratis"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://www.plazapy.com/vender.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="PlazaPY"/>
+  <meta property="og:title" content="Vendé online gratis en PlazaPY"/>
+  <meta property="og:description" content="Abrí tu tienda en minutos, sin costos fijos. Miles de compradores paraguayos te esperan en PlazaPY."/>
+  <meta property="og:image" content="https://www.plazapy.com/og-default.png"/>
+  <meta property="og:url" content="https://www.plazapy.com/vender.html"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Vendé online gratis en PlazaPY"/>
+  <meta name="twitter:description" content="Abrí tu tienda en minutos, sin costos fijos. Delivery incluido en Asunción y Gran Asunción."/>
+  <meta name="twitter:image" content="https://www.plazapy.com/og-default.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "Marketplace de venta online",
+    "provider": { "@type": "Organization", "name": "PlazaPY", "url": "https://www.plazapy.com" },
+    "areaServed": { "@type": "Country", "name": "Paraguay" },
+    "name": "Abrí tu tienda online gratis en PlazaPY",
+    "description": "Plataforma para que comerciantes paraguayos vendan online sin costos fijos, con delivery incluido en Asunción y Gran Asunción.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "PYG", "description": "Creación de tienda y publicación de productos, gratis" }
+  }
+  </script>
+  <style>
+    :root{--rojo:#EE4D2D;--rojo-dark:#D8431F;--rojo-light:#FFF1EC;--naranja:#FF7043;--amarillo:#FFCA28;--negro:#212121;--gris:#757575;--borde:#EEEEEE;--blanco:#fff;--fondo:#F5F5F5;--verde:#26A65B;--verde-light:#E8F8EF}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--blanco);color:var(--negro)}
+
+    nav{position:sticky;top:0;z-index:200;background:white;height:64px;display:flex;align-items:center;padding:0 2rem;gap:1rem;border-bottom:1px solid var(--borde)}
+    .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none}
+    .nav-logo span{color:var(--naranja)}
+    .nav-back{margin-left:auto;color:var(--gris);text-decoration:none;font-size:.85rem}
+    .nav-back:hover{color:var(--rojo)}
+
+    .hero{background:linear-gradient(135deg,var(--rojo) 0%,var(--naranja) 100%);color:white;padding:4rem 1.5rem 5rem;text-align:center;position:relative;overflow:hidden}
+    .hero-tag{display:inline-block;background:rgba(255,255,255,.18);padding:.4rem 1rem;border-radius:100px;font-size:.82rem;font-weight:700;margin-bottom:1.25rem}
+    .hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.15;margin-bottom:1rem;max-width:760px;margin-left:auto;margin-right:auto}
+    .hero p{font-size:1.05rem;opacity:.92;max-width:560px;margin:0 auto 2rem;line-height:1.6}
+    .btn-cta{display:inline-flex;align-items:center;gap:.5rem;background:white;color:var(--rojo);padding:1rem 2.2rem;border-radius:9px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;box-shadow:0 8px 24px rgba(0,0,0,.15);border:none;cursor:pointer;transition:transform .15s}
+    .btn-cta:hover{transform:translateY(-2px)}
+    .hero-sub{margin-top:1rem;font-size:.82rem;opacity:.8}
+
+    .trust{background:var(--rojo-light);padding:.9rem 1.5rem;display:flex;gap:2rem;justify-content:center;flex-wrap:wrap}
+    .trust-item{font-size:.85rem;font-weight:600;color:var(--rojo-dark);display:flex;align-items:center;gap:.4rem}
+
+    .container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
+    .sec{padding:3.5rem 0}
+    .sec-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.7rem;text-align:center;margin-bottom:.5rem}
+    .sec-sub{text-align:center;color:var(--gris);font-size:.95rem;margin-bottom:2.5rem;max-width:520px;margin-left:auto;margin-right:auto}
+
+    .pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+    .paso{text-align:center;padding:1.5rem}
+    .paso-num{width:44px;height:44px;border-radius:50%;background:var(--rojo);color:white;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;margin:0 auto 1rem;font-size:1.1rem}
+    .paso h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:.5rem}
+    .paso p{color:var(--gris);font-size:.88rem;line-height:1.6}
+
+    .beneficios{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+    .beneficio{background:white;border:1.5px solid var(--borde);border-radius:12px;padding:1.5rem}
+    .beneficio .ico{font-size:1.8rem;margin-bottom:.6rem}
+    .beneficio h3{font-family:'Syne',sans-serif;font-weight:700;font-size:.98rem;margin-bottom:.4rem}
+    .beneficio p{color:var(--gris);font-size:.85rem;line-height:1.55}
+
+    .planes-teaser{background:var(--fondo);border-radius:16px;padding:2.5rem 2rem;text-align:center}
+    .planes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2rem}
+    .plan-card{background:white;border-radius:12px;border:1.5px solid var(--borde);padding:1.75rem 1.5rem;text-align:left}
+    .plan-card.dest{border-color:var(--rojo);border-width:2px;position:relative}
+    .plan-card .plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--rojo);color:white;font-size:.68rem;font-weight:700;padding:3px 12px;border-radius:100px;white-space:nowrap}
+    .plan-nombre{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;margin-bottom:.3rem}
+    .plan-precio{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--rojo);margin-bottom:.9rem}
+    .plan-precio small{font-size:.7rem;font-weight:500;color:var(--gris)}
+    .plan-lista{list-style:none;font-size:.83rem;color:#444;display:flex;flex-direction:column;gap:.5rem}
+    .plan-lista li::before{content:'✓ ';color:var(--verde);font-weight:700}
+
+    .cta-final{background:linear-gradient(135deg,var(--negro),#3a3a3a);border-radius:18px;padding:3rem 2rem;text-align:center;color:white}
+    .cta-final h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:.6rem}
+    .cta-final p{opacity:.8;margin-bottom:1.5rem;font-size:.92rem}
+
+    footer{background:#212121;color:rgba(255,255,255,.55);padding:1.75rem 2rem;text-align:center;font-size:.82rem}
+    footer a{color:rgba(255,255,255,.55);text-decoration:none}
+    footer a:hover{color:white}
+
+    @media(max-width:768px){
+      .pasos,.beneficios,.planes-grid{grid-template-columns:1fr}
+      .trust{gap:1rem}
+      nav{padding:0 1rem}
+      .container{padding:0 1rem}
+      .hero{padding:2.75rem 1rem 3.5rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
+  <a href="index.html" class="nav-back">← Volver al inicio</a>
+</nav>
+
+<div class="hero">
+  <span class="hero-tag">🚀 100% gratis para empezar</span>
+  <h1>Vendé online en Paraguay sin pagar nada para empezar</h1>
+  <p>Creá tu tienda en minutos, publicá tus productos y llegá a compradores de Asunción y Gran Asunción, con delivery incluido en la plataforma.</p>
+  <button class="btn-cta" id="btnCtaHero" onclick="irAMiTienda()">🏪 Crear mi tienda gratis →</button>
+  <div class="hero-sub">No pedimos tarjeta de crédito. Tu tienda queda activa apenas la aprobamos (menos de 24hs).</div>
+</div>
+
+<div class="trust">
+  <div class="trust-item">✅ Sin costos fijos</div>
+  <div class="trust-item">🚚 Delivery incluido</div>
+  <div class="trust-item">📱 Pedidos directo a tu WhatsApp</div>
+  <div class="trust-item">🇵🇾 100% paraguayo</div>
+</div>
+
+<div class="container">
+
+  <div class="sec">
+    <div class="sec-title">¿Cómo funciona?</div>
+    <div class="sec-sub">Tres pasos y ya estás vendiendo.</div>
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <h3>Creá tu tienda</h3>
+        <p>Cargá el nombre, logo y datos de contacto de tu negocio. Es gratis y no tiene vencimiento.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <h3>Publicá tus productos</h3>
+        <p>Subí fotos, precio y descripción. Nuestro equipo revisa y aprueba en menos de 24hs.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-num">3</div>
+        <h3>Recibí pedidos</h3>
+        <p>Los compradores te escriben directo por WhatsApp o piden delivery. Vos coordinás la entrega.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" style="padding-top:0">
+    <div class="sec-title">Por qué vender en PlazaPY</div>
+    <div class="beneficios">
+      <div class="beneficio"><div class="ico">💸</div><h3>Sin costos fijos</h3><p>Publicar tu tienda y tus productos no cuesta nada. Solo pagás si elegís destacarte más adelante.</p></div>
+      <div class="beneficio"><div class="ico">🚚</div><h3>Delivery resuelto</h3><p>Ofrecemos entrega a domicilio en Asunción y Gran Asunción, o retiro en tu local, sin que tengas que organizarlo vos.</p></div>
+      <div class="beneficio"><div class="ico">📊</div><h3>Estadísticas de tu tienda</h3><p>Vistas, productos más buscados y conversión, para que sepas qué está funcionando.</p></div>
+      <div class="beneficio"><div class="ico">🛡️</div><h3>Compradores reales</h3><p>Moderamos cada tienda y producto antes de publicarlo, para mantener la confianza en la plataforma.</p></div>
+      <div class="beneficio"><div class="ico">💬</div><h3>Contacto directo</h3><p>Los pedidos y consultas te llegan directo a tu WhatsApp, sin intermediarios ni comisiones por venta.</p></div>
+      <div class="beneficio"><div class="ico">⭐</div><h3>Crecé cuando quieras</h3><p>Si te va bien, podés destacar tu tienda o verificarla para generar más confianza y más ventas.</p></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="planes-teaser">
+      <div class="sec-title" style="margin-bottom:.3rem">Empezá gratis, crecé cuando quieras</div>
+      <div class="sec-sub" style="margin-bottom:0">Estos son los planes disponibles una vez que tenés tu tienda creada.</div>
+      <div class="planes-grid">
+        <div class="plan-card">
+          <div class="plan-nombre">Gratis</div>
+          <div class="plan-precio">Gs. 0</div>
+          <ul class="plan-lista">
+            <li>Tienda online sin vencimiento</li>
+            <li>Productos ilimitados</li>
+            <li>Pedidos por WhatsApp</li>
+            <li>Estadísticas básicas</li>
+          </ul>
+        </div>
+        <div class="plan-card dest">
+          <span class="plan-badge">MÁS ELEGIDO</span>
+          <div class="plan-nombre">⭐ Destacado</div>
+          <div class="plan-precio">Gs. 80.000 <small>/ 30 días</small></div>
+          <ul class="plan-lista">
+            <li>Todo lo del plan gratis</li>
+            <li>Apareces primero en búsquedas</li>
+            <li>Insignia destacada en tu tienda</li>
+            <li>Hasta 5x más visitas</li>
+          </ul>
+        </div>
+        <div class="plan-card">
+          <div class="plan-nombre">✓ Verificado</div>
+          <div class="plan-precio">Gs. 120.000 <small>pago único</small></div>
+          <ul class="plan-lista">
+            <li>Insignia de tienda verificada</li>
+            <li>Más confianza para el comprador</li>
+            <li>Validación de datos por PlazaPY</li>
+            <li>Se mantiene mientras la tienda esté activa</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="cta-final">
+      <h2>¿Listo para vender?</h2>
+      <p>Crear tu tienda toma menos de 5 minutos.</p>
+      <button class="btn-cta" onclick="irAMiTienda()">🏪 Crear mi tienda gratis →</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a href="index.html">PlazaPY</a> · <a href="terminos.html">Términos</a> · <a href="privacidad.html">Privacidad</a> · © 2025 PlazaPY · República del Paraguay
+</footer>
+
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+
+async function irAMiTienda(){
+  const{data:{session}}=await db.auth.getSession();
+  if(!session){
+    sessionStorage.setItem('redirectAfterLogin','mi-tienda.html');
+    window.location.href='auth.html?next=mi-tienda';
+    return;
+  }
+  window.location.href='mi-tienda.html';
+}
+</script>
+</body>
+</html>
