@@ -2,38 +2,34 @@
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1VML3DMJ80"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-1VML3DMJ80');
-  </script>
-  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VML3DMJ80"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VML3DMJ80');
+</script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PlazaPY — Comprá y vendé online en Paraguay con delivery</title>
   <meta name="description" content="PlazaPY es el marketplace paraguayo donde comprás en tiendas locales verificadas con delivery en Asunción y Gran Asunción. Publicá tu tienda gratis, sin comisión por venta."/>
-  <meta name="keywords" content="marketplace Paraguay, comprar online Paraguay, vender online Paraguay, tiendas Paraguay, delivery Asunción, crear tienda gratis Paraguay"/>
+  <meta name="keywords" content="marketplace Paraguay, comprar online Paraguay, vender online Paraguay, tiendas Paraguay, delivery Asunción, crear tienda gratis Paraguay, donde vender mis productos Paraguay, comprar con delivery Paraguay, tiendas verificadas Paraguay"/>
   <meta name="robots" content="index,follow"/>
   <link rel="canonical" href="https://www.plazapy.com/"/>
-  
   <meta property="og:title" content="PlazaPY — Comprá y vendé online en Paraguay"/>
   <meta property="og:description" content="El marketplace paraguayo con tiendas verificadas, delivery a domicilio en Asunción y Gran Asunción. Publicá tu tienda gratis, sin comisión."/>
   <meta property="og:image" content="https://www.plazapy.com/icon-512.png"/>
   <meta property="og:url" content="https://www.plazapy.com/"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="PlazaPY"/>
-  
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="PlazaPY — Comprá y vendé online en Paraguay"/>
   <meta name="twitter:description" content="Marketplace paraguayo con delivery. Publicá tu tienda gratis."/>
   <meta name="twitter:image" content="https://www.plazapy.com/icon-512.png"/>
-  
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -47,7 +43,6 @@
     "areaServed":{"@type":"Country","name":"Paraguay"}
   }
   </script>
-  
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -58,24 +53,23 @@
     "potentialAction":{"@type":"SearchAction","target":"https://www.plazapy.com/productos.html?q={search_term_string}","query-input":"required name=search_term_string"}
   }
   </script>
-  
   <link rel="manifest" href="/manifest.json"/>
-  <meta name="theme-color" content="#EE4D2D"/>
+  <meta name="theme-color" content="#C1440E"/>
   <link rel="icon" href="/icon-192.png"/>
   <link rel="apple-touch-icon" href="/icon-192.png"/>
-  
   <style>
     :root{
-      --rojo:#EE4D2D;--rojo-dark:#D8431F;--rojo-light:#FFF1EC;
-      --naranja:#FF7043;--naranja-dark:#F4511E;
-      --amarillo:#FFCA28;--amarillo-dark:#FFB300;
-      --negro:#212121;--gris:#757575;--gris-light:#9e9e9e;
-      --borde:#EEEEEE;--blanco:#FFFFFF;--fondo:#F5F5F5;
-      --verde:#26A65B;--verde-light:#E8F8EF;
+      /* Identidad PlazaPY: tierra colorada, lapacho y yerba mate */
+      --rojo:#C1440E;--rojo-dark:#9A350A;--rojo-light:#FBEAE0;
+      --naranja:#E8763C;--naranja-dark:#CC5F2A;
+      --amarillo:#F2B705;--amarillo-dark:#D89F00;
+      --negro:#2B211A;--gris:#7C7267;--gris-light:#A79C8E;
+      --borde:#ECE3D6;--blanco:#FFFFFF;--fondo:#FAF6EF;
+      --verde:#2F6B4F;--verde-light:#E4F0E9;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
-    body{font-family:'DM Sans',sans-serif;background:var(--blanco);color:var(--negro)}
+    body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
 
     /* ── NAV TOP ── */
     .nav-top{background:var(--rojo-dark);padding:.4rem 2rem;display:flex;align-items:center;justify-content:flex-end;gap:1.5rem}
@@ -88,18 +82,24 @@
     .nav-logo span{color:var(--naranja)}
     .nav-search{flex:1;max-width:560px;display:flex;background:white;border-radius:6px;overflow:hidden;border:1.5px solid var(--rojo)}
     .nav-search input{flex:1;border:none;outline:none;padding:.6rem 1rem;font-family:'DM Sans',sans-serif;font-size:.92rem;color:var(--negro)}
-    .nav-search button{background:var(--rojo);border:none;padding:0 1.25rem;cursor:pointer;font-size:1.05rem;color:white;transition:background .2s}
+    .nav-search button{background:var(--rojo);border:none;padding:0 1.25rem;cursor:pointer;font-size:1.05rem;color:white}
     .nav-search button:hover{background:var(--rojo-dark)}
     .nav-right{margin-left:auto;display:flex;align-items:center;gap:1.25rem}
     .nav-icon{color:var(--negro);text-decoration:none;font-size:.78rem;display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.75;transition:opacity .15s}
     .nav-icon:hover{opacity:1;color:var(--rojo)}
     .nav-icon .ni{font-size:1.3rem}
-    .btn-tienda{background:var(--rojo);color:white;padding:.55rem 1.2rem;border-radius:6px;text-decoration:none;font-size:.85rem;font-weight:700;white-space:nowrap;border:none;cursor:pointer;transition:background .2s}
+    .btn-tienda{background:var(--rojo);color:white;padding:.55rem 1.2rem;border-radius:6px;text-decoration:none;font-size:.85rem;font-weight:700;white-space:nowrap;border:none;cursor:pointer}
     .btn-tienda:hover{background:var(--rojo-dark)}
 
-    /* ── HERO BANNER ── */
+    /* ── CATEGORÍAS NAV ── */
+    .cat-nav{background:var(--blanco);padding:0 2rem;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--borde)}
+    .cat-nav::-webkit-scrollbar{display:none}
+    .cat-nav a{color:var(--gris);text-decoration:none;font-size:.82rem;font-weight:500;padding:.65rem 1rem;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;flex-shrink:0}
+    .cat-nav a:hover{color:var(--rojo);border-bottom-color:var(--rojo)}
+
+    /* ── HERO BANNER SLIDER ── */
     .hero-wrap{padding:1rem 2rem 0;max-width:1280px;margin:0 auto}
-    .hero{position:relative;overflow:hidden;background:#222;height:320px;border-radius:10px}
+    .hero{position:relative;overflow:hidden;background:#2B211A;height:320px;border-radius:10px}
     .slides{display:flex;transition:transform .5s ease;height:100%}
     .slide{min-width:100%;height:100%;position:relative;display:flex;align-items:center;overflow:hidden}
     .slide-bg{position:absolute;inset:0;background-size:cover;background-position:center}
@@ -108,7 +108,9 @@
     .slide-tag{background:var(--amarillo);color:#333;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.06em;display:inline-block;margin-bottom:.75rem}
     .slide-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.4rem,3vw,2.3rem);line-height:1.15;margin-bottom:.5rem}
     .slide-desc{font-size:.9rem;opacity:.85;margin-bottom:1.1rem;line-height:1.5}
-    .btn-slide{background:var(--rojo);color:white;padding:.6rem 1.4rem;border-radius:6px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;display:inline-block;transition:background .2s;border:none;cursor:pointer}
+    .slide-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--amarillo);margin-bottom:1rem}
+    .slide-price s{font-size:.95rem;opacity:.6;font-weight:400;color:white;margin-left:.4rem}
+    .btn-slide{background:var(--rojo);color:white;padding:.6rem 1.4rem;border-radius:6px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;display:inline-block;border:none;cursor:pointer}
     .btn-slide:hover{background:var(--rojo-dark)}
     .slide-nav{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:.4rem;z-index:10}
     .slide-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all .2s;border:none}
@@ -118,8 +120,11 @@
     .slide-arrow.prev{left:1rem}
     .slide-arrow.next{right:1rem}
 
+    /* ── DIVISOR ÑANDUTÍ ── */
+    .lace-divider{height:14px;margin-top:1rem;background-image:radial-gradient(circle at 7px 7px,var(--rojo-light) 3.5px,transparent 3.6px);background-size:14px 14px;background-position:center;opacity:.9}
+
     /* ── TRUST BAR ── */
-    .trust{background:var(--rojo-light);padding:.65rem 2rem;display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+    .trust{background:var(--rojo-light);padding:.65rem 2rem;display:flex;gap:2rem;justify-content:center;flex-wrap:wrap}
     .trust-item{font-size:.8rem;font-weight:600;color:var(--rojo-dark);display:flex;align-items:center;gap:.4rem}
 
     /* ── LAYOUT ── */
@@ -128,8 +133,28 @@
     .sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
     .sec-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--negro);display:flex;align-items:center;gap:.5rem}
     .sec-title::before{content:'';display:block;width:4px;height:22px;background:var(--rojo);border-radius:2px}
-    .ver-mas{color:var(--rojo);text-decoration:none;font-size:.85rem;font-weight:600;transition:text-decoration .2s}
+    .ver-mas{color:var(--rojo);text-decoration:none;font-size:.85rem;font-weight:600}
     .ver-mas:hover{text-decoration:underline}
+
+    /* ── CATEGORÍAS GRID ── */
+    .cats-scroll{display:flex;gap:.75rem;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:none}
+    .cats-scroll::-webkit-scrollbar{display:none}
+    .cat-chip{display:flex;flex-direction:column;align-items:center;gap:.4rem;padding:.85rem 1rem;background:white;border-radius:10px;border:1.5px solid var(--borde);cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;min-width:84px}
+    .cat-chip:hover{border-color:var(--rojo);transform:translateY(-2px);box-shadow:0 4px 14px rgba(238,77,45,.12)}
+    .cat-chip .cc-icon{font-size:1.7rem}
+    .cat-chip .cc-name{font-size:.72rem;font-weight:600;color:var(--negro);text-align:center;white-space:nowrap}
+
+    /* ── BANNER OFERTAS ── */
+    .offer-banners{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+    .offer-banner{border-radius:10px;overflow:hidden;position:relative;height:115px;cursor:pointer;display:flex;align-items:center;padding:1.25rem;border:1px solid var(--borde)}
+    .offer-banner.b1{background:var(--rojo-light)}
+    .offer-banner.b2{background:var(--verde-light)}
+    .offer-banner.b3{background:#FBF1D6}
+    .ob-text{z-index:1}
+    .ob-tag{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:.25rem}
+    .ob-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;line-height:1.2;margin-bottom:.4rem;color:var(--negro)}
+    .ob-sub{font-size:.78rem;opacity:.75;color:var(--negro)}
+    .ob-emoji{position:absolute;right:1rem;font-size:2.8rem;opacity:.5}
 
     /* ── PRODUCTOS GRID ── */
     .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1rem}
@@ -138,6 +163,7 @@
     .prod-img{height:180px;background:var(--fondo);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:3rem}
     .prod-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
     .badge-oferta{position:absolute;top:.5rem;left:.5rem;background:var(--rojo);color:white;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:4px;z-index:1}
+    .badge-nuevo{position:absolute;top:.5rem;left:.5rem;background:var(--verde);color:white;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:4px;z-index:1}
     .badge-dest{position:absolute;top:.5rem;right:.5rem;background:var(--amarillo);color:#333;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:4px;z-index:1}
     .prod-body{padding:.8rem}
     .prod-tienda{font-size:.7rem;color:var(--rojo);font-weight:600;margin-bottom:.3rem;display:flex;align-items:center;gap:.3rem}
@@ -147,13 +173,29 @@
     .prod-precio-original{font-size:.76rem;color:var(--gris-light);text-decoration:line-through;margin-left:.35rem}
     .prod-footer{display:flex;justify-content:space-between;align-items:center}
     .prod-ciudad{font-size:.72rem;color:var(--gris)}
+    .btn-comprar{background:var(--rojo);color:white;border:none;padding:.3rem .75rem;border-radius:5px;font-size:.72rem;font-weight:700;cursor:pointer;transition:background .15s}
+    .btn-comprar:hover{background:var(--rojo-dark)}
+
+    /* ── TIENDAS ── */
+    .tiendas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+    .tienda-card{background:white;border-radius:10px;overflow:hidden;border:1px solid var(--borde);transition:all .2s;text-decoration:none;display:block;color:var(--negro)}
+    .tienda-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.1)}
+    .tienda-banner{height:80px;background:linear-gradient(135deg,var(--rojo),var(--naranja));position:relative}
+    .tienda-banner img{width:100%;height:100%;object-fit:cover}
+    .tienda-logo{width:52px;height:52px;border-radius:50%;background:white;border:3px solid white;position:absolute;bottom:-26px;left:1rem;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 2px 6px rgba(0,0,0,.12);overflow:hidden;font-weight:700;color:var(--rojo)}
+    .tienda-logo img{width:100%;height:100%;object-fit:cover}
+    .tienda-body{padding:2rem 1rem 1rem}
+    .tienda-nombre{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.2rem}
+    .tienda-desc{font-size:.75rem;color:var(--gris);line-height:1.4;margin-bottom:.5rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .tienda-meta{display:flex;gap:.75rem;font-size:.72rem;color:var(--gris)}
+    .badge-verif-t{background:var(--verde-light);color:var(--verde);font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:4px;display:inline-block;margin-bottom:.3rem}
 
     /* ── LOADING ── */
     .loading{text-align:center;padding:3rem;color:var(--gris);grid-column:1/-1}
     .empty-state{text-align:center;padding:3rem;color:var(--gris);grid-column:1/-1}
 
     /* ── FOOTER ── */
-    footer{background:#212121;color:rgba(255,255,255,.55);padding:2.5rem 2rem 1.5rem;margin-top:2rem}
+    footer{background:var(--negro);color:rgba(255,255,255,.55);padding:2.5rem 2rem 1.5rem;margin-top:2rem}
     .footer-inner{max-width:1280px;margin:0 auto}
     .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;padding-bottom:1.75rem;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:1.5rem}
     .footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:white;margin-bottom:.5rem}
@@ -170,17 +212,21 @@
       .nav-logo{font-size:1.25rem;flex-shrink:0}
       .nav-search{max-width:none;flex:1;min-width:0}
       .nav-search input{padding:.55rem .7rem;font-size:.85rem}
+      .nav-search button{padding:0 .8rem}
       .nav-right .nav-icon{display:none}
       .nav-right{flex-shrink:0;gap:0}
       .btn-tienda{padding:.5rem .7rem;font-size:.78rem;white-space:nowrap}
       .nav-top{display:none}
+      .cat-nav{padding:0 1rem}
       .container{padding:0 1rem}
       .hero-wrap{padding:.75rem 1rem 0}
       .hero{height:200px;border-radius:8px}
       .slide-content{padding:1.25rem 1.5rem}
       .slide-title{font-size:1.1rem}
       .slide-desc{display:none}
+      .offer-banners{grid-template-columns:1fr}
       .prod-grid{grid-template-columns:repeat(2,1fr);gap:.75rem}
+      .tiendas-grid{grid-template-columns:repeat(2,1fr)}
       .footer-top{grid-template-columns:1fr 1fr;gap:1.5rem}
       .trust{gap:1rem;padding:.6rem 1rem;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;margin-top:.75rem}
       .trust-item{white-space:nowrap;flex-shrink:0}
@@ -196,14 +242,14 @@
   </style>
 </head>
 <body>
-
+  
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(()=>{});
 }
 </script>
 
-<div class="nav-top">
+  <div class="nav-top">
   <a href="auth.html">Iniciar sesión</a>
   <a href="auth.html">Registrarse</a>
   <a href="https://wa.me/595995676743?text=Hola%20PlazaPY!" target="_blank">💬 Ayuda</a>
@@ -222,11 +268,25 @@ if ('serviceWorker' in navigator) {
   </div>
 </nav>
 
+<div class="cat-nav">
+  <a href="productos.html?cat=electronica">📱 Electrónica</a>
+  <a href="productos.html?cat=ropa">👗 Ropa y moda</a>
+  <a href="productos.html?cat=hogar">🏠 Hogar</a>
+  <a href="productos.html?cat=deportes">⚽ Deportes</a>
+  <a href="productos.html?cat=belleza">💄 Belleza</a>
+  <a href="productos.html?cat=alimentos">🍔 Alimentos</a>
+  <a href="productos.html?cat=juguetes">🧸 Juguetes</a>
+  <a href="productos.html?cat=mascotas">🐾 Mascotas</a>
+  <a href="productos.html?cat=autos">🚗 Autos y motos</a>
+  <a href="productos.html?cat=servicios">🔧 Servicios</a>
+  <a href="productos.html">Ver todo →</a>
+</div>
+
 <div class="hero-wrap">
   <div class="hero">
     <div class="slides" id="slides">
       <div class="slide">
-        <div class="slide-bg" style="background:linear-gradient(135deg,#EE4D2D 0%,#FF7043 100%)"></div>
+        <div class="slide-bg" style="background:linear-gradient(135deg,#C1440E 0%,#E8763C 100%)"></div>
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <span class="slide-tag">🚀 Nuevo en PlazaPY</span>
@@ -236,7 +296,7 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="slide">
-        <div class="slide-bg" style="background:linear-gradient(135deg,#26A65B 0%,#2ecc71 100%)"></div>
+        <div class="slide-bg" style="background:linear-gradient(135deg,#2F6B4F 0%,#3D8A67 100%)"></div>
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <span class="slide-tag">🏪 Para comerciantes</span>
@@ -246,12 +306,12 @@ if ('serviceWorker' in navigator) {
         </div>
       </div>
       <div class="slide">
-        <div class="slide-bg" style="background:linear-gradient(135deg,#333 0%,#EE4D2D 100%)"></div>
+        <div class="slide-bg" style="background:linear-gradient(135deg,#2B211A 0%,#C1440E 100%)"></div>
         <div class="slide-overlay"></div>
         <div class="slide-content">
           <span class="slide-tag">🚚 Delivery express</span>
           <div class="slide-title">Entrega a domicilio<br>en Asunción</div>
-          <div class="slide-desc">Desde Gs. 15.000 a domicilio</div>
+          <div class="slide-price">Desde <span style="color:var(--amarillo)">Gs. 15.000</span></div>
           <a href="productos.html" class="btn-slide">Comprar ahora →</a>
         </div>
       </div>
@@ -261,6 +321,8 @@ if ('serviceWorker' in navigator) {
     <div class="slide-nav" id="slideNav"></div>
   </div>
 </div>
+
+<div class="lace-divider"></div>
 
 <div class="trust">
   <div class="trust-item">✅ Tiendas verificadas</div>
@@ -272,6 +334,56 @@ if ('serviceWorker' in navigator) {
 </div>
 
 <div class="container">
+
+  <div class="sec">
+    <div class="sec-header">
+      <div class="sec-title">Categorías</div>
+      <a href="productos.html" class="ver-mas">Ver todo →</a>
+    </div>
+    <div class="cats-scroll">
+      <a href="productos.html?cat=electronica" class="cat-chip"><span class="cc-icon">📱</span><span class="cc-name">Electrónica</span></a>
+      <a href="productos.html?cat=ropa" class="cat-chip"><span class="cc-icon">👗</span><span class="cc-name">Ropa</span></a>
+      <a href="productos.html?cat=hogar" class="cat-chip"><span class="cc-icon">🏠</span><span class="cc-name">Hogar</span></a>
+      <a href="productos.html?cat=deportes" class="cat-chip"><span class="cc-icon">⚽</span><span class="cc-name">Deportes</span></a>
+      <a href="productos.html?cat=belleza" class="cat-chip"><span class="cc-icon">💄</span><span class="cc-name">Belleza</span></a>
+      <a href="productos.html?cat=alimentos" class="cat-chip"><span class="cc-icon">🍔</span><span class="cc-name">Alimentos</span></a>
+      <a href="productos.html?cat=juguetes" class="cat-chip"><span class="cc-icon">🧸</span><span class="cc-name">Juguetes</span></a>
+      <a href="productos.html?cat=mascotas" class="cat-chip"><span class="cc-icon">🐾</span><span class="cc-name">Mascotas</span></a>
+      <a href="productos.html?cat=autos" class="cat-chip"><span class="cc-icon">🚗</span><span class="cc-name">Autos</span></a>
+      <a href="productos.html?cat=servicios" class="cat-chip"><span class="cc-icon">🔧</span><span class="cc-name">Servicios</span></a>
+      <a href="productos.html?cat=libros" class="cat-chip"><span class="cc-icon">📚</span><span class="cc-name">Libros</span></a>
+      <a href="productos.html?cat=otros" class="cat-chip"><span class="cc-icon">📦</span><span class="cc-name">Otros</span></a>
+    </div>
+  </div>
+
+  <div class="sec" style="padding-top:0">
+    <div class="offer-banners">
+      <div class="offer-banner b1" onclick="window.location.href='productos.html?oferta=1'">
+        <div class="ob-text">
+          <div class="ob-tag" style="color:var(--rojo)">Ofertas del día</div>
+          <div class="ob-title">Hasta 50% OFF</div>
+          <div class="ob-sub">En productos seleccionados</div>
+        </div>
+        <div class="ob-emoji">🔥</div>
+      </div>
+      <div class="offer-banner b2" onclick="window.location.href='vender.html'">
+        <div class="ob-text">
+          <div class="ob-tag" style="color:var(--verde)">Para vendedores</div>
+          <div class="ob-title">Abrí tu tienda gratis</div>
+          <div class="ob-sub">Sin costos fijos</div>
+        </div>
+        <div class="ob-emoji">🏪</div>
+      </div>
+      <div class="offer-banner b3" onclick="window.location.href='productos.html'">
+        <div class="ob-text">
+          <div class="ob-tag" style="color:var(--amarillo-dark)">Delivery express</div>
+          <div class="ob-title">Entrega en Asunción</div>
+          <div class="ob-sub">Gs. 15.000 a domicilio</div>
+        </div>
+        <div class="ob-emoji">🚚</div>
+      </div>
+    </div>
+  </div>
 
   <div class="sec">
     <div class="sec-header">
@@ -290,6 +402,16 @@ if ('serviceWorker' in navigator) {
     </div>
     <div class="prod-grid" id="gridDestacados">
       <div class="loading">Cargando productos...</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <div class="sec-title">🏪 Tiendas verificadas</div>
+      <a href="tiendas.html" class="ver-mas">Ver todas →</a>
+    </div>
+    <div class="tiendas-grid" id="gridTiendas">
+      <div class="loading">Cargando tiendas...</div>
     </div>
   </div>
 
@@ -346,9 +468,8 @@ if ('serviceWorker' in navigator) {
 
 <script>
 const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
-const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rSgYVKDw_CpBLv1AJYCDvFpSb5XpJA';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY'; // clave consistente con el resto del sitio (tienda.html, producto.html, productos.html, etc.)
 const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
-const ICONS={electronica:'📱',ropa:'👗',hogar:'🏠',deportes:'⚽',belleza:'💄',alimentos:'🍔',juguetes:'🧸',mascotas:'🐾',autos:'🚗',servicios:'🔧',libros:'📚',otros:'📦'};
 
 let slideActual=0;
 const slidesEl=document.getElementById('slides');
@@ -372,7 +493,7 @@ function irSlide(n){slideActual=n;slidesEl.style.transform=`translateX(-${n*100}
 function cardProducto(p,tiendaNombre){
   const descuento=p.precio_oferta?Math.round((1-p.precio_oferta/p.precio)*100):0;
   const precioFinal=p.precio_oferta||p.precio;
-  const img=p.foto_url?`<img src="${p.foto_url}" alt="${p.nombre}" loading="lazy"/>`:`<span>${ICONS[p.categoria]||'📦'}</span>`;
+  const img=p.foto_url?`<img src="${p.foto_url}" alt="${p.nombre}" loading="lazy"/>`:`<span>${iconCat(p.categoria)}</span>`;
   return`
   <a href="producto.html?id=${p.id}" class="prod-card">
     <div class="prod-img">
@@ -389,29 +510,84 @@ function cardProducto(p,tiendaNombre){
       </div>
       <div class="prod-footer">
         <span class="prod-ciudad">📍 Paraguay</span>
+        <button class="btn-comprar" onclick="event.preventDefault();window.location.href='producto.html?id=${p.id}'">Ver</button>
       </div>
     </div>
   </a>`;
 }
 
+function iconCat(cat){
+  const m={electronica:'📱',ropa:'👗',hogar:'🏠',deportes:'⚽',belleza:'💄',alimentos:'🍔',juguetes:'🧸',mascotas:'🐾',autos:'🚗',servicios:'🔧',libros:'📚',otros:'📦'};
+  return m[cat]||'📦';
+}
+
+function emptyState(txt){
+  return`<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:.5rem">📭</div><div style="font-weight:600;margin-bottom:.3rem">${txt}</div><div style="font-size:.82rem"><a href="vender.html" style="color:var(--rojo)">¡Publicá el primero!</a></div></div>`;
+}
+
 async function cargar(){
-  const[{data:productos}]=await Promise.all([
+  const[{data:tiendas},{data:productos}]=await Promise.all([
+    db.from('tiendas').select('*').eq('estado','activa').order('destacada',{ascending:false}).limit(8),
     db.from('productos').select('*,tiendas(nombre,logo_url)').eq('estado','aprobado').eq('disponible',true).order('created_at',{ascending:false}).limit(40)
   ]);
 
+  const ts=tiendas||[];
   const ps=productos||[];
-  const tMap={};
-  ps.forEach(p=>{if(p.tiendas)tMap[p.tienda_id]=p.tiendas.nombre;});
 
-  const ofertas=ps.filter(p=>p.precio_oferta||p.oferta).slice(0,8);
-  document.getElementById('gridOfertas').innerHTML=ofertas.length?ofertas.map(p=>cardProducto(p,p.tiendas?.nombre||'')).join(''):'<div class="empty-state">No hay ofertas aún</div>';
+  // Las tiendas "destacadas" pierden ese estado visual si su período ya venció,
+  // aunque el campo destacada siga en true en la base (el admin puede limpiarlo cuando quiera).
+  const ahora=new Date();
+  ts.forEach(t=>{ if(t.destacada_hasta && new Date(t.destacada_hasta) < ahora) t.destacada=false; });
+  ts.sort((a,b)=>(b.destacada?1:0)-(a.destacada?1:0));
+
+  const tMap={};
+  ts.forEach(t=>tMap[t.id]=t.nombre);
+
+  const ofertas=ps.filter(p=>p.oferta||p.precio_oferta).slice(0,8);
+  document.getElementById('gridOfertas').innerHTML=ofertas.length?ofertas.map(p=>cardProducto(p,p.tiendas?.nombre||tMap[p.tienda_id]||'')).join(''):emptyState('No hay ofertas aún');
 
   const dest=ps.filter(p=>p.destacado).slice(0,8);
-  document.getElementById('gridDestacados').innerHTML=dest.length?dest.map(p=>cardProducto(p,p.tiendas?.nombre||'')).join(''):'<div class="empty-state">No hay productos destacados aún</div>';
+  document.getElementById('gridDestacados').innerHTML=dest.length?dest.map(p=>cardProducto(p,p.tiendas?.nombre||tMap[p.tienda_id]||'')).join(''):emptyState('No hay productos destacados aún');
 
   const nuevos=ps.slice(0,12);
-  document.getElementById('gridNuevos').innerHTML=nuevos.length?nuevos.map(p=>cardProducto(p,p.tiendas?.nombre||'')).join(''):'<div class="empty-state">Aún no hay productos</div>';
+  document.getElementById('gridNuevos').innerHTML=nuevos.length?nuevos.map(p=>cardProducto(p,p.tiendas?.nombre||tMap[p.tienda_id]||'')).join(''):emptyState('Aún no hay productos');
 
+  const gridT=document.getElementById('gridTiendas');
+  if(ts.length){
+    gridT.innerHTML=ts.map(t=>`
+      <a href="tienda.html?id=${t.id}" class="tienda-card">
+        <div class="tienda-banner" style="${t.banner_url?`background-image:url(${t.banner_url});background-size:cover`:''}">
+          <div class="tienda-logo">${t.logo_url?`<img src="${t.logo_url}" alt="${t.nombre}"/>`:t.nombre[0].toUpperCase()}</div>
+        </div>
+        <div class="tienda-body">
+          ${t.verificado?'<span class="badge-verif-t">✓ Verificada</span>':''}
+          <div class="tienda-nombre">${t.nombre}</div>
+          <div class="tienda-desc">${t.descripcion||'Tienda en PlazaPY'}</div>
+          <div class="tienda-meta"><span>📍 ${t.ciudad||'Paraguay'}</span></div>
+        </div>
+      </a>`).join('');
+  } else {
+    gridT.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div style="font-size:2.5rem;margin-bottom:.5rem">🏪</div><div style="font-weight:600;margin-bottom:.3rem">Aún no hay tiendas</div><div style="font-size:.82rem"><a href="vender.html" style="color:var(--rojo)">¡Abrí la primera!</a></div></div>`;
+  }
+
+  if(dest.length>0){
+    dest.slice(0,3).forEach(p=>{
+      const slide=document.createElement('div');
+      slide.className='slide';
+      const precio=p.precio_oferta||p.precio;
+      slide.innerHTML=`
+        <div class="slide-bg" style="${p.foto_url?`background-image:url(${p.foto_url});background-size:cover;background-position:center`:'background:linear-gradient(135deg,#C1440E,#E8763C)'}"></div>
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <span class="slide-tag">⭐ Producto destacado</span>
+          <div class="slide-title">${p.nombre}</div>
+          <div class="slide-price">Gs. ${Number(precio).toLocaleString()}${p.precio_oferta?` <s>Gs. ${Number(p.precio).toLocaleString()}</s>`:''}</div>
+          <a href="producto.html?id=${p.id}" class="btn-slide">Ver producto →</a>
+        </div>`;
+      document.getElementById('slides').appendChild(slide);
+    });
+    totalSlides=3+Math.min(dest.length,3);
+  }
   initSlider();
 }
 
