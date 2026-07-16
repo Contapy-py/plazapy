@@ -1,17 +1,432 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="PlazaPY - El marketplace digital paraguayo">
-  <meta name="theme-color" content="#EE4D2D">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="/icon-192.png">
-  <link rel="apple-touch-icon" href="/icon-192.png">
-  <title>PlazaPY — Comprá y vendé online en Paraguay</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1VML3DMJ80"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1VML3DMJ80');
+  </script>
+  
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PlazaPY — Comprá y vendé online en Paraguay con delivery</title>
+  <meta name="description" content="PlazaPY es el marketplace paraguayo donde comprás en tiendas locales verificadas con delivery en Asunción y Gran Asunción. Publicá tu tienda gratis, sin comisión por venta."/>
+  <meta name="keywords" content="marketplace Paraguay, comprar online Paraguay, vender online Paraguay, tiendas Paraguay, delivery Asunción, crear tienda gratis Paraguay"/>
+  <meta name="robots" content="index,follow"/>
+  <link rel="canonical" href="https://www.plazapy.com/"/>
+  
+  <meta property="og:title" content="PlazaPY — Comprá y vendé online en Paraguay"/>
+  <meta property="og:description" content="El marketplace paraguayo con tiendas verificadas, delivery a domicilio en Asunción y Gran Asunción. Publicá tu tienda gratis, sin comisión."/>
+  <meta property="og:image" content="https://www.plazapy.com/icon-512.png"/>
+  <meta property="og:url" content="https://www.plazapy.com/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="PlazaPY"/>
+  
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="PlazaPY — Comprá y vendé online en Paraguay"/>
+  <meta name="twitter:description" content="Marketplace paraguayo con delivery. Publicá tu tienda gratis."/>
+  <meta name="twitter:image" content="https://www.plazapy.com/icon-512.png"/>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"PlazaPY",
+    "url":"https://www.plazapy.com",
+    "logo":"https://www.plazapy.com/icon-512.png",
+    "description":"PlazaPY es el marketplace paraguayo donde comprás en tiendas locales verificadas con delivery en Asunción y Gran Asunción.",
+    "contactPoint":{"@type":"ContactPoint","telephone":"+595995676743","contactType":"customer service","availableLanguage":"Spanish"},
+    "sameAs":["https://www.plazapy.com"],
+    "areaServed":{"@type":"Country","name":"Paraguay"}
+  }
+  </script>
+  
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"PlazaPY",
+    "url":"https://www.plazapy.com",
+    "description":"Marketplace paraguayo — comprá y vendé online con delivery a domicilio",
+    "potentialAction":{"@type":"SearchAction","target":"https://www.plazapy.com/productos.html?q={search_term_string}","query-input":"required name=search_term_string"}
+  }
+  </script>
+  
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#EE4D2D"/>
+  <link rel="icon" href="/icon-192.png"/>
+  <link rel="apple-touch-icon" href="/icon-192.png"/>
+  
+  <style>
+    :root{
+      --rojo:#EE4D2D;--rojo-dark:#D8431F;--rojo-light:#FFF1EC;
+      --naranja:#FF7043;--naranja-dark:#F4511E;
+      --amarillo:#FFCA28;--amarillo-dark:#FFB300;
+      --negro:#212121;--gris:#757575;--gris-light:#9e9e9e;
+      --borde:#EEEEEE;--blanco:#FFFFFF;--fondo:#F5F5F5;
+      --verde:#26A65B;--verde-light:#E8F8EF;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--blanco);color:var(--negro)}
+
+    /* ── NAV TOP ── */
+    .nav-top{background:var(--rojo-dark);padding:.4rem 2rem;display:flex;align-items:center;justify-content:flex-end;gap:1.5rem}
+    .nav-top a{color:rgba(255,255,255,.85);font-size:.78rem;text-decoration:none}
+    .nav-top a:hover{color:white}
+
+    /* ── NAV PRINCIPAL ── */
+    nav{position:sticky;top:0;z-index:200;background:var(--blanco);height:68px;display:flex;align-items:center;padding:0 2rem;gap:1.25rem;border-bottom:1px solid var(--borde)}
+    .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--rojo);text-decoration:none;flex-shrink:0;letter-spacing:-.02em}
+    .nav-logo span{color:var(--naranja)}
+    .nav-search{flex:1;max-width:560px;display:flex;background:white;border-radius:6px;overflow:hidden;border:1.5px solid var(--rojo)}
+    .nav-search input{flex:1;border:none;outline:none;padding:.6rem 1rem;font-family:'DM Sans',sans-serif;font-size:.92rem;color:var(--negro)}
+    .nav-search button{background:var(--rojo);border:none;padding:0 1.25rem;cursor:pointer;font-size:1.05rem;color:white;transition:background .2s}
+    .nav-search button:hover{background:var(--rojo-dark)}
+    .nav-right{margin-left:auto;display:flex;align-items:center;gap:1.25rem}
+    .nav-icon{color:var(--negro);text-decoration:none;font-size:.78rem;display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.75;transition:opacity .15s}
+    .nav-icon:hover{opacity:1;color:var(--rojo)}
+    .nav-icon .ni{font-size:1.3rem}
+    .btn-tienda{background:var(--rojo);color:white;padding:.55rem 1.2rem;border-radius:6px;text-decoration:none;font-size:.85rem;font-weight:700;white-space:nowrap;border:none;cursor:pointer;transition:background .2s}
+    .btn-tienda:hover{background:var(--rojo-dark)}
+
+    /* ── HERO BANNER ── */
+    .hero-wrap{padding:1rem 2rem 0;max-width:1280px;margin:0 auto}
+    .hero{position:relative;overflow:hidden;background:#222;height:320px;border-radius:10px}
+    .slides{display:flex;transition:transform .5s ease;height:100%}
+    .slide{min-width:100%;height:100%;position:relative;display:flex;align-items:center;overflow:hidden}
+    .slide-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+    .slide-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,transparent 60%)}
+    .slide-content{position:relative;z-index:1;padding:2rem 3.5rem;color:white;max-width:580px}
+    .slide-tag{background:var(--amarillo);color:#333;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.06em;display:inline-block;margin-bottom:.75rem}
+    .slide-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.4rem,3vw,2.3rem);line-height:1.15;margin-bottom:.5rem}
+    .slide-desc{font-size:.9rem;opacity:.85;margin-bottom:1.1rem;line-height:1.5}
+    .btn-slide{background:var(--rojo);color:white;padding:.6rem 1.4rem;border-radius:6px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;display:inline-block;transition:background .2s;border:none;cursor:pointer}
+    .btn-slide:hover{background:var(--rojo-dark)}
+    .slide-nav{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:.4rem;z-index:10}
+    .slide-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all .2s;border:none}
+    .slide-dot.activo{background:var(--amarillo);width:22px;border-radius:4px}
+    .slide-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:10;background:rgba(0,0,0,.3);color:white;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+    .slide-arrow:hover{background:rgba(0,0,0,.55)}
+    .slide-arrow.prev{left:1rem}
+    .slide-arrow.next{right:1rem}
+
+    /* ── TRUST BAR ── */
+    .trust{background:var(--rojo-light);padding:.65rem 2rem;display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+    .trust-item{font-size:.8rem;font-weight:600;color:var(--rojo-dark);display:flex;align-items:center;gap:.4rem}
+
+    /* ── LAYOUT ── */
+    .container{max-width:1280px;margin:0 auto;padding:0 1.5rem}
+    .sec{padding:2rem 0}
+    .sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+    .sec-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--negro);display:flex;align-items:center;gap:.5rem}
+    .sec-title::before{content:'';display:block;width:4px;height:22px;background:var(--rojo);border-radius:2px}
+    .ver-mas{color:var(--rojo);text-decoration:none;font-size:.85rem;font-weight:600;transition:text-decoration .2s}
+    .ver-mas:hover{text-decoration:underline}
+
+    /* ── PRODUCTOS GRID ── */
+    .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1rem}
+    .prod-card{background:white;border-radius:8px;overflow:hidden;border:1px solid var(--borde);transition:all .2s;cursor:pointer;text-decoration:none;display:block;color:var(--negro)}
+    .prod-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.1);border-color:#ddd}
+    .prod-img{height:180px;background:var(--fondo);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:3rem}
+    .prod-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+    .badge-oferta{position:absolute;top:.5rem;left:.5rem;background:var(--rojo);color:white;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:4px;z-index:1}
+    .badge-dest{position:absolute;top:.5rem;right:.5rem;background:var(--amarillo);color:#333;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:4px;z-index:1}
+    .prod-body{padding:.8rem}
+    .prod-tienda{font-size:.7rem;color:var(--rojo);font-weight:600;margin-bottom:.3rem;display:flex;align-items:center;gap:.3rem}
+    .prod-nombre{font-size:.85rem;font-weight:400;line-height:1.35;margin-bottom:.5rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.3em;color:var(--negro)}
+    .prod-precios{margin-bottom:.5rem}
+    .prod-precio{font-size:1.1rem;font-weight:700;color:var(--rojo)}
+    .prod-precio-original{font-size:.76rem;color:var(--gris-light);text-decoration:line-through;margin-left:.35rem}
+    .prod-footer{display:flex;justify-content:space-between;align-items:center}
+    .prod-ciudad{font-size:.72rem;color:var(--gris)}
+
+    /* ── LOADING ── */
+    .loading{text-align:center;padding:3rem;color:var(--gris);grid-column:1/-1}
+    .empty-state{text-align:center;padding:3rem;color:var(--gris);grid-column:1/-1}
+
+    /* ── FOOTER ── */
+    footer{background:#212121;color:rgba(255,255,255,.55);padding:2.5rem 2rem 1.5rem;margin-top:2rem}
+    .footer-inner{max-width:1280px;margin:0 auto}
+    .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;padding-bottom:1.75rem;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:1.5rem}
+    .footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:white;margin-bottom:.5rem}
+    .footer-logo span{color:var(--amarillo)}
+    .footer-desc{font-size:.82rem;line-height:1.6;max-width:240px}
+    .footer-col h4{font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:.85rem;margin-bottom:.85rem}
+    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+    .footer-col a{color:rgba(255,255,255,.55);text-decoration:none;font-size:.82rem;transition:color .2s}
+    .footer-col a:hover{color:white}
+    .footer-bottom{display:flex;justify-content:space-between;font-size:.78rem}
+
+    @media(max-width:768px){
+      nav{padding:0 .75rem;gap:.5rem}
+      .nav-logo{font-size:1.25rem;flex-shrink:0}
+      .nav-search{max-width:none;flex:1;min-width:0}
+      .nav-search input{padding:.55rem .7rem;font-size:.85rem}
+      .nav-right .nav-icon{display:none}
+      .nav-right{flex-shrink:0;gap:0}
+      .btn-tienda{padding:.5rem .7rem;font-size:.78rem;white-space:nowrap}
+      .nav-top{display:none}
+      .container{padding:0 1rem}
+      .hero-wrap{padding:.75rem 1rem 0}
+      .hero{height:200px;border-radius:8px}
+      .slide-content{padding:1.25rem 1.5rem}
+      .slide-title{font-size:1.1rem}
+      .slide-desc{display:none}
+      .prod-grid{grid-template-columns:repeat(2,1fr);gap:.75rem}
+      .footer-top{grid-template-columns:1fr 1fr;gap:1.5rem}
+      .trust{gap:1rem;padding:.6rem 1rem;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;margin-top:.75rem}
+      .trust-item{white-space:nowrap;flex-shrink:0}
+    }
+    @media(max-width:420px){
+      .nav-logo{font-size:1.1rem}
+      .btn-tienda{padding:.5rem .55rem;font-size:.72rem}
+      .nav-search input{font-size:.8rem;padding:.5rem .55rem}
+    }
+    @media(max-width:400px){
+      .prod-grid{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 <body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+</script>
+
+<div class="nav-top">
+  <a href="auth.html">Iniciar sesión</a>
+  <a href="auth.html">Registrarse</a>
+  <a href="https://wa.me/595995676743?text=Hola%20PlazaPY!" target="_blank">💬 Ayuda</a>
+</div>
+
+<nav>
+  <a href="/" class="nav-logo">Plaza<span>PY</span></a>
+  <div class="nav-search">
+    <input type="text" id="searchInput" placeholder="Buscar productos, tiendas..." onkeydown="if(event.key==='Enter')buscar()"/>
+    <button onclick="buscar()">🔍</button>
+  </div>
+  <div class="nav-right">
+    <a href="tiendas.html" class="nav-icon"><span class="ni">🏪</span>Tiendas</a>
+    <a href="cuenta.html" class="nav-icon" id="navCuenta"><span class="ni">👤</span>Mi cuenta</a>
+    <a href="vender.html" class="btn-tienda">+ Abrir tienda</a>
+  </div>
+</nav>
+
+<div class="hero-wrap">
+  <div class="hero">
+    <div class="slides" id="slides">
+      <div class="slide">
+        <div class="slide-bg" style="background:linear-gradient(135deg,#EE4D2D 0%,#FF7043 100%)"></div>
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <span class="slide-tag">🚀 Nuevo en PlazaPY</span>
+          <div class="slide-title">El marketplace<br>paraguayo llegó</div>
+          <div class="slide-desc">Comprá en tiendas locales con delivery a tu puerta en Asunción y Gran Asunción.</div>
+          <a href="productos.html" class="btn-slide">Ver productos →</a>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="slide-bg" style="background:linear-gradient(135deg,#26A65B 0%,#2ecc71 100%)"></div>
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <span class="slide-tag">🏪 Para comerciantes</span>
+          <div class="slide-title">Abrí tu tienda<br>online gratis</div>
+          <div class="slide-desc">Sin costos fijos. Llegá a miles de compradores en todo Paraguay.</div>
+          <a href="vender.html" class="btn-slide">Crear mi tienda →</a>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="slide-bg" style="background:linear-gradient(135deg,#333 0%,#EE4D2D 100%)"></div>
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <span class="slide-tag">🚚 Delivery express</span>
+          <div class="slide-title">Entrega a domicilio<br>en Asunción</div>
+          <div class="slide-desc">Desde Gs. 15.000 a domicilio</div>
+          <a href="productos.html" class="btn-slide">Comprar ahora →</a>
+        </div>
+      </div>
+    </div>
+    <button class="slide-arrow prev" onclick="cambiarSlide(-1)">‹</button>
+    <button class="slide-arrow next" onclick="cambiarSlide(1)">›</button>
+    <div class="slide-nav" id="slideNav"></div>
+  </div>
+</div>
+
+<div class="trust">
+  <div class="trust-item">✅ Tiendas verificadas</div>
+  <div class="trust-item">🚚 Delivery Asunción Gs. 15.000</div>
+  <div class="trust-item">🚚 Gran Asunción Gs. 25.000</div>
+  <div class="trust-item">🏪 Retiro en tienda gratis</div>
+  <div class="trust-item">💬 Soporte por WhatsApp</div>
+  <div class="trust-item">🇵🇾 100% paraguayo</div>
+</div>
+
+<div class="container">
+
+  <div class="sec">
+    <div class="sec-header">
+      <div class="sec-title">🔥 Ofertas del día</div>
+      <a href="productos.html?oferta=1" class="ver-mas">Ver todas →</a>
+    </div>
+    <div class="prod-grid" id="gridOfertas">
+      <div class="loading">Cargando ofertas...</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <div class="sec-title">⭐ Productos destacados</div>
+      <a href="productos.html" class="ver-mas">Ver todos →</a>
+    </div>
+    <div class="prod-grid" id="gridDestacados">
+      <div class="loading">Cargando productos...</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-header">
+      <div class="sec-title">🆕 Recién llegados</div>
+      <a href="productos.html?orden=nuevo" class="ver-mas">Ver todos →</a>
+    </div>
+    <div class="prod-grid" id="gridNuevos">
+      <div class="loading">Cargando...</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Plaza<span>PY</span></div>
+        <p class="footer-desc">El marketplace paraguayo. Comprá en tiendas locales con delivery a domicilio en Asunción y Gran Asunción.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Comprar</h4>
+        <ul>
+          <li><a href="productos.html">Ver productos</a></li>
+          <li><a href="tiendas.html">Ver tiendas</a></li>
+          <li><a href="productos.html?oferta=1">Ofertas</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Vender</h4>
+        <ul>
+          <li><a href="vender.html">Abrir mi tienda</a></li>
+          <li><a href="cuenta.html">Mi cuenta</a></li>
+          <li><a href="terminos.html">Términos</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="https://wa.me/595995676743?text=Hola%20PlazaPY!" target="_blank">💬 WhatsApp</a></li>
+          <li><a href="mailto:hola@plazapy.com">📧 hola@plazapy.com</a></li>
+          <li><a href="privacidad.html">Privacidad</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>🇵🇾 Hecho en Paraguay · © 2025 PlazaPY</span>
+      <span>Todos los derechos reservados</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rSgYVKDw_CpBLv1AJYCDvFpSb5XpJA';
+const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const ICONS={electronica:'📱',ropa:'👗',hogar:'🏠',deportes:'⚽',belleza:'💄',alimentos:'🍔',juguetes:'🧸',mascotas:'🐾',autos:'🚗',servicios:'🔧',libros:'📚',otros:'📦'};
+
+let slideActual=0;
+const slidesEl=document.getElementById('slides');
+let totalSlides=3;
+let autoSlide;
+
+function initSlider(){
+  const nav=document.getElementById('slideNav');
+  nav.innerHTML='';
+  for(let i=0;i<totalSlides;i++){
+    const d=document.createElement('button');
+    d.className='slide-dot'+(i===0?' activo':'');
+    d.onclick=()=>irSlide(i);
+    nav.appendChild(d);
+  }
+  autoSlide=setInterval(()=>cambiarSlide(1),4000);
+}
+function cambiarSlide(dir){slideActual=(slideActual+dir+totalSlides)%totalSlides;irSlide(slideActual);}
+function irSlide(n){slideActual=n;slidesEl.style.transform=`translateX(-${n*100}%)`;document.querySelectorAll('.slide-dot').forEach((d,i)=>d.classList.toggle('activo',i===n));}
+
+function cardProducto(p,tiendaNombre){
+  const descuento=p.precio_oferta?Math.round((1-p.precio_oferta/p.precio)*100):0;
+  const precioFinal=p.precio_oferta||p.precio;
+  const img=p.foto_url?`<img src="${p.foto_url}" alt="${p.nombre}" loading="lazy"/>`:`<span>${ICONS[p.categoria]||'📦'}</span>`;
+  return`
+  <a href="producto.html?id=${p.id}" class="prod-card">
+    <div class="prod-img">
+      ${img}
+      ${p.precio_oferta&&descuento>0?`<span class="badge-oferta">-${descuento}%</span>`:''}
+      ${p.destacado?'<span class="badge-dest">⭐</span>':''}
+    </div>
+    <div class="prod-body">
+      <div class="prod-tienda">🏪 ${tiendaNombre||'PlazaPY'}</div>
+      <div class="prod-nombre">${p.nombre}</div>
+      <div class="prod-precios">
+        <span class="prod-precio">Gs. ${Number(precioFinal).toLocaleString()}</span>
+        ${p.precio_oferta?`<span class="prod-precio-original">Gs. ${Number(p.precio).toLocaleString()}</span>`:''}
+      </div>
+      <div class="prod-footer">
+        <span class="prod-ciudad">📍 Paraguay</span>
+      </div>
+    </div>
+  </a>`;
+}
+
+async function cargar(){
+  const[{data:productos}]=await Promise.all([
+    db.from('productos').select('*,tiendas(nombre,logo_url)').eq('estado','aprobado').eq('disponible',true).order('created_at',{ascending:false}).limit(40)
+  ]);
+
+  const ps=productos||[];
+  const tMap={};
+  ps.forEach(p=>{if(p.tiendas)tMap[p.tienda_id]=p.tiendas.nombre;});
+
+  const ofertas=ps.filter(p=>p.precio_oferta||p.oferta).slice(0,8);
+  document.getElementById('gridOfertas').innerHTML=ofertas.length?ofertas.map(p=>cardProducto(p,p.tiendas?.nombre||'')).join(''):'<div class="empty-state">No hay ofertas aún</div>';
+
+  const dest=ps.filter(p=>p.destacado).slice(0,8);
+  document.getElementById('gridDestacados').innerHTML=dest.length?dest.map(p=>cardProducto(p,p.tiendas?.nombre||'')).join(''):'<div class="empty-state">No hay productos destacados aún</div>';
+
+  const nuevos=ps.slice(0,12);
+  document.getElementById('gridNuevos').innerHTML=nuevos.length?nuevos.map(p=>cardProducto(p,p.tiendas?.nombre||'')).join(''):'<div class="empty-state">Aún no hay productos</div>';
+
+  initSlider();
+}
+
+function buscar(){
+  const q=document.getElementById('searchInput').value.trim();
+  if(q) window.location.href=`productos.html?q=${encodeURIComponent(q)}`;
+}
+
+(async()=>{
+  const{data:{session}}=await db.auth.getSession();
+  const el=document.getElementById('navCuenta');
+  if(el&&session){el.querySelector('.ni').textContent='😊';}
+})();
+
+cargar();
+</script>
 </body>
 </html>
