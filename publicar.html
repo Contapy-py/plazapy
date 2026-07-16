@@ -19,10 +19,11 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     :root {
-      --rojo: #E53935; --rojo-dark: #C62828;
-      --azul: #1565C0; --crema: #F8F8F8;
-      --arena: #E0E0E0; --carbon: #111;
-      --gris: #6B6B6B; --verde: #2E7D32;
+      --rojo: #C1440E; --rojo-dark: #9A350A;
+      --azul: #C1440E; --crema: #FAF6EF;
+      --arena: #ECE3D6; --carbon: #2B211A;
+      --gris: #7C7267; --verde: #2F6B4F;
+      --amarillo: #F2B705;
       --blanco: #FFFFFF;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -88,7 +89,7 @@
       font-size: .85rem; cursor: pointer; transition: all .15s;
       user-select: none; -webkit-user-select: none;
     }
-    .pill:hover { border-color: #aaa; }
+    .pill:hover { border-color: #C9BBA5; }
     .pill.ok { background: var(--azul) !important; color: white !important; border-color: var(--azul) !important; }
 
     /* CONDICIÓN */
@@ -111,10 +112,10 @@
     .foto-previews { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .75rem; }
     .foto-preview-item { position: relative; width: 90px; height: 90px; }
     .foto-preview-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--arena); display: block; }
-    .foto-preview-item .foto-principal { position: absolute; bottom: 3px; left: 3px; background: #1565C0; color: white; font-size: .55rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; }
-    .foto-preview-item .foto-del { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #E53935; color: white; border: none; cursor: pointer; font-size: .7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; line-height: 1; }
+    .foto-preview-item .foto-principal { position: absolute; bottom: 3px; left: 3px; background: #C1440E; color: white; font-size: .55rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; }
+    .foto-preview-item .foto-del { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #C1440E; color: white; border: none; cursor: pointer; font-size: .7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; line-height: 1; }
     .foto-limite { font-size: .78rem; color: var(--gris); margin-top: .4rem; }
-    .foto-limite.lleno { color: #E53935; font-weight: 600; }
+    .foto-limite.lleno { color: #C1440E; font-weight: 600; }
 
     /* MAPA */
     #mapa { height: 280px; border-radius: 8px; border: 1.5px solid var(--arena); margin-top: .4rem; }
@@ -132,9 +133,9 @@
     /* BOTONES */
     .nav-btns { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1.5px solid var(--arena); }
     .btn-prev { background: transparent; border: 1.5px solid var(--arena); color: var(--carbon); padding: .7rem 1.4rem; border-radius: 7px; font-size: .9rem; cursor: pointer; }
-    .btn-prev:hover { border-color: #aaa; }
+    .btn-prev:hover { border-color: #C9BBA5; }
     .btn-next { background: var(--azul); color: white; border: none; padding: .7rem 1.8rem; border-radius: 7px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem; cursor: pointer; }
-    .btn-next:hover { background: #1A3A8F; }
+    .btn-next:hover { background: #9A350A; }
     .btn-send { background: var(--rojo); color: white; border: none; padding: .7rem 1.8rem; border-radius: 7px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem; cursor: pointer; }
     .btn-send:hover { background: var(--rojo-dark); }
     .btn-send:disabled { opacity: .5; cursor: not-allowed; }
@@ -185,13 +186,13 @@
     <p id="exitoDesc">Está en revisión. Te avisamos por WhatsApp cuando esté activo.</p>
 
     <!-- OFERTA DE DESTACADO (solo en anuncios nuevos) -->
-    <div id="ofertaDestacado" style="background:#FFF8E7;border:2px solid #F5A623;border-radius:14px;padding:1.5rem;margin:1.5rem 0;text-align:left;display:none">
+    <div id="ofertaDestacado" style="background:#FFF8E7;border:2px solid #F2B705;border-radius:14px;padding:1.5rem;margin:1.5rem 0;text-align:left;display:none">
       <div style="font-size:1.5rem;margin-bottom:.5rem">⭐</div>
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.4rem">¿Querés que aparezca primero?</div>
-      <div style="font-size:.88rem;color:#666;line-height:1.6;margin-bottom:1rem">Los anuncios <strong>destacados</strong> aparecen arriba de todos y reciben hasta <strong>5x más contactos</strong>. Solo Gs. 50.000 por 30 días.</div>
-      <div style="background:white;border-radius:10px;padding:1rem;margin-bottom:1rem;border:1px solid #E0E0E0">
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.6rem;color:#1565C0">💳 Opciones de pago</div>
-        <div style="font-size:.85rem;line-height:1.9;color:#333">
+      <div style="font-size:.88rem;color:#7C7267;line-height:1.6;margin-bottom:1rem">Los anuncios <strong>destacados</strong> aparecen arriba de todos y reciben hasta <strong>5x más contactos</strong>. Solo Gs. 50.000 por 30 días.</div>
+      <div style="background:white;border-radius:10px;padding:1rem;margin-bottom:1rem;border:1px solid #ECE3D6">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.6rem;color:#C1440E">💳 Opciones de pago</div>
+        <div style="font-size:.85rem;line-height:1.9;color:#2B211A">
           <strong>Tigo Money:</strong> 0981 000 000<br>
           <strong>Personal Pay:</strong> 0971 000 000<br>
           <strong>Transferencia bancaria:</strong><br>
@@ -200,19 +201,19 @@
           &nbsp;&nbsp;Titular: PlazaPY
         </div>
       </div>
-      <div style="font-size:.82rem;color:#666;margin-bottom:1rem">
+      <div style="font-size:.82rem;color:#7C7267;margin-bottom:1rem">
         📱 Después del pago, enviá el comprobante y el <strong>número de tu anuncio</strong> por WhatsApp:
       </div>
       <a id="btnWaDestacado" href="#" target="_blank"
         style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#25D366;color:white;padding:.8rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.75rem">
         💬 Enviar comprobante por WhatsApp
       </a>
-      <div style="font-size:.75rem;color:#999;text-align:center">Activamos el destacado en menos de 2 horas hábiles</div>
+      <div style="font-size:.75rem;color:#A79C8E;text-align:center">Activamos el destacado en menos de 2 horas hábiles</div>
     </div>
 
     <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
-      <a href="cuenta.html" style="display:inline-block;background:#1565C0;color:white;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem">Ver mis anuncios</a>
-      <a href="index.html" style="display:inline-block;background:#F8F8F8;color:#111;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;border:1.5px solid #E0E0E0">← Volver al inicio</a>
+      <a href="cuenta.html" style="display:inline-block;background:#C1440E;color:white;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem">Ver mis anuncios</a>
+      <a href="index.html" style="display:inline-block;background:#FAF6EF;color:#2B211A;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;border:1.5px solid #ECE3D6">← Volver al inicio</a>
     </div>
   </div>
 
@@ -556,7 +557,7 @@ function mostrarToast(msg, tipo) {
   // toast simple
   const t = document.createElement('div');
   t.textContent = msg;
-  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:${tipo==='error'?'#E53935':'#2E7D32'};color:white;padding:.85rem 1.3rem;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2)`;
+  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:${tipo==='error'?'#C1440E':'#2F6B4F'};color:white;padding:.85rem 1.3rem;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2)`;
   document.body.appendChild(t);
   setTimeout(()=>t.remove(), 3000);
 }

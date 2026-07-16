@@ -216,6 +216,7 @@ function confirmarEdad(){
   sessionStorage.setItem('ns_mayor18','1');
   document.getElementById('ageGate').classList.add('oculto');
   document.getElementById('contenidoNS').style.display='block';
+  document.body.style.overflow='';
   cargar();
 }
 
@@ -223,6 +224,8 @@ function confirmarEdad(){
 if(sessionStorage.getItem('ns_mayor18')==='1'){
   document.getElementById('ageGate').classList.add('oculto');
   document.getElementById('contenidoNS').style.display='block';
+}else{
+  document.body.style.overflow='hidden';
 }
 
 // ── CARGAR PRODUCTOS ADULTOS ──
@@ -236,7 +239,6 @@ async function cargar(){
 
   todosProds=data||[];
   renderGrid();
-  if(!error)cargar(); // no hacer nada si ya cargó
 }
 
 function renderGrid(){
