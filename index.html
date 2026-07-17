@@ -200,6 +200,17 @@
     .skel-tienda{background:white;border-radius:10px;overflow:hidden;border:1px solid var(--borde)}
     .skel-tienda .skel-img{height:80px}
 
+    /* ── PUBLICIDAD ── */
+    .ad-slot{margin:1.75rem 0;border-radius:12px;overflow:hidden;position:relative;min-height:110px;border:1px solid var(--borde)}
+    .ad-label{position:absolute;top:10px;left:10px;background:rgba(43,33,26,.6);color:#fff;font-size:.62rem;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.05em;text-transform:uppercase;z-index:2}
+    .ad-slot a.ad-link{display:block;height:100%;min-height:110px}
+    .ad-slot img{width:100%;height:100%;max-height:180px;object-fit:cover;display:block}
+    .ad-empty{background:linear-gradient(135deg,var(--rojo-light),var(--fondo));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.5rem;min-height:110px}
+    .ad-empty strong{font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:.3rem}
+    .ad-empty span{font-size:.8rem;color:var(--gris);margin-bottom:.75rem}
+    .ad-empty a{background:var(--rojo);color:#fff;padding:.55rem 1.2rem;border-radius:100px;text-decoration:none;font-size:.8rem;font-weight:700}
+    .ad-empty a:hover{background:var(--rojo-dark)}
+
     /* ── LOADING ── */
     .loading{text-align:center;padding:3rem;color:var(--gris);grid-column:1/-1}
     .empty-state{text-align:center;padding:3rem;color:var(--gris);grid-column:1/-1}
@@ -215,7 +226,9 @@
     .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.4rem}
     .footer-col a{color:rgba(255,255,255,.55);text-decoration:none;font-size:.82rem;transition:color .2s}
     .footer-col a:hover{color:white}
-    .footer-bottom{display:flex;justify-content:space-between;font-size:.78rem}
+    .footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:1rem;font-size:.78rem;flex-wrap:wrap}
+    .footer-ns-link{color:inherit;opacity:.65;text-decoration:none;transition:opacity .2s}
+    .footer-ns-link:hover{opacity:1}
 
     @media(max-width:768px){
       nav{padding:0 .75rem;gap:.5rem}
@@ -404,6 +417,8 @@ if ('serviceWorker' in navigator) {
     </div>
   </div>
 
+  <div class="ad-slot" id="adTop"></div>
+
   <div class="sec">
     <div class="sec-header">
       <div class="sec-title">⭐ Productos destacados</div>
@@ -421,6 +436,8 @@ if ('serviceWorker' in navigator) {
     <div class="tiendas-grid" id="gridTiendas"><div class="skel-tienda"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-tienda"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-tienda"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-tienda"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div>
     </div>
   </div>
+
+  <div class="ad-slot" id="adMid"></div>
 
   <div class="sec">
     <div class="sec-header">
@@ -467,6 +484,7 @@ if ('serviceWorker' in navigator) {
     </div>
     <div class="footer-bottom">
       <span>🇵🇾 Hecho en Paraguay · © 2025 PlazaPY</span>
+      <a href="nightshop.html" class="footer-ns-link">🔞 NightShop PY · Tienda para adultos</a>
       <span>Todos los derechos reservados</span>
     </div>
   </div>
@@ -603,6 +621,33 @@ function buscar(){
   if(q) window.location.href=`productos.html?q=${encodeURIComponent(q)}`;
 }
 
+// ── PUBLICIDAD ──
+const WA_ADS='https://wa.me/595995676743?text=' + encodeURIComponent('Hola PlazaPY! Quiero anunciar mi negocio en la página.');
+function adEmptyHTML(){
+  return `<div class="ad-empty">
+    <strong>📢 Este espacio publicitario está disponible</strong>
+    <span>Anunciá tu negocio (nightclubs, gastronomía, eventos y más) acá y llegá a miles de paraguayos.</span>
+    <a href="${WA_ADS}" target="_blank">Quiero anunciar aquí →</a>
+  </div>`;
+}
+async function cargarAds(){
+  const{data}=await db.from('publicidad').select('*').eq('activo',true).order('orden',{ascending:true});
+  const ads=data||[];
+  renderAd('adTop', ads.filter(a=>a.ubicacion==='home-top'));
+  renderAd('adMid', ads.filter(a=>a.ubicacion==='home-mid'));
+}
+function renderAd(elId,lista){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  if(!lista.length){el.innerHTML=adEmptyHTML();return;}
+  const ad=lista[0];
+  el.innerHTML=`
+    <span class="ad-label">Publicidad</span>
+    <a class="ad-link" href="${ad.link_url||'#'}" target="_blank" rel="sponsored noopener">
+      <img src="${ad.imagen_url}" alt="${ad.anunciante}"/>
+    </a>`;
+}
+
 (async()=>{
   const{data:{session}}=await db.auth.getSession();
   const el=document.getElementById('navCuenta');
@@ -610,6 +655,7 @@ function buscar(){
 })();
 
 cargar();
+cargarAds();
 </script>
 </body>
 </html>
