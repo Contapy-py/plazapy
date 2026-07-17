@@ -171,6 +171,7 @@
     .prod-precios{margin-bottom:.5rem}
     .prod-precio{font-size:1.1rem;font-weight:700;color:var(--rojo)}
     .prod-precio-original{font-size:.76rem;color:var(--gris-light);text-decoration:line-through;margin-left:.35rem}
+    .prod-urgencia{font-size:.7rem;font-weight:700;color:var(--rojo-dark);margin-bottom:.35rem}
     .prod-footer{display:flex;justify-content:space-between;align-items:center}
     .prod-ciudad{font-size:.72rem;color:var(--gris)}
     .btn-comprar{background:var(--rojo);color:white;border:none;padding:.3rem .75rem;border-radius:5px;font-size:.72rem;font-weight:700;cursor:pointer;transition:background .15s}
@@ -189,6 +190,15 @@
     .tienda-desc{font-size:.75rem;color:var(--gris);line-height:1.4;margin-bottom:.5rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     .tienda-meta{display:flex;gap:.75rem;font-size:.72rem;color:var(--gris)}
     .badge-verif-t{background:var(--verde-light);color:var(--verde);font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:4px;display:inline-block;margin-bottom:.3rem}
+
+    /* ── SKELETONS ── */
+    .skel-card{background:white;border-radius:8px;overflow:hidden;border:1px solid var(--borde)}
+    .skel-img{height:180px;background:linear-gradient(90deg,var(--borde) 25%,#F5EFE4 50%,var(--borde) 75%);background-size:400% 100%;animation:skel-shine 1.4s ease-in-out infinite}
+    .skel-line{height:.6rem;margin:.8rem;border-radius:4px;background:linear-gradient(90deg,var(--borde) 25%,#F5EFE4 50%,var(--borde) 75%);background-size:400% 100%;animation:skel-shine 1.4s ease-in-out infinite}
+    .skel-line.corta{width:55%}
+    @keyframes skel-shine{0%{background-position:100% 0}100%{background-position:0 0}}
+    .skel-tienda{background:white;border-radius:10px;overflow:hidden;border:1px solid var(--borde)}
+    .skel-tienda .skel-img{height:80px}
 
     /* ── LOADING ── */
     .loading{text-align:center;padding:3rem;color:var(--gris);grid-column:1/-1}
@@ -390,8 +400,7 @@ if ('serviceWorker' in navigator) {
       <div class="sec-title">🔥 Ofertas del día</div>
       <a href="productos.html?oferta=1" class="ver-mas">Ver todas →</a>
     </div>
-    <div class="prod-grid" id="gridOfertas">
-      <div class="loading">Cargando ofertas...</div>
+    <div class="prod-grid" id="gridOfertas"><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div>
     </div>
   </div>
 
@@ -400,8 +409,7 @@ if ('serviceWorker' in navigator) {
       <div class="sec-title">⭐ Productos destacados</div>
       <a href="productos.html" class="ver-mas">Ver todos →</a>
     </div>
-    <div class="prod-grid" id="gridDestacados">
-      <div class="loading">Cargando productos...</div>
+    <div class="prod-grid" id="gridDestacados"><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div>
     </div>
   </div>
 
@@ -410,8 +418,7 @@ if ('serviceWorker' in navigator) {
       <div class="sec-title">🏪 Tiendas verificadas</div>
       <a href="tiendas.html" class="ver-mas">Ver todas →</a>
     </div>
-    <div class="tiendas-grid" id="gridTiendas">
-      <div class="loading">Cargando tiendas...</div>
+    <div class="tiendas-grid" id="gridTiendas"><div class="skel-tienda"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-tienda"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-tienda"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-tienda"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div>
     </div>
   </div>
 
@@ -420,8 +427,7 @@ if ('serviceWorker' in navigator) {
       <div class="sec-title">🆕 Recién llegados</div>
       <a href="productos.html?orden=nuevo" class="ver-mas">Ver todos →</a>
     </div>
-    <div class="prod-grid" id="gridNuevos">
-      <div class="loading">Cargando...</div>
+    <div class="prod-grid" id="gridNuevos"><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div><div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line corta"></div></div>
     </div>
   </div>
 
@@ -504,6 +510,7 @@ function cardProducto(p,tiendaNombre){
     <div class="prod-body">
       <div class="prod-tienda">🏪 ${tiendaNombre||'PlazaPY'}</div>
       <div class="prod-nombre">${p.nombre}</div>
+      ${p.stock&&p.stock<=3?`<div class="prod-urgencia">🔥 ¡Quedan ${p.stock}!</div>`:''}
       <div class="prod-precios">
         <span class="prod-precio">Gs. ${Number(precioFinal).toLocaleString()}</span>
         ${p.precio_oferta?`<span class="prod-precio-original">Gs. ${Number(p.precio).toLocaleString()}</span>`:''}

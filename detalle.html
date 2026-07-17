@@ -33,10 +33,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
-    :root{--azul:#1565C0;--amarillo:#F5A623;--rojo:#E53935;--verde:#2E7D32;--negro:#111;--gris:#666;--borde:#E0E0E0;--blanco:#fff;--fondo:#F8F8F8}
+    :root{--rojo:#C1440E;--rojo-dark:#9A350A;--rojo-light:#FBEAE0;--naranja:#E8763C;--amarillo:#F2B705;--verde:#2F6B4F;--negro:#2B211A;--gris:#7C7267;--borde:#ECE3D6;--blanco:#fff;--fondo:#FAF6EF}
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
-    nav{position:sticky;top:0;z-index:100;background:var(--azul);height:60px;display:flex;align-items:center;padding:0 2rem;gap:1rem;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+    nav{position:sticky;top:0;z-index:100;background:var(--rojo);height:60px;display:flex;align-items:center;padding:0 2rem;gap:1rem;box-shadow:0 2px 8px rgba(0,0,0,.2)}
     .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:white;text-decoration:none}
     .nav-logo span{color:var(--amarillo)}
     .nav-back{color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;margin-left:auto}
@@ -44,7 +44,7 @@
     .btn-pub{background:var(--amarillo);color:var(--negro);padding:.45rem 1.1rem;border-radius:5px;text-decoration:none;font-size:.88rem;font-weight:700}
 
     .breadcrumb{background:white;border-bottom:1px solid var(--borde);padding:.65rem 2rem;font-size:.8rem;color:var(--gris)}
-    .breadcrumb a{color:var(--azul);text-decoration:none}
+    .breadcrumb a{color:var(--rojo);text-decoration:none}
     .breadcrumb a:hover{text-decoration:underline}
 
     .page{max-width:1100px;margin:0 auto;padding:1.5rem;display:grid;grid-template-columns:1fr 340px;gap:1.5rem}
@@ -63,7 +63,7 @@
     .badge{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.04em}
     .badge-dest{background:#FFF3CC;color:#8a6b00}
     .badge-verif{background:#E8F5E9;color:var(--verde)}
-    .badge-cat{background:#E3F0FF;color:var(--azul)}
+    .badge-cat{background:#E3F0FF;color:var(--rojo)}
     .badge-cond{background:var(--fondo);color:var(--gris)}
 
     .anuncio-precio{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:var(--rojo);margin-bottom:.3rem}
@@ -74,7 +74,7 @@
     .detalle-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gris);font-weight:600}
     .detalle-val{font-size:.9rem;font-weight:500}
 
-    .desc-text{font-size:.92rem;line-height:1.7;color:#333;white-space:pre-wrap}
+    .desc-text{font-size:.92rem;line-height:1.7;color:var(--negro);white-space:pre-wrap}
 
     #mapa-detalle{height:220px;border-radius:8px;overflow:hidden}
 
@@ -86,7 +86,7 @@
     .btn-wa{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;background:#25D366;color:white;border:none;padding:.85rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;text-decoration:none;margin-bottom:.75rem;transition:background .2s}
     .btn-wa:hover{background:#1da851}
     .btn-llamar{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;background:var(--fondo);color:var(--negro);border:1.5px solid var(--borde);padding:.75rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none;transition:all .2s}
-    .btn-llamar:hover{border-color:var(--azul);color:var(--azul)}
+    .btn-llamar:hover{border-color:var(--rojo);color:var(--rojo)}
     .contact-hint{font-size:.75rem;color:var(--gris);text-align:center;margin-top:.75rem;line-height:1.5}
 
     .safety-card{background:#FFF8E7;border:1.5px solid #FFE082;border-radius:10px;padding:1rem}
@@ -99,7 +99,7 @@
     .galeria-principal img { width: 100%; height: 100%; object-fit: cover; }
     .galeria-thumbs { display: flex; gap: .5rem; flex-wrap: wrap; }
     .galeria-thumb { width: 72px; height: 72px; border-radius: 7px; border: 2px solid var(--borde); overflow: hidden; cursor: pointer; flex-shrink: 0; transition: border-color .2s; }
-    .galeria-thumb:hover, .galeria-thumb.activo { border-color: var(--azul); }
+    .galeria-thumb:hover, .galeria-thumb.activo { border-color: var(--rojo); }
     .galeria-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .loading-page{text-align:center;padding:5rem;color:var(--gris)}
     .error-page{text-align:center;padding:5rem;color:var(--gris)}
@@ -136,7 +136,7 @@
 </div>
 
 <div id="loadingPage" class="loading-page">⏳ Cargando anuncio...</div>
-<div id="errorPage" class="error-page" style="display:none">⚠️ Anuncio no encontrado. <a href="anuncios.html" style="color:var(--azul)">Ver todos los anuncios</a></div>
+<div id="errorPage" class="error-page" style="display:none">⚠️ Anuncio no encontrado. <a href="anuncios.html" style="color:var(--rojo)">Ver todos los anuncios</a></div>
 
 <div class="page" id="pageContent" style="display:none">
   <!-- IZQUIERDA -->
@@ -309,7 +309,7 @@ async function cargar(){
     setTimeout(()=>{
       const m=L.map('mapa-detalle').setView([a.lat,a.lng],14);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(m);
-      L.circle([a.lat,a.lng],{radius:300,color:'#1565C0',fillColor:'#1565C0',fillOpacity:.15}).addTo(m);
+      L.circle([a.lat,a.lng],{radius:300,color:'#C1440E',fillColor:'#C1440E',fillOpacity:.15}).addTo(m);
     },100);
   }
 
