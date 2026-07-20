@@ -175,10 +175,10 @@ tr:hover td{background:#fafafa}
   <div class="login-box">
     <div class="login-logo">Plaza<span>PY</span></div>
     <div class="login-sub">Panel de administración</div>
-    <input type="text" id="loginUser" placeholder="Usuario"/>
-    <input type="password" id="loginPass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()"/>
-    <button class="login-btn" onclick="login()">Ingresar</button>
-    <div class="login-err" id="loginErr">Usuario o contraseña incorrectos.</div>
+    <input type="email" id="loginUser" placeholder="Email de administrador" autocomplete="username"/>
+    <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"/>
+    <button class="login-btn" id="loginBtn" onclick="login()">Ingresar</button>
+    <div class="login-err" id="loginErr">Email, contraseña incorrectos, o la cuenta no tiene permisos de administrador.</div>
   </div>
 </div>
 
@@ -391,28 +391,56 @@ const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
 const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 
-const ADMIN_USER='admin';
-const ADMIN_PASS='plazapy2025';
-
 let todasTiendas=[],todosProductos=[],todosPedidos=[],todosBanners=[];
 let filtroTiendaEstado='todos',filtroProductoEstado='todos';
 let bannerImgFile=null,editandoBannerId=null;
 
-function login(){
+async function login(){
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value;
-  if(u===ADMIN_USER&&p===ADMIN_PASS){
-    document.getElementById('loginWrap').style.display='none';
-    document.getElementById('adminWrap').classList.add('v');
-    cargarTodo();
-  } else {
+  const btn=document.getElementById('loginBtn');
+  document.getElementById('loginErr').classList.remove('v');
+  if(!u||!p)return;
+  btn.disabled=true;btn.textContent='Ingresando...';
+
+  const{data,error}=await db.auth.signInWithPassword({email:u,password:p});
+  if(error||!data.session){
     document.getElementById('loginErr').classList.add('v');
+    btn.disabled=false;btn.textContent='Ingresar';
+    return;
   }
+
+  const{data:perfil}=await db.from('perfiles').select('es_admin').eq('id',data.session.user.id).maybeSingle();
+  if(!perfil||!perfil.es_admin){
+    document.getElementById('loginErr').classList.add('v');
+    await db.auth.signOut();
+    btn.disabled=false;btn.textContent='Ingresar';
+    return;
+  }
+
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('adminWrap').classList.add('v');
+  btn.disabled=false;btn.textContent='Ingresar';
+  cargarTodo();
 }
-function logout(){
+
+async function logout(){
+  await db.auth.signOut();
   document.getElementById('adminWrap').classList.remove('v');
   document.getElementById('loginWrap').style.display='flex';
 }
+
+// Si ya hay una sesión de admin activa (recarga de página), entrar directo
+(async()=>{
+  const{data:{session}}=await db.auth.getSession();
+  if(!session)return;
+  const{data:perfil}=await db.from('perfiles').select('es_admin').eq('id',session.user.id).maybeSingle();
+  if(perfil&&perfil.es_admin){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('adminWrap').classList.add('v');
+    cargarTodo();
+  }
+})();
 
 async function cargarTodo(){
   await Promise.all([cargarTiendas(),cargarProductos(),cargarPedidos(),cargarBanners()]);
