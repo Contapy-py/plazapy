@@ -4,25 +4,25 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mi tienda — PlazaPY</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
-    :root{--rojo:#C1440E;--rojo-dark:#9A350A;--rojo-light:#FBEAE0;--naranja:#E8763C;--amarillo:#F2B705;--negro:#2B211A;--gris:#7C7267;--borde:#ECE3D6;--blanco:#fff;--fondo:#FAF6EF;--verde:#2F6B4F;--verde-light:#E4F0E9}
+    :root{--rojo:#1558D6;--rojo-dark:#0E41A8;--rojo-light:#E7EFFD;--naranja:#4F8DF5;--amarillo:#F2B705;--negro:#101828;--gris:#667085;--borde:#E3E8F2;--blanco:#fff;--fondo:#F3F6FC;--verde:#13805C;--verde-light:#E1F4EC}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--fondo);color:var(--negro)}
     nav{position:sticky;top:0;z-index:100;background:white;height:64px;display:flex;align-items:center;padding:0 2rem;gap:1rem;border-bottom:1px solid var(--borde)}
-    .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none}
+    .nav-logo{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none}
     .nav-logo span{color:var(--naranja)}
     .nav-back{color:var(--gris);text-decoration:none;font-size:.88rem;margin-left:auto}
     .nav-back:hover{color:var(--rojo)}
 
     .page{max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem}
-    h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;margin-bottom:.3rem}
+    h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.8rem;margin-bottom:.3rem}
     .sub{color:var(--gris);margin-bottom:1.5rem}
 
     .tabs-mt{display:flex;gap:0;border-bottom:2px solid var(--borde);margin-bottom:1.5rem}
-    .tab-mt{padding:.7rem 1.2rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:var(--gris);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+    .tab-mt{padding:.7rem 1.2rem;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.88rem;color:var(--gris);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
     .tab-mt.activo{color:var(--rojo);border-bottom-color:var(--rojo)}
     .tab-mt .tmb{background:var(--rojo);color:white;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:100px;margin-left:.4rem}
 
@@ -30,12 +30,12 @@
     .seccion-mt.v{display:block}
 
     .panel{background:white;border-radius:12px;border:1.5px solid var(--borde);padding:1.75rem;margin-bottom:1.25rem}
-    .panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1.5px solid var(--borde)}
+    .panel-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1.5px solid var(--borde)}
 
     .campo{margin-bottom:1.1rem}
     .campo label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem}
     .campo label .req{color:var(--rojo)}
-    .campo input,.campo select,.campo textarea{width:100%;padding:.7rem .9rem;border:1.5px solid var(--borde);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.92rem;color:var(--negro);background:var(--fondo);outline:none;transition:border-color .2s}
+    .campo input,.campo select,.campo textarea{width:100%;padding:.7rem .9rem;border:1.5px solid var(--borde);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.92rem;color:var(--negro);background:var(--fondo);outline:none;transition:border-color .2s}
     .campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--rojo);background:white}
     .campo textarea{resize:vertical;min-height:90px;line-height:1.6}
     .hint{font-size:.78rem;color:var(--gris);margin-top:.35rem}
@@ -55,18 +55,18 @@
     #mapaTienda,#mapaTiendaEdit{height:240px;border-radius:8px;border:1.5px solid var(--borde);margin-top:.4rem}
     .map-hint{font-size:.8rem;color:var(--gris);margin-top:.5rem}
 
-    .btn-guardar{background:var(--rojo);color:white;border:none;padding:.85rem 2rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:background .2s}
+    .btn-guardar{background:var(--rojo);color:white;border:none;padding:.85rem 2rem;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:background .2s}
     .btn-guardar:hover{background:var(--rojo-dark)}
     .btn-guardar:disabled{opacity:.5;cursor:not-allowed}
 
     .estado-box{display:flex;align-items:center;gap:.75rem;padding:1rem;border-radius:10px;margin-bottom:1.5rem}
     .estado-pendiente{background:#fff3cd;color:#856404}
     .estado-activa{background:var(--verde-light);color:var(--verde)}
-    .estado-bloqueada{background:#2B211A;color:white}
+    .estado-bloqueada{background:#101828;color:white}
     .estado-icon{font-size:1.5rem}
 
     .productos-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-    .btn-add{background:var(--rojo);color:white;border:none;padding:.6rem 1.2rem;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer}
+    .btn-add{background:var(--rojo);color:white;border:none;padding:.6rem 1.2rem;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer}
     .btn-add:hover{background:var(--rojo-dark)}
     .prod-row{display:flex;gap:1rem;align-items:center;padding:1rem;border-bottom:1px solid var(--borde)}
     .prod-row:last-child{border-bottom:none}
@@ -87,10 +87,10 @@
     .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem}
     .modal-bg.v{display:flex}
     .modal{background:white;border-radius:14px;padding:1.75rem;max-width:520px;width:100%;max-height:90vh;overflow-y:auto}
-    .modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:1.25rem}
+    .modal-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:1.25rem}
     .modal-acciones{display:flex;gap:.6rem;margin-top:1.25rem}
-    .btn-cancel{flex:1;background:var(--fondo);border:1.5px solid var(--borde);color:var(--negro);padding:.7rem;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif}
-    .btn-confirm{flex:1;background:var(--rojo);border:none;color:white;padding:.7rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+    .btn-cancel{flex:1;background:var(--fondo);border:1.5px solid var(--borde);color:var(--negro);padding:.7rem;border-radius:8px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+    .btn-confirm{flex:1;background:var(--rojo);border:none;color:white;padding:.7rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
 
     .foto-prod-zone{border:2px dashed var(--borde);border-radius:10px;padding:1.25rem;text-align:center;cursor:pointer;position:relative;transition:border-color .2s}
     .foto-prod-zone:hover{border-color:var(--rojo)}
@@ -118,7 +118,7 @@
     /* ESTADISTICAS */
     .stats-grid-mt{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem}
     .stat-card-mt{background:white;border-radius:12px;border:1.5px solid var(--borde);padding:1.25rem;text-align:center}
-    .stat-num-mt{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;line-height:1;color:var(--rojo)}
+    .stat-num-mt{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:2rem;line-height:1;color:var(--rojo)}
     .stat-lbl-mt{font-size:.78rem;color:var(--gris);margin-top:.4rem}
     .stat-sub-mt{font-size:.7rem;color:#999;margin-top:.2rem}
 
@@ -143,8 +143,8 @@
     /* PLANES */
     .plan-card-mt{border:1.5px solid var(--borde);border-radius:12px;padding:1.5rem}
     .plan-card-mt.dest{border:2px solid var(--rojo)}
-    .plan-nombre-mt{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:.2rem}
-    .plan-precio-mt{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--rojo);margin-bottom:.75rem}
+    .plan-nombre-mt{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1rem;margin-bottom:.2rem}
+    .plan-precio-mt{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.4rem;color:var(--rojo);margin-bottom:.75rem}
     .plan-precio-mt small{font-size:.7rem;color:var(--gris);font-weight:500}
     .plan-lista-mt{font-size:.82rem;color:#444;padding-left:1.1rem;line-height:1.7;margin-bottom:1.1rem}
 
@@ -298,37 +298,33 @@
       <div class="panel">
         <div class="panel-title">🚀 Hacé crecer tu tienda</div>
         <p style="font-size:.88rem;color:var(--gris);margin-bottom:1.5rem;line-height:1.6">
-          Tu tienda ya está publicada gratis. Si querés más visibilidad, elegí uno de estos planes.
+          Tu tienda ya está publicada gratis. Si querés más visibilidad, elegí un plan, pagá por transferencia y subí tu comprobante acá mismo.
         </p>
         <div id="planesEstadoActual" style="display:none;background:var(--verde-light);color:var(--verde);border-radius:8px;padding:.85rem 1rem;font-size:.85rem;font-weight:600;margin-bottom:1.25rem"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem" id="planesGrid">
-          <div class="plan-card-mt dest">
-            <div class="plan-nombre-mt">⭐ Destacado</div>
-            <div class="plan-precio-mt">Gs. 80.000 <small>/ 30 días</small></div>
-            <ul class="plan-lista-mt">
-              <li>Aparecés primero en tiendas.html y en el inicio</li>
-              <li>Insignia ⭐ destacada visible para compradores</li>
-            </ul>
-            <button class="btn-add" style="width:100%" id="btnPlanDestacado" onclick="solicitarPlan('destacado')">Solicitar destacado</button>
+        <div style="display:grid;grid-template-columns:minmax(0,420px);gap:1rem" id="planesGrid">
+          <div class="hint">Cargando planes...</div>
+        </div>
+
+        <div id="pagoBox" style="display:none;border:2px solid var(--rojo);border-radius:12px;padding:1.25rem;margin-top:1.25rem">
+          <div class="panel-title" id="pagoTitulo" style="margin-bottom:1rem"></div>
+          <div style="background:var(--fondo);border-radius:10px;padding:1.1rem;font-size:.85rem;line-height:1.8;margin-bottom:1.1rem">
+            <strong>💳 1. Transferí el monto exacto:</strong><br>
+            Tigo Money: 0981 000 000<br>
+            Personal Pay: 0971 000 000<br>
+            Transferencia: Visión Banco, Cuenta 0000000-0, Titular PlazaPY
           </div>
-          <div class="plan-card-mt">
-            <div class="plan-nombre-mt">✓ Verificado</div>
-            <div class="plan-precio-mt">Gs. 120.000 <small>pago único</small></div>
-            <ul class="plan-lista-mt">
-              <li>Insignia ✓ de tienda verificada</li>
-              <li>Más confianza para tus compradores</li>
-            </ul>
-            <button class="btn-add" style="width:100%;background:var(--fondo);color:var(--negro);border:1.5px solid var(--borde)" id="btnPlanVerificado" onclick="solicitarPlan('verificado')">Solicitar verificación</button>
+          <div class="campo">
+            <label>2. Subí tu comprobante (foto o PDF) <span class="req">*</span></label>
+            <input type="file" id="pagoArchivo" accept="image/*,application/pdf"/>
+            <div class="hint">Máximo 5 MB. Lo revisamos y activamos tu plan en menos de 2 horas hábiles.</div>
+          </div>
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+            <button class="btn-guardar" id="btnEnviarPago" onclick="enviarPago()">Enviar comprobante</button>
+            <button class="btn-guardar" style="background:var(--fondo);color:var(--negro);border:1.5px solid var(--borde)" onclick="cancelarPago()">Cancelar</button>
           </div>
         </div>
 
-        <div style="background:var(--fondo);border-radius:10px;padding:1.1rem;margin-top:1.25rem;font-size:.85rem;line-height:1.8">
-          <strong>💳 Cómo pagar:</strong><br>
-          Tigo Money: 0981 000 000<br>
-          Personal Pay: 0971 000 000<br>
-          Transferencia: Visión Banco, Cuenta 0000000-0, Titular PlazaPY<br>
-          <span style="color:var(--gris)">Después de pagar, tocá "Solicitar" arriba: te va a abrir WhatsApp con tu tienda ya identificada para que mandes el comprobante. Activamos en menos de 2 horas hábiles.</span>
-        </div>
+        <div id="pagosHistorial" style="margin-top:1.5rem"></div>
       </div>
     </div>
 
@@ -423,14 +419,6 @@
           <option value="servicios">🔧 Servicios</option>
           <option value="libros">📚 Libros</option>
           <option value="otros">📦 Otros</option>
-          <optgroup label="🔞 NightShop PY — Solo adultos +18">
-            <option value="juguetes-adultos">💎 Juguetes adultos</option>
-            <option value="lenceria">👙 Lencería</option>
-            <option value="cosmetica-adultos">✨ Cosmética adultos</option>
-            <option value="disfraces">🎭 Disfraces</option>
-            <option value="accesorios-adultos">⛓️ Accesorios adultos</option>
-            <option value="parejas">💑 Para parejas</option>
-          </optgroup>
         </select>
       </div>
       <div class="campo"><label>Stock disponible</label><input type="number" id="pStock" placeholder="1" min="0" value="1"/></div>
@@ -439,7 +427,8 @@
       <div class="campo"><label>Precio (Gs.) <span class="req">*</span></label><input type="number" id="pPrecio" placeholder="0" min="0"/></div>
       <div class="campo"><label>Precio oferta (opcional)</label><input type="number" id="pPrecioOferta" placeholder="0" min="0"/></div>
     </div>
-    <div class="checkbox-row"><input type="checkbox" id="pDestacado"/><label for="pDestacado">⭐ Marcar como destacado</label></div>
+    <div id="wrapPDestacado"><div class="checkbox-row"><input type="checkbox" id="pDestacado"/><label for="pDestacado">⭐ Marcar como destacado</label></div></div>
+    <div class="hint" id="hintPDestacado" style="display:none;margin-bottom:1rem">⭐ Destacar productos está disponible con el plan Destacado (pestaña Planes).</div>
     <div class="modal-acciones">
       <button class="btn-cancel" onclick="cerrarModalProducto()">Cancelar</button>
       <button class="btn-confirm" id="btnGuardarProducto" onclick="guardarProducto()">Guardar producto</button>
@@ -474,7 +463,7 @@ async function init(){
     miTienda=tienda;
     document.getElementById('panelTienda').style.display='block';
     actualizarEstadoBox();
-    actualizarPanelPlanes();
+    cargarPlanes();
     precargarFormEdicion();
     cargarProductos();
   } else {
@@ -505,47 +494,114 @@ function actualizarEstadoBox(){
   }
 }
 
-// ── PLANES ──
-function actualizarPanelPlanes(){
-  const estadoEl=document.getElementById('planesEstadoActual');
-  const partes=[];
-  if(miTienda.destacada){
-    const hasta=miTienda.destacada_hasta?new Date(miTienda.destacada_hasta).toLocaleDateString('es-PY'):null;
-    partes.push('⭐ Tu tienda ya está destacada'+(hasta?' hasta el '+hasta:''));
-    document.getElementById('btnPlanDestacado').textContent='Ya tenés este plan';
-    document.getElementById('btnPlanDestacado').disabled=true;
+// ── PLANES Y PAGOS ──
+let planesDisp=[],pagosTienda=[],planElegido=null;
+const fmtGs=n=>'Gs. '+Number(n).toLocaleString('es-PY');
+const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function cargarPlanes(){
+  const grid=document.getElementById('planesGrid');
+  const{data,error}=await db.from('planes').select('*').eq('activo',true).order('orden');
+  if(error||!data||!data.length){
+    grid.innerHTML='<div class="hint">No pudimos cargar los planes. Escribinos por WhatsApp y te ayudamos.</div>';
+    return;
   }
-  if(miTienda.verificado){
-    partes.push('✓ Tu tienda ya está verificada');
-    document.getElementById('btnPlanVerificado').textContent='Ya tenés este plan';
-    document.getElementById('btnPlanVerificado').disabled=true;
-  }
-  if(miTienda.plan_solicitado){
-    partes.push('📩 Ya enviaste una solicitud de plan "'+miTienda.plan_solicitado+'", la estamos revisando.');
-  }
-  if(partes.length){
-    estadoEl.style.display='block';
-    estadoEl.innerHTML=partes.join('<br>');
-  }
+  planesDisp=data;
+  await cargarPagos();
 }
 
-async function solicitarPlan(tipo){
+async function cargarPagos(){
   if(!miTienda)return;
-  await db.from('tiendas').update({
-    plan_solicitado: tipo,
-    plan_solicitado_en: new Date().toISOString()
-  }).eq('id', miTienda.id);
-  miTienda.plan_solicitado=tipo;
+  const{data}=await db.from('pagos').select('*').eq('tienda_id',miTienda.id).order('created_at',{ascending:false}).limit(5);
+  pagosTienda=data||[];
   actualizarPanelPlanes();
+}
 
-  const msg = encodeURIComponent(
-    `Hola! Quiero el plan "${tipo}" para mi tienda en PlazaPY.\n`+
-    `Tienda: ${miTienda.nombre}\n`+
-    `ID: ${miTienda.id}\n`+
-    `Adjunto el comprobante de pago.`
-  );
-  window.open('https://wa.me/595995676743?text='+msg, '_blank');
-  toast('Solicitud registrada. Te abrimos WhatsApp para enviar el comprobante.', 'verde');
+function actualizarPanelPlanes(){
+  const grid=document.getElementById('planesGrid');
+  if(!grid||!planesDisp.length||!miTienda)return;
+  const vigente=miTienda.destacada&&(!miTienda.destacada_hasta||new Date(miTienda.destacada_hasta)>new Date());
+  const pendiente=cod=>pagosTienda.some(p=>p.plan_codigo===cod&&p.estado==='pendiente');
+
+  grid.innerHTML=planesDisp.map(pl=>{
+    const dest=pl.codigo==='destacado';
+    const per=pl.duracion_dias?`/ ${pl.duracion_dias} días`:'pago único';
+    const beneficios=(pl.descripcion||'').split('|').filter(Boolean).map(x=>`<li>${esc(x)}</li>`).join('');
+    let txt=vigente?'Renovar destacado':'Contratar destacado';
+    let off=false;
+    if(pendiente(pl.codigo)){txt='Comprobante en revisión';off=true;}
+    const estilo=dest?'width:100%':'width:100%;background:var(--fondo);color:var(--negro);border:1.5px solid var(--borde)';
+    return `<div class="plan-card-mt${dest?' dest':''}">
+      <div class="plan-nombre-mt">${dest?'⭐':'✓'} ${esc(pl.nombre)}</div>
+      <div class="plan-precio-mt">${fmtGs(pl.precio_gs)} <small>${per}</small></div>
+      <ul class="plan-lista-mt">${beneficios}</ul>
+      <button class="btn-add" style="${estilo}" ${off?'disabled':''} onclick="elegirPlan('${pl.codigo}')">${txt}</button>
+    </div>`;
+  }).join('');
+
+  const partes=[];
+  if(vigente){
+    const hasta=miTienda.destacada_hasta?new Date(miTienda.destacada_hasta).toLocaleDateString('es-PY'):null;
+    partes.push('⭐ Tu tienda está destacada'+(hasta?' hasta el '+hasta:''));
+  }
+  const estadoEl=document.getElementById('planesEstadoActual');
+  estadoEl.style.display=partes.length?'block':'none';
+  estadoEl.innerHTML=partes.join('<br>');
+
+  const hist=document.getElementById('pagosHistorial');
+  const etiqueta={pendiente:'⏳ En revisión',aprobado:'✅ Aprobado',rechazado:'❌ Rechazado'};
+  hist.innerHTML=pagosTienda.length?
+    '<div style="font-weight:700;font-size:.88rem;margin-bottom:.5rem">Tus pagos</div>'+
+    pagosTienda.map(p=>`<div style="display:flex;justify-content:space-between;gap:.5rem;font-size:.82rem;padding:.5rem 0;border-bottom:1px solid var(--borde)">
+      <span>${new Date(p.created_at).toLocaleDateString('es-PY')} · ${esc(p.plan_codigo)} · ${fmtGs(p.monto_gs||0)}</span>
+      <span>${etiqueta[p.estado]||p.estado}${p.estado==='rechazado'&&p.nota_admin?' — '+esc(p.nota_admin):''}</span>
+    </div>`).join(''):'';
+}
+
+function elegirPlan(codigo){
+  planElegido=planesDisp.find(p=>p.codigo===codigo);
+  if(!planElegido)return;
+  document.getElementById('pagoTitulo').textContent=`Plan ${planElegido.nombre} — ${fmtGs(planElegido.precio_gs)}`;
+  document.getElementById('pagoArchivo').value='';
+  const box=document.getElementById('pagoBox');
+  box.style.display='block';
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function cancelarPago(){
+  planElegido=null;
+  document.getElementById('pagoBox').style.display='none';
+}
+
+async function enviarPago(){
+  if(!miTienda||!planElegido)return;
+  const f=document.getElementById('pagoArchivo').files[0];
+  if(!f){toast('Adjuntá el comprobante de pago','rojo');return;}
+  if(f.size>5*1024*1024){toast('El archivo supera los 5 MB','rojo');return;}
+  if(!/^(image\/|application\/pdf)/.test(f.type)){toast('Subí una imagen o un PDF','rojo');return;}
+
+  const btn=document.getElementById('btnEnviarPago');
+  btn.disabled=true;btn.textContent='Enviando...';
+  const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5)||'jpg';
+  const path=`${miTienda.id}/${Date.now()}.${ext}`;
+
+  const{error:upErr}=await db.storage.from('comprobantes').upload(path,f,{contentType:f.type});
+  if(upErr){toast('No pudimos subir el archivo: '+upErr.message,'rojo');btn.disabled=false;btn.textContent='Enviar comprobante';return;}
+
+  const{error:insErr}=await db.from('pagos').insert([{tienda_id:miTienda.id,plan_codigo:planElegido.codigo,comprobante_path:path}]);
+  if(insErr){
+    await db.storage.from('comprobantes').remove([path]);
+    toast('No pudimos registrar el pago: '+insErr.message,'rojo');
+    btn.disabled=false;btn.textContent='Enviar comprobante';return;
+  }
+
+  await db.from('tiendas').update({plan_solicitado:planElegido.codigo,plan_solicitado_en:new Date().toISOString()}).eq('id',miTienda.id);
+  miTienda.plan_solicitado=planElegido.codigo;
+
+  btn.disabled=false;btn.textContent='Enviar comprobante';
+  cancelarPago();
+  toast('Comprobante enviado. Te avisamos apenas lo aprobemos.','verde');
+  await cargarPagos();
 }
 
 function initMapa(){
@@ -646,20 +702,10 @@ async function crearTienda(){
   document.getElementById('formCrearTienda').style.display='none';
   document.getElementById('panelTienda').style.display='block';
   actualizarEstadoBox();
-  actualizarPanelPlanes();
+  cargarPlanes();
   precargarFormEdicion();
   cargarProductos();
   toast('¡Tienda creada! En revisión.','verde');
-
-  notificarAdmin(`🏪 NUEVA TIENDA pendiente de aprobacion:\n\n${nombre}\nWhatsApp: ${wa}\nCiudad: ${nuevaTienda.ciudad||'-'}\n\nRevisar en plazapy.com/admin.html`);
-}
-
-// ── NOTIFICACIONES CALLMEBOT (admin) ──
-function notificarAdmin(mensaje){
-  const phone='595995676743';
-  const apikey='5999924';
-  const url=`https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(mensaje)}&apikey=${apikey}`;
-  fetch(url).then(()=>{}).catch(()=>{});
 }
 
 // ── ESTADISTICAS ──
@@ -840,6 +886,16 @@ function renderProductos(){
     </div>`).join('');
 }
 
+function destacadoVigente(){
+  return !!(miTienda&&miTienda.destacada&&(!miTienda.destacada_hasta||new Date(miTienda.destacada_hasta)>new Date()));
+}
+function actualizarOpcionDestacado(){
+  const ok=destacadoVigente();
+  document.getElementById('wrapPDestacado').style.display=ok?'block':'none';
+  document.getElementById('hintPDestacado').style.display=ok?'none':'block';
+  if(!ok)document.getElementById('pDestacado').checked=false;
+}
+
 function abrirModalProducto(){
   editandoProductoId=null;fotosProdFiles=[];fotosProdExistentes=[];
   document.getElementById('modalProdTitulo').textContent='Agregar producto';
@@ -847,6 +903,7 @@ function abrirModalProducto(){
   document.getElementById('pCategoria').value='';document.getElementById('pStock').value='1';
   document.getElementById('pPrecio').value='';document.getElementById('pPrecioOferta').value='';
   document.getElementById('pDestacado').checked=false;
+  actualizarOpcionDestacado();
   renderFotosProd();
   document.getElementById('modalProducto').classList.add('v');
 }
@@ -862,6 +919,7 @@ function editarProducto(id){
   document.getElementById('pPrecio').value=p.precio;
   document.getElementById('pPrecioOferta').value=p.precio_oferta||'';
   document.getElementById('pDestacado').checked=p.destacado;
+  actualizarOpcionDestacado();
 
   // Cargar fotos existentes (urls) para mostrarlas y permitir eliminarlas
   try{fotosProdExistentes=p.fotos_urls?JSON.parse(p.fotos_urls):[];}catch(e){fotosProdExistentes=[];}
@@ -949,7 +1007,7 @@ async function guardarProducto(){
     descripcion:document.getElementById('pDesc').value.trim(),
     categoria,precio,precio_oferta:precioOferta,oferta:!!precioOferta,
     stock:Number(document.getElementById('pStock').value)||1,
-    destacado:document.getElementById('pDestacado').checked,
+    destacado:destacadoVigente()&&document.getElementById('pDestacado').checked,
     estado:'pendiente'
   };
   if(todasLasFotos.length){
@@ -966,10 +1024,6 @@ async function guardarProducto(){
 
   cerrarModalProducto();cargarProductos();
   toast(editandoProductoId?'Producto actualizado.':'Producto agregado.','verde');
-
-  if(!editandoProductoId){
-    notificarAdmin(`📦 NUEVO PRODUCTO pendiente de aprobacion:\n\n${nombre}\nTienda: ${miTienda.nombre}\nPrecio: Gs. ${Number(precio).toLocaleString()}\n\nRevisar en plazapy.com/admin.html`);
-  }
 }
 
 async function eliminarProducto(id){

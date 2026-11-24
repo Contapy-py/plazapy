@@ -23,16 +23,16 @@
   <meta property="og:url" content="https://www.plazapy.com/vender.html"/>
   <meta property="og:type" content="website"/>
   <link rel="manifest" href="/manifest.json"/>
-  <meta name="theme-color" content="#C1440E"/>
+  <meta name="theme-color" content="#1558D6"/>
   <link rel="icon" href="/icon-192.png"/>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="plazapy.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root{--rojo:#C1440E;--rojo-dark:#9A350A;--rojo-light:#FBEAE0;--naranja:#E8763C;--amarillo:#F2B705;--negro:#2B211A;--gris:#7C7267;--borde:#ECE3D6;--blanco:#fff;--fondo:#FAF6EF;--verde:#2F6B4F;--verde-light:#E4F0E9}
+    :root{--rojo:#1558D6;--rojo-dark:#0E41A8;--rojo-light:#E7EFFD;--naranja:#4F8DF5;--amarillo:#F2B705;--negro:#101828;--gris:#667085;--borde:#E3E8F2;--blanco:#fff;--fondo:#F3F6FC;--verde:#13805C;--verde-light:#E1F4EC}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:var(--blanco);color:var(--negro)}
-    nav{background:white;height:64px;display:flex;align-items:center;padding:0 2rem;border-bottom:1px solid var(--borde);position:sticky;top:0;z-index:100}
-    .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--blanco);color:var(--negro)}
+    .nav-logo{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.5rem;color:var(--rojo);text-decoration:none}
     .nav-logo span{color:var(--naranja)}
     .nav-right{margin-left:auto;display:flex;gap:.75rem;align-items:center}
     .btn-nav-login{color:var(--gris);text-decoration:none;font-size:.88rem}
@@ -41,46 +41,46 @@
 
     .hero{background:linear-gradient(135deg,var(--rojo) 0%,var(--naranja) 100%);padding:5rem 2rem;text-align:center;color:white}
     .hero-tag{background:rgba(255,255,255,.2);color:white;font-size:.8rem;font-weight:700;padding:4px 14px;border-radius:100px;display:inline-block;margin-bottom:1.25rem;text-transform:uppercase;letter-spacing:.06em}
-    .hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin-bottom:1rem;max-width:700px;margin-left:auto;margin-right:auto}
+    .hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin-bottom:1rem;max-width:700px;margin-left:auto;margin-right:auto}
     .hero h1 span{color:var(--amarillo)}
     .hero p{font-size:1.05rem;opacity:.9;max-width:540px;margin:0 auto 2rem;line-height:1.65}
     .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-    .btn-main{background:white;color:var(--rojo);padding:.85rem 2rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;text-decoration:none;display:inline-block;transition:transform .15s}
+    .btn-main{background:white;color:var(--rojo);padding:.85rem 2rem;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1rem;text-decoration:none;display:inline-block;transition:transform .15s}
     .btn-main:hover{transform:translateY(-2px)}
     .btn-sec{background:rgba(255,255,255,.15);color:white;padding:.85rem 2rem;border-radius:8px;font-weight:600;font-size:.95rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.4)}
     .btn-sec:hover{background:rgba(255,255,255,.25)}
     .hero-stats{display:flex;gap:2.5rem;justify-content:center;margin-top:3rem;flex-wrap:wrap}
-    .hero-stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--amarillo)}
+    .hero-stat-num{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.8rem;color:var(--amarillo)}
     .hero-stat-lbl{font-size:.8rem;opacity:.8;margin-top:.2rem;text-align:center}
 
     .section{max-width:1100px;margin:0 auto;padding:4rem 2rem}
     .sec-tag{color:var(--rojo);font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
-    .sec-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:1rem;line-height:1.2}
+    .sec-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:1rem;line-height:1.2}
     .sec-sub{color:var(--gris);font-size:.98rem;max-width:560px;line-height:1.7;margin-bottom:3rem}
 
     .ventajas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
     .ventaja{background:var(--fondo);border-radius:14px;padding:1.75rem;border:1.5px solid var(--borde)}
     .ventaja-ico{font-size:2.2rem;margin-bottom:.85rem}
-    .ventaja h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.5rem}
+    .ventaja h3{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.5rem}
     .ventaja p{font-size:.87rem;color:var(--gris);line-height:1.65}
 
     .como-bg{background:var(--fondo);padding:4rem 2rem}
     .como-inner{max-width:900px;margin:0 auto}
     .pasos{display:flex;flex-direction:column;gap:1rem;margin-top:2rem}
     .paso{display:flex;gap:1.25rem;align-items:flex-start;background:white;border-radius:12px;padding:1.5rem;border:1.5px solid var(--borde)}
-    .paso-num{width:42px;height:42px;border-radius:50%;background:var(--rojo);color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .paso h3{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.3rem}
+    .paso-num{width:42px;height:42px;border-radius:50%;background:var(--rojo);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .paso h3{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.3rem}
     .paso p{font-size:.86rem;color:var(--gris);line-height:1.6}
 
     /* PLANES */
-    .planes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2.5rem}
+    .planes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin-top:2.5rem;max-width:780px;margin-left:auto;margin-right:auto}
     .plan{border-radius:14px;border:2px solid var(--borde);padding:2rem;position:relative;background:white;transition:box-shadow .2s}
     .plan:hover{box-shadow:0 8px 30px rgba(0,0,0,.1)}
     .plan.popular{border-color:var(--rojo)}
     .plan-pop-tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--rojo);color:white;font-size:.7rem;font-weight:700;padding:3px 14px;border-radius:100px;white-space:nowrap}
     .plan-icon{font-size:2rem;margin-bottom:.75rem}
-    .plan-nombre{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.25rem}
-    .plan-precio{font-size:2rem;font-weight:800;font-family:'Syne',sans-serif;line-height:1;margin:.5rem 0}
+    .plan-nombre{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.25rem}
+    .plan-precio{font-size:2rem;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;line-height:1;margin:.5rem 0}
     .plan-precio.gratis{color:var(--verde)}
     .plan-precio.pago{color:var(--rojo)}
     .plan-per{font-size:.8rem;color:var(--gris);font-weight:400}
@@ -89,7 +89,7 @@
     .plan-features li::before{content:"✓";color:var(--verde);font-weight:700;flex-shrink:0}
     .plan-features li.no{color:#bbb}
     .plan-features li.no::before{content:"✗";color:#ddd}
-    .btn-plan{display:block;text-align:center;padding:.8rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;text-decoration:none;margin-top:1.25rem}
+    .btn-plan{display:block;text-align:center;padding:.8rem;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem;text-decoration:none;margin-top:1.25rem}
     .btn-plan-free{background:var(--fondo);color:var(--negro);border:1.5px solid var(--borde)}
     .btn-plan-free:hover{border-color:var(--rojo);color:var(--rojo)}
     .btn-plan-paid{background:var(--rojo);color:white}
@@ -104,7 +104,7 @@
     .pm-ico{font-size:1.4rem;width:36px;text-align:center;flex-shrink:0}
     .pm-label{font-weight:600;font-size:.9rem}
     .pm-dato{font-size:.82rem;color:rgba(255,255,255,.5);margin-top:.1rem}
-    .pago-info h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.75rem}
+    .pago-info h3{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:.75rem}
     .pago-info p{color:rgba(255,255,255,.65);font-size:.9rem;line-height:1.7;margin-bottom:.85rem}
     .pago-nota{background:rgba(255,255,255,.07);border-left:3px solid var(--amarillo);padding:.85rem 1rem;border-radius:0 8px 8px 0;font-size:.85rem;color:rgba(255,255,255,.8);line-height:1.6}
 
@@ -118,15 +118,11 @@
     .faq-a.open{max-height:300px;padding:.75rem 1.25rem 1.25rem}
 
     .cta-final{background:linear-gradient(135deg,var(--rojo),var(--naranja));padding:5rem 2rem;text-align:center;color:white}
-    .cta-final h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:.75rem}
+    .cta-final h2{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:.75rem}
     .cta-final p{font-size:1rem;opacity:.9;margin-bottom:2rem}
 
-    footer{background:#2B211A;color:rgba(255,255,255,.5);padding:1.5rem 2rem;text-align:center;font-size:.82rem}
-    footer a{color:rgba(255,255,255,.5);text-decoration:none;margin:0 .6rem}
-    footer a:hover{color:white}
 
     @media(max-width:768px){
-      nav{padding:0 1rem}
       .hero{padding:3rem 1.5rem}
       .section{padding:3rem 1.5rem}
       .ventajas-grid,.planes-grid,.pago-grid{grid-template-columns:1fr}
@@ -136,13 +132,7 @@
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
-  <div class="nav-right">
-    <a href="auth.html" class="btn-nav-login">Iniciar sesión</a>
-    <a href="mi-tienda.html" class="btn-nav-cta">Crear mi tienda →</a>
-  </div>
-</nav>
+<header id="pz-nav" data-activo="" data-placeholder="Buscar productos"></header>
 
 <!-- HERO -->
 <div class="hero">
@@ -206,7 +196,6 @@
         <li>Fotos, descripción y precio</li>
         <li>Aparecés en el catálogo</li>
         <li>Estadísticas básicas</li>
-        <li class="no">Badge tienda verificada</li>
         <li class="no">Productos destacados</li>
         <li class="no">Prioridad en búsquedas</li>
       </ul>
@@ -217,7 +206,7 @@
       <div class="plan-pop-tag">⭐ Más popular</div>
       <div class="plan-icon">⭐</div>
       <div class="plan-nombre">Destacado</div>
-      <div class="plan-precio pago">Gs. 50.000<span class="plan-per"> / mes</span></div>
+      <div class="plan-precio pago">Gs. 30.000<span class="plan-per"> / mes</span></div>
       <ul class="plan-features">
         <li>Todo lo del plan Básico</li>
         <li>Productos ilimitados</li>
@@ -225,27 +214,9 @@
         <li>Aparecés primero en el catálogo</li>
         <li>Slider del home (con oferta)</li>
         <li>Hasta 5x más visibilidad</li>
-        <li class="no">Badge tienda verificada</li>
         <li class="no">Soporte prioritario</li>
       </ul>
-      <a href="https://wa.me/595995676743?text=Hola!%20Quiero%20contratar%20el%20plan%20Destacado%20para%20mi%20tienda%20en%20PlazaPY%20(Gs.%2050.000%2Fmes)" target="_blank" class="btn-plan btn-plan-paid">Contratar por WhatsApp →</a>
-    </div>
-
-    <div class="plan">
-      <div class="plan-icon">🏢</div>
-      <div class="plan-nombre">Negocio</div>
-      <div class="plan-precio pago">Gs. 150.000<span class="plan-per"> / mes</span></div>
-      <ul class="plan-features">
-        <li>Todo lo del plan Destacado</li>
-        <li>Badge ✅ tienda verificada</li>
-        <li>Máxima prioridad en búsquedas</li>
-        <li>Estadísticas avanzadas</li>
-        <li>Soporte prioritario WhatsApp</li>
-        <li>En sección "Tiendas verificadas"</li>
-        <li>Factura disponible (con RUC)</li>
-        <li>Productos ilimitados</li>
-      </ul>
-      <a href="https://wa.me/595995676743?text=Hola!%20Quiero%20contratar%20el%20plan%20Negocio%20para%20mi%20tienda%20en%20PlazaPY%20(Gs.%20150.000%2Fmes)" target="_blank" class="btn-plan btn-plan-paid">Contratar por WhatsApp →</a>
+      <a href="mi-tienda.html" class="btn-plan btn-plan-paid">Contratar Destacado →</a>
     </div>
 
   </div>
@@ -258,12 +229,12 @@
     <div class="sec-title" style="color:white;margin-bottom:.5rem">Pagá como te resulte más cómodo</div>
     <div class="pago-grid">
       <div class="pago-metodos">
-        <div class="pm"><span class="pm-ico">🏦</span><div><div class="pm-label">Transferencia bancaria</div><div class="pm-dato">Consultá al contratar</div></div></div>
+        <div class="pm"><span class="pm-ico">🏦</span><div><div class="pm-label">Transferencia bancaria</div><div class="pm-dato">Los datos aparecen en tu panel al contratar</div></div></div>
         <div class="pm"><span class="pm-ico">💵</span><div><div class="pm-label">Efectivo en Asunción</div><div class="pm-dato">Coordinás por WhatsApp</div></div></div>
       </div>
       <div class="pago-info">
         <h3>Simple y transparente</h3>
-        <p>Escribinos por WhatsApp con el nombre de tu tienda y el plan que querés. Te damos los datos de pago y activamos tu plan en menos de 2 horas hábiles después de confirmar el pago.</p>
+        <p>Elegí tu plan desde el panel de tu tienda, transferí y subí el comprobante ahí mismo. Activamos tu plan en menos de 2 horas hábiles después de confirmar el pago.</p>
         <p>Emitimos <strong style="color:white">factura legal</strong> para empresas que la necesiten.</p>
         <div class="pago-nota">💡 El plan Básico es completamente gratuito. Solo contratás un plan pago si querés más visibilidad y funciones.</div>
       </div>
@@ -292,15 +263,7 @@
   <a href="mi-tienda.html" class="btn-main">🚀 Crear mi tienda gratis →</a>
 </div>
 
-<footer>
-  <a href="index.html">PlazaPY</a>
-  <a href="productos.html">Ver productos</a>
-  <a href="tiendas.html">Ver tiendas</a>
-  <a href="terminos.html">Términos</a>
-  <a href="privacidad.html">Privacidad</a>
-  <a href="https://wa.me/595995676743" target="_blank">💬 WhatsApp</a><br/><br/>
-  © 2025 PlazaPY · El marketplace paraguayo · República del Paraguay
-</footer>
+<footer id="pz-footer"></footer>
 
 <script>
 function toggleFaq(el){
@@ -312,5 +275,6 @@ function toggleFaq(el){
 }
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
 </script>
+<script src="plazapy.js"></script>
 </body>
 </html>

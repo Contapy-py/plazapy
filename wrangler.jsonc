@@ -1,7 +1,15 @@
 {
   "name": "plazapy",
+  "main": "worker/index.js",
   "compatibility_date": "2026-07-17",
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS",
+    // El Worker solo interviene en estas páginas; el resto se sirve como archivo estático
+    "run_worker_first": ["/producto", "/producto.html", "/detalle", "/detalle.html", "/tienda", "/tienda.html"]
+  },
+  "vars": {
+    "SUPABASE_URL": "https://ayjlnbxcojqglcufqzob.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY"
   }
 }

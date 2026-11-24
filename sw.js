@@ -1,7 +1,9 @@
 // PlazaPY Service Worker — cache básico para experiencia tipo app
-const CACHE_NAME = 'plazapy-v1';
+const CACHE_NAME = 'plazapy-v2';
 const ASSETS_TO_CACHE = [
   '/index.html',
+  '/plazapy.css',
+  '/plazapy.js',
   '/icon-192.png',
   '/icon-512.png'
 ];

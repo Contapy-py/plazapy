@@ -29,279 +29,214 @@
   <meta name="twitter:title" content="PlazaPY" id="twTitle" />
   <meta name="twitter:description" content="Encontrá los mejores anuncios en Paraguay." id="twDesc" />
   <meta name="twitter:image" content="https://www.plazapy.com/og-default.png" id="twImage" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <style>
-    :root{--rojo:#C1440E;--rojo-dark:#9A350A;--rojo-light:#FBEAE0;--naranja:#E8763C;--amarillo:#F2B705;--verde:#2F6B4F;--negro:#2B211A;--gris:#7C7267;--borde:#ECE3D6;--blanco:#fff;--fondo:#FAF6EF}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--negro)}
-    nav{position:sticky;top:0;z-index:100;background:var(--rojo);height:60px;display:flex;align-items:center;padding:0 2rem;gap:1rem;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-    .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:white;text-decoration:none}
-    .nav-logo span{color:var(--amarillo)}
-    .nav-back{color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;margin-left:auto}
-    .nav-back:hover{color:white}
-    .btn-pub{background:var(--amarillo);color:var(--negro);padding:.45rem 1.1rem;border-radius:5px;text-decoration:none;font-size:.88rem;font-weight:700}
-
-    .breadcrumb{background:white;border-bottom:1px solid var(--borde);padding:.65rem 2rem;font-size:.8rem;color:var(--gris)}
-    .breadcrumb a{color:var(--rojo);text-decoration:none}
-    .breadcrumb a:hover{text-decoration:underline}
-
-    .page{max-width:1100px;margin:0 auto;padding:1.5rem;display:grid;grid-template-columns:1fr 340px;gap:1.5rem}
-
-    /* IZQUIERDA */
-    .main-col{}
-    .img-main{background:white;border-radius:10px;border:1.5px solid var(--borde);overflow:hidden;margin-bottom:1rem}
-    .img-placeholder{height:360px;display:flex;align-items:center;justify-content:center;font-size:6rem;background:var(--fondo)}
-    .img-placeholder img{width:100%;height:100%;object-fit:cover}
-
-    .panel{background:white;border-radius:10px;border:1.5px solid var(--borde);padding:1.25rem;margin-bottom:1rem}
-    .panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--borde);color:var(--gris);text-transform:uppercase;letter-spacing:.06em;font-size:.75rem}
-
-    .anuncio-titulo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;line-height:1.2;margin-bottom:.75rem}
-    .anuncio-badges{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
-    .badge{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.04em}
-    .badge-dest{background:#FFF3CC;color:#8a6b00}
-    .badge-verif{background:#E8F5E9;color:var(--verde)}
-    .badge-cat{background:#E3F0FF;color:var(--rojo)}
-    .badge-cond{background:var(--fondo);color:var(--gris)}
-
-    .anuncio-precio{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:var(--rojo);margin-bottom:.3rem}
-    .anuncio-neg{font-size:.82rem;color:var(--gris);margin-bottom:1rem}
-
-    .detalle-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.5rem}
-    .detalle-item{display:flex;flex-direction:column;gap:.15rem}
-    .detalle-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gris);font-weight:600}
-    .detalle-val{font-size:.9rem;font-weight:500}
-
-    .desc-text{font-size:.92rem;line-height:1.7;color:var(--negro);white-space:pre-wrap}
-
-    #mapa-detalle{height:220px;border-radius:8px;overflow:hidden}
-
-    /* DERECHA */
-    .side-col{position:sticky;top:76px;height:fit-content}
-    .contact-card{background:white;border-radius:10px;border:1.5px solid var(--borde);padding:1.5rem;margin-bottom:1rem}
-    .contact-nombre{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.3rem}
-    .contact-verif{font-size:.78rem;color:var(--verde);margin-bottom:1rem;font-weight:600}
-    .btn-wa{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;background:#25D366;color:white;border:none;padding:.85rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;text-decoration:none;margin-bottom:.75rem;transition:background .2s}
-    .btn-wa:hover{background:#1da851}
-    .btn-llamar{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;background:var(--fondo);color:var(--negro);border:1.5px solid var(--borde);padding:.75rem;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none;transition:all .2s}
-    .btn-llamar:hover{border-color:var(--rojo);color:var(--rojo)}
-    .contact-hint{font-size:.75rem;color:var(--gris);text-align:center;margin-top:.75rem;line-height:1.5}
-
-    .safety-card{background:#FFF8E7;border:1.5px solid #FFE082;border-radius:10px;padding:1rem}
-    .safety-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:#8a6b00;margin-bottom:.5rem}
-    .safety-item{font-size:.78rem;color:#8a6b00;line-height:1.6}
-
-    /* GALERÍA */
-    .galeria { display: grid; grid-template-columns: 1fr; gap: .5rem; margin-bottom: 1rem; }
-    .galeria-principal { background: white; border-radius: 10px; border: 1.5px solid var(--borde); overflow: hidden; height: 340px; display: flex; align-items: center; justify-content: center; font-size: 5rem; cursor: pointer; }
-    .galeria-principal img { width: 100%; height: 100%; object-fit: cover; }
-    .galeria-thumbs { display: flex; gap: .5rem; flex-wrap: wrap; }
-    .galeria-thumb { width: 72px; height: 72px; border-radius: 7px; border: 2px solid var(--borde); overflow: hidden; cursor: pointer; flex-shrink: 0; transition: border-color .2s; }
-    .galeria-thumb:hover, .galeria-thumb.activo { border-color: var(--rojo); }
-    .galeria-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .loading-page{text-align:center;padding:5rem;color:var(--gris)}
-    .error-page{text-align:center;padding:5rem;color:var(--gris)}
-
-    @media(max-width:768px){
-      .page{grid-template-columns:1fr;padding:.75rem;gap:1rem}
-      .side-col{position:static}
-      nav{padding:0 1rem}
-      .breadcrumb{padding:.55rem 1rem;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      .anuncio-titulo{font-size:1.25rem}
-      .anuncio-precio{font-size:1.6rem}
-      .img-placeholder,.galeria-principal{height:240px}
-      .detalle-grid{grid-template-columns:1fr 1fr}
-      .panel{padding:1rem}
-      .contact-card{padding:1.1rem}
-      .btn-wa{font-size:.95rem;padding:.8rem}
-      .safety-card{padding:.85rem}
-    }
-    @media(max-width:480px){
-      .detalle-grid{grid-template-columns:1fr}
-      .galeria-principal{height:200px}
-    }
-  </style>
+  <link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#1558D6"/>
+<link rel="icon" href="/icon-192.png"/>
+<link rel="stylesheet" href="plazapy.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+.migas{font-size:.78rem;color:var(--gris);padding:1.1rem 0 .9rem}
+.migas a{text-decoration:none}.migas a:hover{color:var(--azul)}
+.migas b{color:var(--tinta);font-weight:600}
+.estado-pagina{text-align:center;padding:4rem 1rem;color:var(--gris)}
+.estado-pagina a{color:var(--azul);font-weight:700}
+.pagina{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:1.2rem;align-items:start}
+.card{background:#fff;border-radius:var(--r-xl);padding:1.6rem;margin-bottom:1.2rem}
+.g-main{aspect-ratio:16/10;background:var(--superficie);border-radius:var(--r-lg);overflow:hidden;display:grid;place-items:center;font-size:5rem}
+.g-main img{width:100%;height:100%;object-fit:cover}
+.g-thumbs{display:flex;gap:.6rem;margin-top:.7rem;overflow-x:auto;scrollbar-width:thin}
+.g-thumbs:empty{display:none}
+.gal-thumb{width:84px;height:64px;border-radius:var(--r-sm);overflow:hidden;cursor:pointer;border:2px solid transparent;flex-shrink:0;background:var(--superficie)}
+.gal-thumb img{width:100%;height:100%;object-fit:cover}
+.gal-thumb.activo{border-color:var(--azul)}
+.badges{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.8rem}
+.badge-op{background:var(--azul);color:#fff}
+.badge-op.alq{background:var(--verde)}
+.badge-gris{background:var(--azul-fondo);color:#344054}
+.titulo{font-size:1.55rem;font-weight:800;line-height:1.25;letter-spacing:-.02em;margin-bottom:.6rem}
+.precio{font-size:2rem;font-weight:800;letter-spacing:-.02em}
+.precio small{font-size:.95rem;font-weight:600;color:var(--gris)}
+.neg{font-size:.82rem;color:var(--gris);margin:.15rem 0 1.2rem}
+.datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem}
+.dato{background:var(--superficie);border-radius:var(--r-md);padding:.75rem .9rem}
+.dato span{display:block;font-size:.72rem;color:var(--gris);font-weight:600;margin-bottom:.1rem}
+.dato b{font-size:.9rem}
+.sec-t{font-size:1.05rem;font-weight:800;margin-bottom:.8rem}
+.desc{font-size:.92rem;line-height:1.8;color:#344054;white-space:pre-wrap;word-break:break-word}
+#mapa-detalle{height:280px;border-radius:var(--r-md);border:1px solid var(--borde)}
+.nota-mapa{font-size:.78rem;color:var(--gris);margin-top:.5rem}
+.lateral{position:sticky;top:84px}
+.contacto{background:#fff;border-radius:var(--r-xl);padding:1.4rem;margin-bottom:1rem}
+.contacto-nombre{display:flex;align-items:center;gap:.8rem;margin-bottom:1.1rem}
+.avatar{width:46px;height:46px;border-radius:50%;background:var(--azul-suave);color:var(--azul);display:grid;place-items:center;font-weight:800;font-size:1.1rem}
+.contacto-nombre b{display:block;font-size:.95rem}
+.contacto-nombre small{color:var(--gris);font-size:.78rem}
+.contacto .btn{width:100%;margin-bottom:.6rem}
+.hint{font-size:.76rem;color:var(--gris);line-height:1.5;margin-top:.3rem}
+.seguridad{background:var(--verde-suave);color:#0B5F43;border-radius:var(--r-lg);padding:1.1rem 1.2rem;font-size:.8rem;line-height:1.9}
+.seguridad b{display:block;margin-bottom:.2rem;font-size:.86rem}
+.seguridad a{color:#0B5F43;font-weight:700}
+.compartir{background:#fff;border-radius:var(--r-xl);padding:1.2rem 1.4rem;margin-bottom:1rem}
+.compartir b{display:block;font-size:.9rem;margin-bottom:.7rem}
+.share-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.share-btn{font-size:.8rem;font-weight:700;padding:.55rem 1rem;border-radius:100px;background:var(--azul-fondo);color:#344054;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
+.share-btn:hover{background:var(--azul-suave);color:var(--azul)}
+.barra-movil{display:none}
+@media(max-width:900px){
+  .pagina{grid-template-columns:1fr}
+  .lateral{position:static}
+  .card{padding:1.1rem;border-radius:var(--r-lg)}
+  .titulo{font-size:1.3rem}.precio{font-size:1.6rem}
+  .barra-movil{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:240;background:#fff;border-top:1px solid var(--borde);padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom,0px));gap:.6rem}
+  .barra-movil .btn{flex:1}
+  body{padding-bottom:84px}
+}
+</style>
 </head>
 <body>
-<nav>
-  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
-  <a href="anuncios.html" class="nav-back">← Volver a anuncios</a>
-  <a href="publicar.html" class="btn-pub">+ Publicar</a>
-</nav>
+<header id="pz-nav" data-activo="anuncios" data-tabbar="0" data-buscar="anuncios.html" data-placeholder="Buscar inmuebles y vehículos"></header>
 
-<div class="breadcrumb" id="breadcrumb">
-  <a href="index.html">PlazaPY</a> › <a href="anuncios.html">Anuncios</a> › Cargando...
-</div>
+<div class="pz-container">
+  <div class="migas" id="breadcrumb"><a href="index.html">Inicio</a> / <a href="anuncios.html">Inmuebles y vehículos</a></div>
+  <div id="loadingPage" class="estado-pagina">Cargando anuncio...</div>
+  <div id="errorPage" class="estado-pagina" style="display:none">No encontramos este anuncio.<br><a href="anuncios.html">Ver todos los anuncios →</a></div>
 
-<div id="loadingPage" class="loading-page">⏳ Cargando anuncio...</div>
-<div id="errorPage" class="error-page" style="display:none">⚠️ Anuncio no encontrado. <a href="anuncios.html" style="color:var(--rojo)">Ver todos los anuncios</a></div>
-
-<div class="page" id="pageContent" style="display:none">
-  <!-- IZQUIERDA -->
-  <div class="main-col">
-    <div class="img-main">
-      <div class="img-placeholder" id="imgPrincipal">📦</div>
-      <div id="galeriaThumbs" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem"></div>
-    </div>
-
-    <div class="panel">
-      <div class="anuncio-badges" id="badges"></div>
-      <div class="anuncio-titulo" id="titulo"></div>
-      <div class="anuncio-precio" id="precio"></div>
-      <div class="anuncio-neg" id="negociable"></div>
-      <div class="detalle-grid" id="detalles"></div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">Descripción</div>
-      <div class="desc-text" id="descripcion"></div>
-    </div>
-
-    <div class="panel" id="mapaPanel" style="display:none">
-      <div class="panel-title">📍 Ubicación aproximada</div>
-      <div id="mapa-detalle"></div>
-      <p style="font-size:.78rem;color:var(--gris);margin-top:.5rem">La ubicación es aproximada. Coordiná con el vendedor el punto exacto de encuentro.</p>
-    </div>
-  </div>
-
-  <!-- DERECHA -->
-  <div class="side-col">
-    <div class="contact-card">
-      <div class="contact-nombre" id="contactNombre"></div>
-      <div class="contact-verif" id="contactVerif"></div>
-      <a href="#" class="btn-wa" id="btnWa">💬 Contactar por WhatsApp</a>
-      <a href="#" class="btn-llamar" id="btnLlamar">📞 Llamar</a>
-      <div class="contact-hint">Nunca hagas pagos anticipados sin ver el producto en persona.</div>
-    </div>
-    <div class="safety-card">
-      <div class="safety-title">🛡️ Consejos de seguridad</div>
-      <div class="safety-item">
-        ✓ Coordiná en lugar público<br>
-        ✓ Verificá el producto antes de pagar<br>
-        ✓ Desconfiá de precios muy bajos<br>
-        ✓ No enviés dinero por adelantado<br>
-        ✓ <a href="#" style="color:#8a6b00" onclick="reportar()">Reportar este anuncio</a>
+  <div class="pagina" id="pageContent" style="display:none">
+    <div>
+      <div class="card">
+        <div class="g-main" id="imgPrincipal">📦</div>
+        <div class="g-thumbs" id="galeriaThumbs"></div>
       </div>
+      <div class="card">
+        <div class="badges" id="badges"></div>
+        <h1 class="titulo" id="titulo"></h1>
+        <div class="precio" id="precio"></div>
+        <div class="neg" id="negociable"></div>
+        <div class="datos" id="detalles"></div>
+      </div>
+      <div class="card"><div class="sec-t">Descripción</div><div class="desc" id="descripcion"></div></div>
+      <div class="card" id="mapaPanel" style="display:none">
+        <div class="sec-t">Ubicación aproximada</div>
+        <div id="mapa-detalle"></div>
+        <p class="nota-mapa">La ubicación es aproximada. Coordiná con el vendedor el punto exacto de encuentro.</p>
+      </div>
+      <div id="similares"></div>
     </div>
+
+    <aside class="lateral">
+      <div class="contacto">
+        <div class="contacto-nombre"><div class="avatar" id="avatar">?</div><div><b id="contactNombre"></b><small>Anunciante</small></div></div>
+        <a href="#" class="btn btn-wa" id="btnWa" target="_blank" rel="noopener">Contactar por WhatsApp</a>
+        <a href="#" class="btn btn-outline" id="btnLlamar">Llamar</a>
+        <div class="hint">Nunca hagas pagos anticipados sin ver el inmueble o el vehículo en persona.</div>
+      </div>
+      <div class="compartir">
+        <b>Compartir este anuncio</b>
+        <div class="share-row">
+          <a href="#" class="share-btn" id="shWa" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="#" class="share-btn" id="shFb" target="_blank" rel="noopener">Facebook</a>
+          <button class="share-btn" id="shCopy" type="button">Copiar link</button>
+          <button class="share-btn" id="shNative" type="button" style="display:none">Más opciones</button>
+        </div>
+      </div>
+      <div class="seguridad">
+        <b>🛡️ Consejos de seguridad</b>
+        ✓ Coordiná la visita en un lugar seguro<br>
+        ✓ Verificá documentos antes de pagar<br>
+        ✓ Desconfiá de precios demasiado bajos<br>
+        ✓ No envíes dinero por adelantado<br>
+        ✓ <a href="#" id="btnReportar" target="_blank" rel="noopener">Reportar este anuncio</a>
+      </div>
+    </aside>
   </div>
 </div>
 
+<div class="barra-movil" id="barraMovil"><a href="#" class="btn btn-wa" id="btnWaM" target="_blank" rel="noopener">WhatsApp</a><a href="#" class="btn btn-outline" id="btnLlamarM">Llamar</a><button class="btn btn-soft" id="btnCompartirM" type="button">Compartir</button></div>
+
+<footer id="pz-footer"></footer>
+<script src="plazapy.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const SUPA_URL='https://ayjlnbxcojqglcufqzob.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5amxuYnhjb2pxZ2xjdWZxem9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNjE3MzcsImV4cCI6MjA5NTgzNzczN30.K3IF9CDiINmZ-rN3x40Z7eAivJFtMHRJHHlOnw7MUCY';
 const db=window.supabase.createClient(SUPA_URL,SUPA_KEY);
-const ICONS={repuestos:'🔧',autos:'🚗',motos:'🏍️',talleres:'🔩',electronica:'📱',inmuebles:'🏠',empleos:'💼',otros:'📦'};
+const {esc,gs,ICONOS}=PZ;
+const NOM={inmuebles:'Inmuebles',autos:'Autos',motos:'Motos'};
+let fotos=[];
 
 async function cargar(){
   const id=new URLSearchParams(window.location.search).get('id');
   if(!id){mostrarError();return;}
-
   const{data,error}=await db.from('anuncios').select('*').eq('id',id).eq('estado','aprobado').single();
   if(error||!data){mostrarError();return;}
-
   const a=data;
+  const esInm=a.categoria==='inmuebles';
+  const op=esInm?PZ.operacion(a):'';
+  const tipoQ=esInm?'inmuebles':a.categoria;
 
-  // Breadcrumb
-  const bcEl = document.getElementById('breadcrumb'); if(bcEl) bcEl.innerHTML=`<a href="index.html">PlazaPY</a> › <a href="anuncios.html?cat=${a.categoria}">${a.categoria}</a> › ${a.titulo}`;
+  document.getElementById('breadcrumb').innerHTML=`<a href="index.html">Inicio</a> / <a href="anuncios.html">Inmuebles y vehículos</a> / <a href="anuncios.html?tipo=${encodeURIComponent(tipoQ)}">${esc(NOM[a.categoria]||a.categoria)}</a> / <b>${esc(a.titulo)}</b>`;
+
   // SEO dinámico
-  const pageTitle = a.titulo + ' — PlazaPY';
-  const pageDesc = (a.descripcion||'').substring(0,155) + (a.descripcion?.length > 155 ? '...' : '');
-  const pageUrl = 'https://www.plazapy.com/detalle.html?id=' + a.id;
-  const pageImg = a.foto_url || 'https://www.plazapy.com/og-default.png';
-  const pagePrice = 'Gs. ' + Number(a.precio).toLocaleString();
+  const pageTitle=a.titulo+' — PlazaPY';
+  const pageDesc=(a.descripcion||'').substring(0,155)+((a.descripcion||'').length>155?'...':'');
+  const pageUrl='https://www.plazapy.com/detalle.html?id='+a.id;
+  const pageImg=a.foto_url||'https://www.plazapy.com/icon-512.png';
+  document.title=pageTitle;
+  document.getElementById('canonical').href=pageUrl;
+  document.querySelector('meta[name=description]').content=pageDesc;
+  [['ogTitle',pageTitle],['ogDesc',pageDesc],['ogImage',pageImg],['ogUrl',pageUrl],['twTitle',pageTitle],['twDesc',pageDesc],['twImage',pageImg]].forEach(([i,v])=>{const e=document.getElementById(i);if(e)e.content=v;});
+  const schema={"@context":"https://schema.org","@type":"Product","name":a.titulo,"description":a.descripcion||'',"image":pageImg,"url":pageUrl,
+    "offers":{"@type":"Offer","priceCurrency":"PYG","price":a.precio,"availability":"https://schema.org/InStock","seller":{"@type":"Person","name":a.nombre_contacto||'PlazaPY'}}};
+  const sEl=document.createElement('script');sEl.type='application/ld+json';sEl.textContent=JSON.stringify(schema);document.head.appendChild(sEl);
 
-  document.title = pageTitle;
-  document.getElementById('canonical').href = pageUrl;
-  document.querySelector('meta[name=description]').content = pageDesc;
-  document.getElementById('ogTitle').content = pageTitle;
-  document.getElementById('ogDesc').content = pageDesc;
-  document.getElementById('ogImage').content = pageImg;
-  document.getElementById('ogUrl').content = pageUrl;
-  document.getElementById('twTitle').content = pageTitle;
-  document.getElementById('twDesc').content = pageDesc;
-  document.getElementById('twImage').content = pageImg;
+  // Galería
+  try{fotos=a.fotos_urls?JSON.parse(a.fotos_urls):[];}catch(e){fotos=[];}
+  if(a.foto_url&&!fotos.length)fotos=[a.foto_url];
+  const principal=document.getElementById('imgPrincipal');
+  if(fotos.length){
+    principal.innerHTML=`<img src="${esc(fotos[0])}" alt="${esc(a.titulo)}"/>`;
+    if(fotos.length>1)document.getElementById('galeriaThumbs').innerHTML=fotos.map((u,i)=>`<div class="gal-thumb${i===0?' activo':''}" onclick="verFoto(${i})"><img src="${esc(u)}" alt="Foto ${i+1}" loading="lazy"/></div>`).join('');
+  }else principal.textContent=ICONOS[a.categoria]||'📦';
 
-  // Schema.org — datos estructurados para Google
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": a.titulo,
-    "description": a.descripcion || '',
-    "image": pageImg,
-    "offers": {
-      "@type": "Offer",
-      "priceCurrency": "PYG",
-      "price": a.precio,
-      "availability": "https://schema.org/InStock",
-      "seller": { "@type": "Person", "name": a.nombre_contacto || 'PlazaPY' }
-    },
-    "url": pageUrl
-  };
-  const schemaEl = document.createElement('script');
-  schemaEl.type = 'application/ld+json';
-  schemaEl.textContent = JSON.stringify(schema);
-  document.head.appendChild(schemaEl);
-
-  // Galería de fotos
-  const principal = document.getElementById('imgPrincipal');
-  const thumbsEl = document.getElementById('galeriaThumbs');
-
-  let fotos = [];
-  try { fotos = a.fotos_urls ? JSON.parse(a.fotos_urls) : []; } catch(e) {}
-  if (a.foto_url && !fotos.length) fotos = [a.foto_url];
-
-  if (principal) {
-    if (fotos.length) {
-      principal.innerHTML = `<img src="${fotos[0]}" alt="${a.titulo}" style="width:100%;height:100%;object-fit:cover" />`;
-      if (fotos.length > 1 && thumbsEl) {
-        thumbsEl.innerHTML = fotos.map((url, i) => `
-          <div class="galeria-thumb${i===0?' activo':''}" onclick="verFoto(${i})" id="thumb${i}" style="width:72px;height:72px;border-radius:7px;border:2px solid var(--borde);overflow:hidden;cursor:pointer">
-            <img src="${url}" alt="foto ${i+1}" loading="lazy" style="width:100%;height:100%;object-fit:cover"/>
-          </div>
-        `).join('');
-      }
-    } else {
-      principal.textContent = ICONS[a.categoria]||'📦';
-    }
-  }
-
-  // Badges
+  // Etiquetas, precio y datos
   let badges='';
-  if(a.destacado) badges+=`<span class="badge badge-dest">⭐ Destacado</span>`;
-  if(a.verificado) badges+=`<span class="badge badge-verif">✓ Verificado</span>`;
-  badges+=`<span class="badge badge-cat">${a.categoria}</span>`;
-  if(a.condicion) badges+=`<span class="badge badge-cond">${a.condicion}</span>`;
-  const badgesEl=document.getElementById('badges'); if(badgesEl) badgesEl.innerHTML=badges;
-
-  // Info principal
-  const tituloEl=document.getElementById('titulo'); if(tituloEl) tituloEl.textContent=a.titulo;
-  const precioEl=document.getElementById('precio'); if(precioEl) precioEl.textContent='Gs. '+Number(a.precio).toLocaleString();
-  const negEl=document.getElementById('negociable'); if(negEl) negEl.textContent=a.negociable==='si'?'Precio negociable':a.negociable==='consultar'?'Precio a consultar':'Precio fijo';
-  const descEl=document.getElementById('descripcion'); if(descEl) descEl.textContent=a.descripcion;
-
-  // Detalles
-  const detalles=[
-    ['Ciudad',a.ciudad||'—'],
-    ['Barrio',a.barrio||'—'],
-    ['Subcategoría',a.subcategoria||'—'],
-    ['Condición',a.condicion||'—'],
-    ['Publicado',new Date(a.created_at).toLocaleDateString('es-PY')],
-    ['Estado','Disponible'],
-  ];
-  const detEl=document.getElementById('detalles'); if(detEl) detEl.innerHTML=detalles.map(([l,v])=>`
-    <div class="detalle-item"><span class="detalle-label">${l}</span><span class="detalle-val">${v}</span></div>
-  `).join('');
+  if(esInm)badges+=`<span class="badge badge-op ${op==='Alquiler'?'alq':''}">${op==='Alquiler'?'Alquiler':'En venta'}</span>`;
+  else badges+=`<span class="badge badge-op">${esc(a.categoria==='motos'?'Moto':'Auto')}</span>`;
+  if(a.destacado)badges+='<span class="badge badge-dest">★ Destacado</span>';
+  if(a.subcategoria)badges+=`<span class="badge badge-gris">${esc(a.subcategoria)}</span>`;
+  if(a.condicion)badges+=`<span class="badge badge-gris">${esc(a.condicion)}</span>`;
+  document.getElementById('badges').innerHTML=badges;
+  document.getElementById('titulo').textContent=a.titulo;
+  document.getElementById('precio').innerHTML=esc(gs(a.precio))+(op==='Alquiler'?' <small>/ mes</small>':'');
+  document.getElementById('negociable').textContent=a.negociable==='si'?'Precio negociable':a.negociable==='consultar'?'Precio a consultar':'Precio fijo';
+  document.getElementById('descripcion').textContent=a.descripcion||'Sin descripción.';
+  const datos=[['Ciudad',a.ciudad],['Barrio',a.barrio],[esInm?'Tipo':'Categoría',a.subcategoria||NOM[a.categoria]],['Condición',a.condicion],['Publicado',new Date(a.created_at).toLocaleDateString('es-PY')]].filter(d=>d[1]);
+  document.getElementById('detalles').innerHTML=datos.map(([l,v])=>`<div class="dato"><span>${esc(l)}</span><b>${esc(v)}</b></div>`).join('');
 
   // Contacto
-  const cnEl=document.getElementById('contactNombre'); if(cnEl) cnEl.textContent=a.nombre_contacto;
-  const cvEl=document.getElementById('contactVerif'); if(cvEl) cvEl.textContent=a.verificado?'✓ Vendedor verificado por PlazaPY':'Vendedor registrado';
-  const wa=a.whatsapp.replace(/\D/g,'');
-  const msg=encodeURIComponent(`Hola! Vi tu anuncio en PlazaPY: "${a.titulo}". ¿Está disponible?`);
-  const waEl=document.getElementById('btnWa'); if(waEl) waEl.href=`https://wa.me/${wa}?text=${msg}`;
-  const llEl=document.getElementById('btnLlamar'); if(llEl) llEl.href=`tel:${a.whatsapp}`;
+  const nombre=a.nombre_contacto||'Anunciante';
+  document.getElementById('contactNombre').textContent=nombre;
+  document.getElementById('avatar').textContent=nombre[0].toUpperCase();
+  const wa=(a.whatsapp||'').replace(/\D/g,'');
+  const msg=encodeURIComponent(`Hola! Vi tu anuncio en PlazaPY: "${a.titulo}". ¿Sigue disponible?`);
+  ['btnWa','btnWaM'].forEach(i=>document.getElementById(i).href=`https://wa.me/${wa}?text=${msg}`);
+  ['btnLlamar','btnLlamarM'].forEach(i=>document.getElementById(i).href=`tel:${a.whatsapp||''}`);
+  document.getElementById('btnReportar').href='https://wa.me/595995676743?text='+encodeURIComponent('Hola PlazaPY! Quiero reportar este anuncio: '+pageUrl);
+
+  // Compartir
+  const textoShare=`${a.titulo} — ${gs(a.precio)}${op==='Alquiler'?' / mes':''} en PlazaPY`;
+  document.getElementById('shWa').href='https://wa.me/?text='+encodeURIComponent(textoShare+'\n'+pageUrl);
+  document.getElementById('shFb').href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(pageUrl);
+  const copiar=async()=>{
+    try{await navigator.clipboard.writeText(pageUrl);PZ.toast('Link copiado');}
+    catch(e){window.prompt('Copiá este link:',pageUrl);}
+  };
+  const nativo=()=>navigator.share({title:a.titulo,text:textoShare,url:pageUrl}).catch(()=>{});
+  document.getElementById('shCopy').onclick=copiar;
+  if(navigator.share){const n=document.getElementById('shNative');n.style.display='inline-block';n.onclick=nativo;}
+  document.getElementById('btnCompartirM').onclick=navigator.share?nativo:copiar;
 
   // Mapa
   if(a.lat&&a.lng){
@@ -309,31 +244,29 @@ async function cargar(){
     setTimeout(()=>{
       const m=L.map('mapa-detalle').setView([a.lat,a.lng],14);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(m);
-      L.circle([a.lat,a.lng],{radius:300,color:'#C1440E',fillColor:'#C1440E',fillOpacity:.15}).addTo(m);
+      L.circle([a.lat,a.lng],{radius:300,color:'#1558D6',fillColor:'#1558D6',fillOpacity:.15}).addTo(m);
     },100);
   }
-
   document.getElementById('loadingPage').style.display='none';
   document.getElementById('pageContent').style.display='grid';
+  cargarSimilares(a);
 }
 
-function verFoto(idx){
-  const fotos=JSON.parse(document.querySelector('.galeria-principal img')?.closest('.galeria')?.dataset?.fotos||'[]');
-  // Recargar con el índice correcto
-  const imgs=document.querySelectorAll('.galeria-thumb img');
-  if(!imgs[idx])return;
-  document.getElementById('imgPrincipal').innerHTML=`<img src="${imgs[idx].src}" alt="foto ${idx+1}"/>`;
-  document.querySelectorAll('.galeria-thumb').forEach((t,i)=>t.classList.toggle('activo',i===idx));
+async function cargarSimilares(a){
+  const{data}=await db.from('anuncios').select('id,categoria,subcategoria,titulo,precio,ciudad,barrio,foto_url,destacado')
+    .eq('estado','aprobado').eq('categoria',a.categoria).neq('id',a.id).order('created_at',{ascending:false}).limit(3);
+  if(!data||!data.length)return;
+  document.getElementById('similares').innerHTML=`<div class="sec-head"><h2 class="sec-title" style="font-size:1.15rem">Anuncios similares</h2><a class="ver-mas" href="anuncios.html?tipo=${encodeURIComponent(a.categoria)}">Ver más →</a></div><div class="agrid">${data.map(PZ.cardAnuncio).join('')}</div>`;
+}
+
+function verFoto(i){
+  document.getElementById('imgPrincipal').innerHTML=`<img src="${esc(fotos[i])}" alt="Foto ${i+1}"/>`;
+  document.querySelectorAll('.gal-thumb').forEach((t,idx)=>t.classList.toggle('activo',idx===i));
 }
 function mostrarError(){
   document.getElementById('loadingPage').style.display='none';
   document.getElementById('errorPage').style.display='block';
 }
-
-function reportar(){
-  alert('Gracias por reportar. Revisaremos este anuncio en breve.');
-}
-
 cargar();
 </script>
 </body>

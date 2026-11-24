@@ -12,37 +12,30 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Publicar anuncio — PlazaPY</title>
+  <title>Publicar anuncio de inmueble o vehículo — PlazaPY</title>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#1558D6"/>
+  <link rel="icon" href="/icon-192.png"/>
+  <link rel="stylesheet" href="plazapy.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     :root {
-      --rojo: #C1440E; --rojo-dark: #9A350A;
-      --azul: #C1440E; --crema: #FAF6EF;
-      --arena: #ECE3D6; --carbon: #2B211A;
-      --gris: #7C7267; --verde: #2F6B4F;
+      --rojo: #1558D6; --rojo-dark: #0E41A8;
+      --azul: #1558D6; --crema: #F3F6FC;
+      --arena: #E3E8F2; --carbon: #101828;
+      --gris: #667085; --verde: #13805C;
       --amarillo: #F2B705;
       --blanco: #FFFFFF;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--crema); color: var(--carbon); }
-
-    nav {
-      position: sticky; top: 0; z-index: 200;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2rem; height: 64px;
-      background: var(--azul); border-bottom: 3px solid var(--amarillo);
-    }
-    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--blanco); text-decoration: none; }
-    .nav-logo span { color: var(--rojo); }
-    .nav-back { color: rgba(255,255,255,0.7); text-decoration: none; font-size: .9rem; }
-    .nav-back:hover { color: white; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--crema); color: var(--carbon); }
 
     .page { max-width: 780px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
 
-    h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; margin-bottom: .3rem; }
+    h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.8rem; margin-bottom: .3rem; }
     .sub { color: var(--gris); margin-bottom: 2rem; }
 
     /* STEPS */
@@ -58,7 +51,7 @@
 
     /* PANEL */
     .panel { background: var(--blanco); border-radius: 12px; border: 1.5px solid var(--arena); padding: 1.75rem; margin-bottom: 1rem; }
-    .panel-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 1.25rem; padding-bottom: .75rem; border-bottom: 1.5px solid var(--arena); }
+    .panel-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 1.25rem; padding-bottom: .75rem; border-bottom: 1.5px solid var(--arena); }
 
     /* CAMPOS */
     .campo { margin-bottom: 1.1rem; }
@@ -67,7 +60,7 @@
     .campo input, .campo select, .campo textarea {
       width: 100%; padding: .7rem .9rem;
       border: 1.5px solid var(--arena); border-radius: 7px;
-      font-family: 'DM Sans', sans-serif; font-size: .95rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem;
       background: var(--crema); color: var(--carbon); outline: none;
     }
     .campo input:focus, .campo select:focus, .campo textarea:focus {
@@ -112,10 +105,10 @@
     .foto-previews { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .75rem; }
     .foto-preview-item { position: relative; width: 90px; height: 90px; }
     .foto-preview-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--arena); display: block; }
-    .foto-preview-item .foto-principal { position: absolute; bottom: 3px; left: 3px; background: #C1440E; color: white; font-size: .55rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; }
-    .foto-preview-item .foto-del { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #C1440E; color: white; border: none; cursor: pointer; font-size: .7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; line-height: 1; }
+    .foto-preview-item .foto-principal { position: absolute; bottom: 3px; left: 3px; background: #1558D6; color: white; font-size: .55rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; }
+    .foto-preview-item .foto-del { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #1558D6; color: white; border: none; cursor: pointer; font-size: .7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; line-height: 1; }
     .foto-limite { font-size: .78rem; color: var(--gris); margin-top: .4rem; }
-    .foto-limite.lleno { color: #C1440E; font-weight: 600; }
+    .foto-limite.lleno { color: #1558D6; font-weight: 600; }
 
     /* MAPA */
     #mapa { height: 280px; border-radius: 8px; border: 1.5px solid var(--arena); margin-top: .4rem; }
@@ -134,9 +127,9 @@
     .nav-btns { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1.5px solid var(--arena); }
     .btn-prev { background: transparent; border: 1.5px solid var(--arena); color: var(--carbon); padding: .7rem 1.4rem; border-radius: 7px; font-size: .9rem; cursor: pointer; }
     .btn-prev:hover { border-color: #C9BBA5; }
-    .btn-next { background: var(--azul); color: white; border: none; padding: .7rem 1.8rem; border-radius: 7px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem; cursor: pointer; }
-    .btn-next:hover { background: #9A350A; }
-    .btn-send { background: var(--rojo); color: white; border: none; padding: .7rem 1.8rem; border-radius: 7px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem; cursor: pointer; }
+    .btn-next { background: var(--azul); color: white; border: none; padding: .7rem 1.8rem; border-radius: 7px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: .9rem; cursor: pointer; }
+    .btn-next:hover { background: #0E41A8; }
+    .btn-send { background: var(--rojo); color: white; border: none; padding: .7rem 1.8rem; border-radius: 7px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: .9rem; cursor: pointer; }
     .btn-send:hover { background: var(--rojo-dark); }
     .btn-send:disabled { opacity: .5; cursor: not-allowed; }
 
@@ -144,9 +137,9 @@
     .exito { text-align: center; padding: 4rem 2rem; display: none; }
     .exito.v { display: block; }
     .exito-icon { font-size: 4rem; margin-bottom: 1rem; }
-    .exito h2 { font-family: 'Syne', sans-serif; font-size: 1.75rem; margin-bottom: .5rem; }
+    .exito h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.75rem; margin-bottom: .5rem; }
     .exito p { color: var(--gris); margin-bottom: 2rem; }
-    .btn-home { display: inline-block; background: var(--azul); color: white; padding: .8rem 1.8rem; border-radius: 7px; text-decoration: none; font-family: 'Syne', sans-serif; font-weight: 700; }
+    .btn-home { display: inline-block; background: var(--azul); color: white; padding: .8rem 1.8rem; border-radius: 7px; text-decoration: none; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
 
     /* VERIFICACIÓN */
     .verif-box { background: #e8f5ee; border: 1.5px solid rgba(26,127,75,.3); border-radius: 9px; padding: 1rem; display: flex; gap: .75rem; margin-bottom: 1.1rem; }
@@ -162,10 +155,7 @@
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="nav-logo">Plaza<span>PY</span></a>
-  <a href="index.html" class="nav-back">← Volver</a>
-</nav>
+<header id="pz-nav" data-activo="anuncios" data-tabbar="0"></header>
 
 <div class="page">
   <h1 id="pageTitle">Publicar anuncio</h1>
@@ -188,11 +178,11 @@
     <!-- OFERTA DE DESTACADO (solo en anuncios nuevos) -->
     <div id="ofertaDestacado" style="background:#FFF8E7;border:2px solid #F2B705;border-radius:14px;padding:1.5rem;margin:1.5rem 0;text-align:left;display:none">
       <div style="font-size:1.5rem;margin-bottom:.5rem">⭐</div>
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.4rem">¿Querés que aparezca primero?</div>
-      <div style="font-size:.88rem;color:#7C7267;line-height:1.6;margin-bottom:1rem">Los anuncios <strong>destacados</strong> aparecen arriba de todos y reciben hasta <strong>5x más contactos</strong>. Solo Gs. 50.000 por 30 días.</div>
-      <div style="background:white;border-radius:10px;padding:1rem;margin-bottom:1rem;border:1px solid #ECE3D6">
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.6rem;color:#C1440E">💳 Opciones de pago</div>
-        <div style="font-size:.85rem;line-height:1.9;color:#2B211A">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:.4rem">¿Querés que aparezca primero?</div>
+      <div style="font-size:.88rem;color:#667085;line-height:1.6;margin-bottom:1rem">Los anuncios <strong>destacados</strong> aparecen arriba de todos y reciben hasta <strong>5x más contactos</strong>. Solo Gs. 50.000 por 30 días.</div>
+      <div style="background:white;border-radius:10px;padding:1rem;margin-bottom:1rem;border:1px solid #E3E8F2">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.6rem;color:#1558D6">💳 Opciones de pago</div>
+        <div style="font-size:.85rem;line-height:1.9;color:#101828">
           <strong>Tigo Money:</strong> 0981 000 000<br>
           <strong>Personal Pay:</strong> 0971 000 000<br>
           <strong>Transferencia bancaria:</strong><br>
@@ -201,42 +191,37 @@
           &nbsp;&nbsp;Titular: PlazaPY
         </div>
       </div>
-      <div style="font-size:.82rem;color:#7C7267;margin-bottom:1rem">
+      <div style="font-size:.82rem;color:#667085;margin-bottom:1rem">
         📱 Después del pago, enviá el comprobante y el <strong>número de tu anuncio</strong> por WhatsApp:
       </div>
       <a id="btnWaDestacado" href="#" target="_blank"
-        style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#25D366;color:white;padding:.8rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.75rem">
+        style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#25D366;color:white;padding:.8rem;border-radius:8px;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.75rem">
         💬 Enviar comprobante por WhatsApp
       </a>
       <div style="font-size:.75rem;color:#A79C8E;text-align:center">Activamos el destacado en menos de 2 horas hábiles</div>
     </div>
 
     <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
-      <a href="cuenta.html" style="display:inline-block;background:#C1440E;color:white;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem">Ver mis anuncios</a>
-      <a href="index.html" style="display:inline-block;background:#FAF6EF;color:#2B211A;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;border:1.5px solid #ECE3D6">← Volver al inicio</a>
+      <a href="cuenta.html" style="display:inline-block;background:#1558D6;color:white;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem">Ver mis anuncios</a>
+      <a href="index.html" style="display:inline-block;background:#F3F6FC;color:#101828;padding:.75rem 1.5rem;border-radius:8px;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem;border:1.5px solid #E3E8F2">← Volver al inicio</a>
     </div>
   </div>
 
   <!-- PASO 1 -->
   <div id="paso1">
     <div class="panel">
-      <div class="panel-title">📦 ¿Qué vas a publicar?</div>
+      <div class="panel-title">¿Qué vas a publicar?</div>
       <div class="campo">
         <label>Categoría <span class="req">*</span></label>
         <div class="pills" id="catPills">
-          <div class="pill" onclick="selCat(this,'repuestos')">🔧 Repuestos</div>
-          <div class="pill" onclick="selCat(this,'autos')">🚗 Autos usados</div>
-          <div class="pill" onclick="selCat(this,'motos')">🏍️ Motos</div>
-          <div class="pill" onclick="selCat(this,'talleres')">🔩 Talleres</div>
-          <div class="pill" onclick="selCat(this,'electronica')">📱 Electrónica</div>
-          <div class="pill" onclick="selCat(this,'inmuebles')">🏠 Inmuebles</div>
-          <div class="pill" onclick="selCat(this,'empleos')">💼 Empleos</div>
-          <div class="pill" onclick="selCat(this,'otros')">📦 Otros</div>
+          <div class="pill" onclick="selCat(this,'inmuebles')">🏠 Inmueble (alquiler o venta)</div>
+          <div class="pill" onclick="selCat(this,'autos')">🚗 Auto</div>
+          <div class="pill" onclick="selCat(this,'motos')">🏍️ Moto</div>
         </div>
         <div class="err" id="errCat">Seleccioná una categoría.</div>
       </div>
       <div class="campo" id="subcatCampo" style="display:none">
-        <label>Subcategoría</label>
+        <label id="subcatLabel">Subcategoría</label>
         <select id="subcat"><option value="">Seleccioná...</option></select>
       </div>
     </div>
@@ -436,7 +421,7 @@ const SUBCATS = {
   motos: ['Deportiva','Scooter','Enduro / Cross','Chopera','Otro'],
   talleres: ['Mecánica general','Chapa y pintura','Electricidad','Gomería','Lavadero','Otro'],
   electronica: ['Celulares','Computadoras','TV / Audio','Cámaras','Accesorios','Otro'],
-  inmuebles: ['Alquiler casa','Venta casa','Alquiler depto','Terreno','Local','Otro'],
+  inmuebles: ['Alquiler casa','Alquiler departamento','Alquiler local','Alquiler otro','Venta casa','Venta departamento','Venta terreno','Venta local','Venta otro'],
   empleos: ['Tiempo completo','Medio tiempo','Freelance','Prácticas','Otro'],
   otros: ['Ropa','Deportes','Juguetes','Libros','Servicios','Otro'],
 };
@@ -448,6 +433,7 @@ function selCat(el, valor) {
   cat = valor;
   document.getElementById('errCat').classList.remove('v');
 
+  document.getElementById('subcatLabel').innerHTML = valor === 'inmuebles' ? 'Tipo de operación e inmueble <span class="req">*</span>' : 'Tipo';
   const campo = document.getElementById('subcatCampo');
   const sel = document.getElementById('subcat');
   sel.innerHTML = '<option value="">Seleccioná...</option>';
@@ -557,7 +543,7 @@ function mostrarToast(msg, tipo) {
   // toast simple
   const t = document.createElement('div');
   t.textContent = msg;
-  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:${tipo==='error'?'#C1440E':'#2F6B4F'};color:white;padding:.85rem 1.3rem;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2)`;
+  t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:${tipo==='error'?'#1558D6':'#13805C'};color:white;padding:.85rem 1.3rem;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2)`;
   document.body.appendChild(t);
   setTimeout(()=>t.remove(), 3000);
 }
@@ -597,7 +583,9 @@ function ir(n) {
 // ── VALIDACIÓN ──
 function validar(p) {
   if (p === 1) {
-    if (!cat) { document.getElementById('errCat').classList.add('v'); return false; }
+    const eC = document.getElementById('errCat');
+    if (!cat) { eC.textContent = 'Seleccioná qué vas a publicar.'; eC.classList.add('v'); return false; }
+    if (cat === 'inmuebles' && !document.getElementById('subcat').value) { eC.textContent = 'Elegí si es alquiler o venta y el tipo de inmueble.'; eC.classList.add('v'); return false; }
   }
   if (p === 2) {
     let ok = true;
@@ -802,5 +790,7 @@ async function cargarParaEditar(id) {
 const editParam = new URLSearchParams(window.location.search).get('editar');
 if (editParam) cargarParaEditar(editParam);
 </script>
+<footer id="pz-footer"></footer>
+<script src="plazapy.js"></script>
 </body>
 </html>
